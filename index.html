@@ -214,9 +214,7 @@
     </div>
     <div class="modal-error" id="authError" style="color:#d93025; font-size:13px; margin-bottom:10px; display:none;"></div>
     <form id="authForm" onsubmit="handleAuth(event)">
-      <!-- Login වෙද්දී Email එක අහනවා -->
       <div class="modal-field" id="emailField"><label>Email</label><input id="authEmail" type="email" placeholder="you@example.com"></div>
-      <!-- Signup වෙද්දී Username එක අහනවා -->
       <div class="modal-field" id="usernameField"><label>Username</label><input id="authUsername" type="text" placeholder="your_nickname" maxlength="20"></div>
       <div class="modal-field"><label>Password</label><input id="authPassword" type="password" placeholder="••••••••"></div>
       <button class="modal-submit" id="authSubmitBtn" type="submit">Login</button>
@@ -330,8 +328,7 @@ function switchAuthTab(mode){
   $('tabLogin').classList.toggle('active',isLogin);
   $('tabSignup').classList.toggle('active',!isLogin);
   
-  // Login වෙද්දී Email එක ඕන, Signup වෙද්දී Username එක ඕන
-  $('emailField').style.display = 'block';
+  $('emailField').style.display = isLogin ? 'block' : 'block';
   $('usernameField').style.display = isLogin ? 'none' : 'block';
   
   $('authEmail').required = true;
@@ -348,7 +345,6 @@ async function handleAuth(e){
   
   try{
     if(authMode==='login'){
-      // Login වෙද්දී කෙලින්ම Email එකයි Password එකයි ගන්නවා
       const email=$('authEmail').value.trim();
       const password=$('authPassword').value;
       if(!email || !password) throw new Error('Email and password required');
@@ -365,7 +361,6 @@ async function handleAuth(e){
       closeAuth(); updateHeader(); switchPanel('feed'); subscribeFeed();
       $('authEmail').value='';$('authPassword').value='';
     } else {
-      // Signup වෙද්දී ඔක්කොම ඕන
       const username=$('authUsername').value.trim();
       const password=$('authPassword').value;
       const email=$('authEmail').value.trim();
@@ -711,9 +706,12 @@ async function renderProfile(userId){
   viewUserProfile(currentUser.id);
 }
 
-// ===== EDIT PROFILE =====
+// ===== EDIT PROFILE (වෙනස් කරපු තැන) =====
 function openEditProfile(){
-  if(!currentProfile) return;
+  if(!currentProfile) {
+    toast('Profile loading... try again'); 
+    return;
+  }
   $('editUsername').value = currentProfile.username || '';
   $('editBio').value = currentProfile.bio || '';
   $('editProfileOverlay').classList.add('show');
@@ -731,13 +729,16 @@ async function saveProfile(){
   try {
     const { error } = await sb.from('profiles').update({ username: newUsername, bio: newBio }).eq('id', currentUser.id);
     if(error) throw error;
+    
     currentUser.username = newUsername;
     currentProfile.username = newUsername;
     currentProfile.bio = newBio;
     toast('Profile updated! ✅');
     closeEditProfile();
     viewUserProfile(currentUser.id);
-  } catch(ex) { toast('Failed: ' + ex.message); }
+  } catch(ex) { 
+    toast('Failed: ' + ex.message); 
+  }
   btn.disabled = false; btn.textContent = 'Save Changes';
 }
 

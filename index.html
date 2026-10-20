@@ -328,9 +328,11 @@ function switchAuthTab(mode){
   $('tabLogin').classList.toggle('active',isLogin);
   $('tabSignup').classList.toggle('active',!isLogin);
   
-  // Login වෙද්දී Email box එක ඕන නෑ, Signup වෙද්දී ඕන
   $('emailField').style.display = isLogin ? 'none' : 'block';
   $('authEmail').required = !isLogin;
+  
+  // Login වෙද්දී Username box එක පෙන්නන්න ඕන
+  document.querySelectorAll('.modal-field')[1].style.display = 'block';
   
   $('authSubmitBtn').textContent = isLogin ? 'Login' : 'Create Account';
   $('authError').style.display='none';
@@ -343,24 +345,25 @@ async function handleAuth(e){
   
   try{
     if(authMode==='login'){
-      // Login වෙද්දී කෙලින්ම Email එක පාවිච්චි කරනවා (Username නෑ)
-      const email=$('authEmail').value.trim();
+      // මෙතනදී Username එකෙන් @example.com email එකක් හදනවා
+      const username=$('authUsername').value.trim();
       const password=$('authPassword').value;
-      if(!email || !password) throw new Error('Email and password required');
+      if(!username || !password) throw new Error('Username and password required');
       
+      const email = username.toLowerCase().replace(/\s+/g,'') + '@example.com';
       const {data,error}=await sb.auth.signInWithPassword({email,password});
       if(error) throw error;
       
       const {data:prof, error: pErr}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
       if(pErr) throw pErr;
       
-      currentUser={id:data.user.id,username:prof?prof.username:email.split('@')[0]};
+      currentUser={id:data.user.id,username:prof?prof.username:username};
       currentProfile=prof;
       toast('Welcome back, '+currentUser.username+'! 👋');
       closeAuth(); updateHeader(); switchPanel('feed'); subscribeFeed();
-      $('authEmail').value='';$('authPassword').value='';
+      $('authUsername').value='';$('authPassword').value='';
     } else {
-      // Signup වෙද්දී ඔක්කොම ඕන
+      // Signup වෙද්දී Email එකත් අහනවා
       const username=$('authUsername').value.trim();
       const password=$('authPassword').value;
       const email=$('authEmail').value.trim();

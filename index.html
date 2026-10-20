@@ -352,8 +352,15 @@ async function handleAuth(e){
       const {data,error}=await sb.auth.signInWithPassword({email,password});
       if(error) throw error;
       
-      const {data:prof, error: pErr}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
+      let {data:prof, error: pErr}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
       if(pErr) throw pErr;
+      
+      // Self-Healing: Profile එක නැත්නම් හදලා දෙනවා
+      if(!prof) {
+        const newUsername = email.split('@')[0];
+        const {data:newProf, error: insErr} = await sb.from('profiles').insert([{id: data.user.id, username: newUsername}]).select().single();
+        if(!insErr) prof = newProf;
+      }
       
       currentUser={id:data.user.id,username:prof?prof.username:email.split('@')[0]};
       currentProfile=prof;
@@ -402,7 +409,14 @@ async function doLogout(){
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='SIGNED_OUT'||!session){ currentUser=null; currentProfile=null; }
   else if(session && !currentUser){
-    const {data:prof}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
+    let {data:prof}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
+    
+    if(!prof) {
+      const newUsername = session.user.email.split('@')[0];
+      const {data:newProf} = await sb.from('profiles').insert([{id: session.user.id, username: newUsername}]).select().single();
+      prof = newProf;
+    }
+    
     if(prof) currentUser={id:session.user.id,username:prof.username};
     currentProfile=prof;
   }
@@ -931,7 +945,14 @@ function subscribeRoom(roomId){
 async function init(){
   const {data:{session}}=await sb.auth.getSession();
   if(session){
-    const {data:prof}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
+    let {data:prof}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
+    
+    if(!prof) {
+      const newUsername = session.user.email.split('@')[0];
+      const {data:newProf} = await sb.from('profiles').insert([{id: session.user.id, username: newUsername}]).select().single();
+      prof = newProf;
+    }
+    
     if(prof) currentUser={id:session.user.id,username:prof.username};
     currentProfile=prof;
   }

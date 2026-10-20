@@ -139,6 +139,15 @@
   .contact-pick:hover { background:#f0f2f5; }
   .contact-pick.selected { background:#e7f3ff; }
 
+  /* INVITE */
+  .invite-text { text-align:center; font-size:14px; color:#65676b; margin-bottom:16px; }
+  .invite-link-box { display:flex; gap:8px; margin-bottom:16px; }
+  .invite-link-box input { flex:1; padding:12px; border-radius:6px; border:1px solid #ccd0d5; background:#f0f2f5; font-size:14px; font-family:inherit; outline:none; }
+  .invite-link-box button { background:#1877f2; color:#fff; border:none; padding:0 16px; border-radius:6px; font-weight:600; cursor:pointer; }
+  .share-apps { display:flex; justify-content:center; gap:12px; margin-top:16px; }
+  .share-app { width:44px; height:44px; border-radius:50%; background:#f0f2f5; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; transition:background .2s; }
+  .share-app:hover { background:#e4e6eb; }
+
   /* FOOTER */
   .footer { text-align:center; padding:24px; color:#65676b; font-size:13px; background:#fff; border-top:1px solid #e4e6eb; margin-top:auto; }
 
@@ -185,6 +194,8 @@
   <button class="nav-btn" data-panel="search"><span class="nav-icon">🔍</span>Search</button>
   <button class="nav-btn" data-panel="chat"><span class="nav-icon">💬</span>Chat</button>
   <button class="nav-btn" data-panel="profile"><span class="nav-icon">👤</span>Profile</button>
+  <!-- අලුත් Invite බොත්තම -->
+  <button class="nav-btn" onclick="openInvite()"><span class="nav-icon">✉️</span>Invite</button>
 </div>
 
 <!-- MAIN CONTENT -->
@@ -256,6 +267,23 @@
   </div>
 </div>
 
+<!-- INVITE MODAL -->
+<div class="modal-overlay" id="inviteOverlay">
+  <div class="modal-box">
+    <button class="close-x" onclick="closeInvite()">×</button>
+    <h2>Invite Friends</h2>
+    <p class="invite-text">Share this link with your friends so they can join Your Place 2026!</p>
+    <div class="invite-link-box">
+      <input id="inviteLinkInput" readonly value="https://your-place.vercel.app">
+      <button onclick="copyInviteLink()">Copy</button>
+    </div>
+    <div class="share-apps">
+      <div class="share-app" onclick="shareWhatsApp()" title="WhatsApp">💬</div>
+      <div class="share-app" onclick="shareNative()" title="Share">📤</div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -274,6 +302,9 @@ let chatChannel = null;
 let chatMessages = [];
 let currentRooms = [];
 let feedChannel = null;
+
+// Invite Link එක (ඔබේ ඇත්ත ලින්ක් එක මෙතන දාන්න)
+const INVITE_LINK = window.location.origin + window.location.pathname;
 
 function $(id){ return document.getElementById(id); }
 function escapeHTML(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -422,7 +453,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
   updateHeader();
 });
 
-// ===== FEED (වෙනස් කරපු තැන) =====
+// ===== FEED =====
 async function renderFeed(){
   const el=$('panel-feed');
   el.innerHTML='<div class="card"><div class="loader"></div></div>';
@@ -448,7 +479,6 @@ async function renderFeed(){
         <div class="post-header">
           ${avatarHTML(profile, 40)}
           <div class="post-info" onclick="viewUserProfile('${p.user_id}')">
-            <!-- මෙතනදී profiles table එකේ අලුත්ම නම පෙන්නනවා -->
             <div class="post-name">${escapeHTML(profile.username)}</div>
             <div class="post-time">${timeAgo(p.created_at)}</div>
           </div>
@@ -460,7 +490,6 @@ async function renderFeed(){
         <div class="post-actions">
           <button class="action-btn like-btn" onclick="toggleLike(${p.id})" data-post="${p.id}"><span class="heart">🤍</span> Like</button>
           <button class="action-btn" onclick="toggleComments(${p.id})">💬 Comment</button>
-          <!-- අලුත් Share බොත්තම මෙතන -->
           <button class="action-btn" onclick="sharePost(${p.id})">🔗 Share</button>
         </div>
         <div class="comments-section" id="comments-section-${p.id}" style="display:none;">
@@ -541,18 +570,15 @@ async function addComment(postId){
 // ===== SHARE POST =====
 function sharePost(postId){
   if(!currentUser){ openAuth('login'); return; }
-  // ලින්ක් එක හදාගන්නවා (මේකෙන් කෙලින්ම පෝස්ට් එකට යන්න පුළුවන්)
   const url = window.location.origin + window.location.pathname + '?post=' + postId;
   
   if(navigator.share) {
-    // ෆෝන් එකේ Native Share Menu එක එනවා
     navigator.share({
       title: 'Your Place 2026 - Post',
       text: 'Check out this post on Your Place 2026!',
       url: url
     }).catch(err => console.log('Share failed:', err));
   } else {
-    // Native Share නැත්නම්, ලින්ක් එක Copy කරනවා
     navigator.clipboard.writeText(url).then(()=>{
       toast('🔗 Link Copied! Share it with friends.');
     }).catch(()=>{
@@ -561,7 +587,44 @@ function sharePost(postId){
   }
 }
 
-// ===== SINGLE POST VIEW (වෙනස් කරපු තැන) =====
+// ===== INVITE MODAL =====
+function openInvite(){
+  $('inviteLinkInput').value = INVITE_LINK;
+  $('inviteOverlay').classList.add('show');
+}
+function closeInvite(){ $('inviteOverlay').classList.remove('show'); }
+
+function copyInviteLink(){
+  const input = $('inviteLinkInput');
+  input.select();
+  input.setSelectionRange(0, 99999);
+  
+  navigator.clipboard.writeText(input.value).then(()=>{
+    toast('✅ Link Copied! Share it with friends.');
+  }).catch(()=>{
+    document.execCommand('copy');
+    toast('✅ Link Copied!');
+  });
+}
+
+function shareWhatsApp(){
+  const text = encodeURIComponent('Join me on Your Place 2026! 🚀\n\n' + INVITE_LINK);
+  window.open('https://wa.me/?text=' + text, '_blank');
+}
+
+function shareNative(){
+  if(navigator.share) {
+    navigator.share({
+      title: 'Your Place 2026',
+      text: 'Join me on Your Place 2026! 🚀',
+      url: INVITE_LINK
+    }).catch(err => console.log('Share failed:', err));
+  } else {
+    copyInviteLink();
+  }
+}
+
+// ===== SINGLE POST VIEW =====
 async function viewSinglePost(postId){
   if(!postId) return;
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -993,6 +1056,7 @@ async function init(){
 $('authOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeAuth(); });
 $('editProfileOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeEditProfile(); });
 $('newChatOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeNewChat(); });
+$('inviteOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeInvite(); });
 
 init();
 </script>

@@ -328,7 +328,7 @@ function switchAuthTab(mode){
   $('tabLogin').classList.toggle('active',isLogin);
   $('tabSignup').classList.toggle('active',!isLogin);
   
-  $('emailField').style.display = isLogin ? 'block' : 'block';
+  $('emailField').style.display = 'block';
   $('usernameField').style.display = isLogin ? 'none' : 'block';
   
   $('authEmail').required = true;
@@ -706,7 +706,7 @@ async function renderProfile(userId){
   viewUserProfile(currentUser.id);
 }
 
-// ===== EDIT PROFILE (වෙනස් කරපු තැන) =====
+// ===== EDIT PROFILE (මේක තමයි අලුතෙන් හදලා තියෙන්නේ) =====
 function openEditProfile(){
   if(!currentProfile) {
     toast('Profile loading... try again'); 

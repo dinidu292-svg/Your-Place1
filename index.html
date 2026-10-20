@@ -355,7 +355,6 @@ async function handleAuth(e){
       let {data:prof, error: pErr}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
       if(pErr) throw pErr;
       
-      // Self-Healing: Profile එක නැත්නම් හදලා දෙනවා
       if(!prof) {
         const newUsername = email.split('@')[0];
         const {data:newProf, error: insErr} = await sb.from('profiles').insert([{id: data.user.id, username: newUsername}]).select().single();
@@ -423,7 +422,7 @@ sb.auth.onAuthStateChange(async(event,session)=>{
   updateHeader();
 });
 
-// ===== FEED =====
+// ===== FEED (වෙනස් කරපු තැන) =====
 async function renderFeed(){
   const el=$('panel-feed');
   el.innerHTML='<div class="card"><div class="loader"></div></div>';
@@ -443,18 +442,20 @@ async function renderFeed(){
 
     el.innerHTML=posts.map(p=>{
       const isOwn = currentUser && p.user_id === currentUser.id;
+      const profile = profileMap[p.user_id] || {id:p.user_id, username:p.username};
       return `
       <div class="card" data-post-id="${p.id}">
         <div class="post-header">
-          ${avatarHTML(profileMap[p.user_id] || {id:p.user_id, username:p.username}, 40)}
+          ${avatarHTML(profile, 40)}
           <div class="post-info" onclick="viewUserProfile('${p.user_id}')">
-            <div class="post-name">${escapeHTML(p.username)}</div>
+            <!-- මෙතනදී profiles table එකේ අලුත්ම නම පෙන්නනවා -->
+            <div class="post-name">${escapeHTML(profile.username)}</div>
             <div class="post-time">${timeAgo(p.created_at)}</div>
           </div>
           ${isOwn ? `<button class="action-btn delete-btn" onclick="deletePost(${p.id})" title="Delete Post">🗑️</button>` : ''}
         </div>
         ${p.image_url?`<img class="post-image" src="${p.image_url}" alt="" loading="lazy" onclick="viewSinglePost(${p.id})">`:''}
-        <div class="post-caption"><strong>${escapeHTML(p.username)}</strong> ${escapeHTML(p.caption||'')}</div>
+        <div class="post-caption"><strong>${escapeHTML(profile.username)}</strong> ${escapeHTML(p.caption||'')}</div>
         <div class="post-stats" id="stats-${p.id}"></div>
         <div class="post-actions">
           <button class="action-btn like-btn" onclick="toggleLike(${p.id})" data-post="${p.id}"><span class="heart">🤍</span> Like</button>
@@ -535,7 +536,7 @@ async function addComment(postId){
   loadPostDetails(postId);
 }
 
-// ===== SINGLE POST VIEW =====
+// ===== SINGLE POST VIEW (වෙනස් කරපු තැන) =====
 async function viewSinglePost(postId){
   if(!postId) return;
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -549,20 +550,21 @@ async function viewSinglePost(postId){
     if(!p) throw new Error('Post not found');
     const {data:prof} = await sb.from('profiles').select('*').eq('id',p.user_id).maybeSingle();
     const isOwn = currentUser && p.user_id === currentUser.id;
+    const profile = prof || {id:p.user_id, username:p.username};
 
     el.innerHTML = `
       <div class="card" style="margin-bottom:16px;">
         <div class="post-header">
           <button class="back-btn" onclick="viewUserProfile('${p.user_id}')" style="margin-right:4px;">←</button>
-          ${avatarHTML(prof || {id:p.user_id, username:p.username}, 40)}
+          ${avatarHTML(profile, 40)}
           <div class="post-info" onclick="viewUserProfile('${p.user_id}')">
-            <div class="post-name">${escapeHTML(p.username)}</div>
+            <div class="post-name">${escapeHTML(profile.username)}</div>
             <div class="post-time">${timeAgo(p.created_at)}</div>
           </div>
           ${isOwn ? `<button class="action-btn delete-btn" onclick="deletePost(${p.id})">🗑️</button>` : ''}
         </div>
         ${p.image_url?`<img class="post-image" src="${p.image_url}" alt="">`:''}
-        <div class="post-caption"><strong>${escapeHTML(p.username)}</strong> ${escapeHTML(p.caption||'')}</div>
+        <div class="post-caption"><strong>${escapeHTML(profile.username)}</strong> ${escapeHTML(p.caption||'')}</div>
         <div class="post-stats" id="stats-${p.id}"></div>
         <div class="post-actions">
           <button class="action-btn like-btn" onclick="toggleLike(${p.id})" data-post="${p.id}"><span class="heart">🤍</span> Like</button>
@@ -720,7 +722,7 @@ async function renderProfile(userId){
   viewUserProfile(currentUser.id);
 }
 
-// ===== EDIT PROFILE (මේක තමයි අලුතෙන් හදලා තියෙන්නේ) =====
+// ===== EDIT PROFILE =====
 function openEditProfile(){
   if(!currentProfile) {
     toast('Profile loading... try again'); 
@@ -749,6 +751,9 @@ async function saveProfile(){
     currentProfile.bio = newBio;
     toast('Profile updated! ✅');
     closeEditProfile();
+    
+    // Profile එක update වුනාම, Feed එකත් refresh වෙන්න ඕන
+    renderFeed(); 
     viewUserProfile(currentUser.id);
   } catch(ex) { 
     toast('Failed: ' + ex.message); 

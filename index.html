@@ -127,16 +127,23 @@
   .chat-msg .bubble { background:#e4e6eb; padding:10px 14px; border-radius:18px; font-size:14px; word-break:break-word; }
   .chat-msg.self .bubble { background:#1877f2; color:#fff; }
   .chat-msg .bubble img { max-width: 100%; border-radius: 8px; margin-top: 4px; cursor: pointer; }
-  .chat-input-bar { display:flex; gap:8px; padding:12px 16px; border-top:1px solid #e4e6eb; background:#fff; align-items:center; }
-  .chat-input-bar input { flex:1; padding:10px 16px; border-radius:20px; border:none; background:#f0f2f5; font-size:14px; font-family:inherit; outline:none; }
-  .chat-input-bar button { background:#1877f2; color:#fff; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:16px; flex-shrink:0; }
-  .chat-tool-btn { background:none; border:none; font-size:22px; cursor:pointer; padding:4px; color:#65676b; transition:transform .2s; flex-shrink:0; }
-  .chat-tool-btn:hover { transform: scale(1.15); }
+  
+  /* CHAT INPUT AREA */
+  .chat-input-bar { display:flex; gap:6px; padding:10px 12px; border-top:1px solid #e4e6eb; background:#fff; align-items:center; position:relative; }
+  .chat-input-bar input { flex:1; padding:10px 14px; border-radius:20px; border:none; background:#f0f2f5; font-size:14px; font-family:inherit; outline:none; min-width: 0; }
+  
+  /* Tool buttons (Emoji, Photo, Voice) */
+  .chat-tool-btn { background:none; border:none; font-size:20px; cursor:pointer; padding:6px; color:#65676b; transition:all .2s; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .chat-tool-btn:hover { background:#f0f2f5; transform:scale(1.1); }
+  
+  /* Send button */
+  #sendChatBtn { background:#1877f2; color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; font-size:16px; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:transform .2s; }
+  #sendChatBtn:hover { transform:scale(1.05); }
 
   /* EMOJI PICKER */
-  .emoji-picker { position:absolute; bottom:70px; left:10px; background:#fff; border:1px solid #e4e6eb; border-radius:8px; padding:10px; display:none; grid-template-columns:repeat(6, 1fr); gap:6px; box-shadow:0 4px 12px rgba(0,0,0,.1); z-index:1000; max-width:250px; }
+  .emoji-picker { position:absolute; bottom:60px; left:10px; background:#fff; border:1px solid #e4e6eb; border-radius:12px; padding:12px; display:none; grid-template-columns:repeat(6, 1fr); gap:8px; box-shadow:0 4px 20px rgba(0,0,0,.15); z-index:1000; max-width:260px; }
   .emoji-picker.show { display:grid; }
-  .emoji-picker span { font-size:22px; cursor:pointer; text-align:center; transition:transform .1s; }
+  .emoji-picker span { font-size:24px; cursor:pointer; text-align:center; transition:transform .1s; }
   .emoji-picker span:hover { transform: scale(1.3); }
 
   /* MODAL */
@@ -197,6 +204,9 @@
     .chat-container { height:calc(100vh - 180px); }
     .header-right { gap: 4px; }
     .btn { padding: 6px 10px; font-size: 12px; }
+    .chat-input-bar { gap: 4px; padding: 8px; }
+    .chat-tool-btn { font-size: 18px; padding: 4px; }
+    #sendChatBtn { width: 32px; height: 32px; font-size: 14px; }
   }
 </style>
 </head>
@@ -308,6 +318,28 @@
   </div>
 </div>
 
+<!-- FEEDBACK MODAL -->
+<div class="modal-overlay" id="feedbackOverlay">
+  <div class="modal-box">
+    <button class="close-x" onclick="closeFeedback()">×</button>
+    <h2>Send Feedback</h2>
+    <p style="text-align:center; font-size:13px; color:#65676b; margin-bottom:16px;">We'd love to hear your thoughts or any issues!</p>
+    <div class="modal-field">
+      <label>Type</label>
+      <select id="feedbackType">
+        <option value="Suggestion">💡 Suggestion</option>
+        <option value="Bug Report">🐞 Bug Report</option>
+        <option value="General">💬 General</option>
+      </select>
+    </div>
+    <div class="modal-field">
+      <label>Message</label>
+      <textarea id="feedbackMessage" rows="4" placeholder="Type your feedback here..." maxlength="500"></textarea>
+    </div>
+    <button class="modal-submit" id="feedbackBtn" onclick="submitFeedback()">Send Feedback</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -343,10 +375,12 @@ function timeAgo(dateStr){
   return d.toLocaleDateString();
 }
 
+// Default Profile Picture (ඔබ එවපු පින්තූරය)
+const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ebf4ff'/><circle cx='50' cy='35' r='20' fill='%231877f2'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%231877f2'/></svg>";
+
 function avatarHTML(profile, size='40', clickable=true){
-  if(!profile) return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${parseInt(size)/2.5}px;">?</div>`;
-  const initial = (profile.username||'?').charAt(0).toUpperCase();
-  const img = profile.avatar_url ? `<img src="${profile.avatar_url}" alt="">` : initial;
+  if(!profile) return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${parseInt(size)/2.5}px;"><img src="${DEFAULT_PFP}"></div>`;
+  const img = profile.avatar_url ? `<img src="${profile.avatar_url}" alt="">` : `<img src="${DEFAULT_PFP}" alt="">`;
   const clickAttr = clickable ? `onclick="event.stopPropagation(); viewUserProfile('${profile.id}')"` : '';
   return `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${parseInt(size)/2.5}px; ${clickable?'cursor:pointer;':''}" ${clickAttr}>${img}</div>`;
 }
@@ -927,9 +961,8 @@ async function openRoom(roomId){
         <div class="chat-header"><button class="back-btn" onclick="backToChatList()">←</button><div style="flex:1; font-weight:700;">${escapeHTML(roomTitle)}${isGroup?' 👥':''}</div></div>
         <div class="chat-messages" id="chatMessagesBox"><div class="loader"></div></div>
         
-        <div id="emojiPicker" class="emoji-picker"></div>
-        
         <div class="chat-input-bar">
+          <div id="emojiPicker" class="emoji-picker"></div>
           <button class="chat-tool-btn" onclick="toggleEmojiPicker()">😀</button>
           <label class="chat-tool-btn" style="cursor:pointer;">
             📷<input type="file" accept="image/*" style="display:none" onchange="sendPhotoInChat(this)">

@@ -194,8 +194,7 @@
   <button class="nav-btn" data-panel="search"><span class="nav-icon">🔍</span>Search</button>
   <button class="nav-btn" data-panel="chat"><span class="nav-icon">💬</span>Chat</button>
   <button class="nav-btn" data-panel="profile"><span class="nav-icon">👤</span>Profile</button>
-  <!-- අලුත් Invite බොත්තම -->
-  <button class="nav-btn" onclick="openInvite()"><span class="nav-icon">✉️</span>Invite</button>
+  <!-- Invite බොත්තම මෙතනින් අයින් කළා -->
 </div>
 
 <!-- MAIN CONTENT -->
@@ -303,7 +302,6 @@ let chatMessages = [];
 let currentRooms = [];
 let feedChannel = null;
 
-// Invite Link එක (ඔබේ ඇත්ත ලින්ක් එක මෙතන දාන්න)
 const INVITE_LINK = window.location.origin + window.location.pathname;
 
 function $(id){ return document.getElementById(id); }
@@ -340,7 +338,9 @@ document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>
 function updateHeader(){
   const box=$('headerRight');
   if(currentUser){
-    box.innerHTML=`<button class="btn" onclick="doLogout()">Logout</button>`;
+    box.innerHTML=`
+      <button class="btn" onclick="openInvite()">✉️ Invite</button>
+      <button class="btn" onclick="doLogout()">Logout</button>`;
   } else {
     box.innerHTML=`<button class="btn" onclick="openAuth('login')">Login</button><button class="btn primary" onclick="openAuth('signup')">Sign Up</button>`;
   }
@@ -841,7 +841,6 @@ async function saveProfile(){
     toast('Profile updated! ✅');
     closeEditProfile();
     
-    // Profile එක update වුනාම, Feed එකත් refresh වෙන්න ඕන
     renderFeed(); 
     viewUserProfile(currentUser.id);
   } catch(ex) { 

@@ -99,17 +99,9 @@
   .founder-socials a { font-size: 24px; text-decoration: none; color: #1877f2; transition: transform .2s; }
   .founder-socials a:hover { transform: scale(1.2); }
 
-  /* SEARCH & REELS */
+  /* SEARCH */
   .search-input { width:100%; padding:12px 16px; border-radius:8px; border:1px solid #e4e6eb; background:#fff; font-size:15px; font-family:inherit; outline:none; margin-bottom:16px; }
   .search-input:focus { border-color:#1877f2; }
-  
-  .reels-container { display: flex; flex-direction: column; gap: 20px; align-items: center; margin-top: 10px; }
-  .reel-card { background: #000; border-radius: 12px; overflow: hidden; position: relative; width: 100%; max-width: 400px; aspect-ratio: 9/16; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-  .reel-video { width: 100%; height: 100%; object-fit: cover; }
-  .reel-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; background: linear-gradient(transparent, rgba(0,0,0,.8)); color: #fff; display: flex; align-items: flex-end; justify-content: space-between; }
-  .reel-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-  .reel-info p { font-size: 12px; opacity: 0.8; }
-  
   .user-row { display:flex; align-items:center; gap:12px; padding:12px 16px; background:#fff; border-radius:8px; margin-bottom:8px; box-shadow:0 1px 2px rgba(0,0,0,.1); cursor:pointer; transition:background .2s; }
   .user-row:hover { background:#f0f2f5; }
   .user-row .info { flex:1; }
@@ -342,23 +334,6 @@
       <textarea id="feedbackMessage" rows="4" placeholder="Type your feedback here..." maxlength="500"></textarea>
     </div>
     <button class="modal-submit" id="feedbackBtn" onclick="submitFeedback()">Send Feedback</button>
-  </div>
-</div>
-
-<!-- UPLOAD REEL MODAL -->
-<div class="modal-overlay" id="uploadReelOverlay">
-  <div class="modal-box">
-    <button class="close-x" onclick="closeUploadReel()">×</button>
-    <h2>Upload Reel</h2>
-    <div class="modal-field">
-      <label>Video (Max 10MB)</label>
-      <input type="file" accept="video/*" id="reelFile" style="padding:8px; border:2px dashed #e2e8f0;">
-    </div>
-    <div class="modal-field">
-      <label>Caption</label>
-      <input id="reelCaption" type="text" placeholder="Write a caption..." maxlength="100">
-    </div>
-    <button class="modal-submit" id="uploadReelBtn" onclick="uploadReel()">Upload</button>
   </div>
 </div>
 
@@ -1066,7 +1041,6 @@ $('editProfileOverlay').addEventListener('click',e=>{ if(e.target===e.currentTar
 $('newChatOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeNewChat(); });
 $('inviteOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeInvite(); });
 $('feedbackOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeFeedback(); });
-$('uploadReelOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeUploadReel(); });
 
 init();
 </script>

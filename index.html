@@ -460,6 +460,8 @@ async function renderFeed(){
         <div class="post-actions">
           <button class="action-btn like-btn" onclick="toggleLike(${p.id})" data-post="${p.id}"><span class="heart">🤍</span> Like</button>
           <button class="action-btn" onclick="toggleComments(${p.id})">💬 Comment</button>
+          <!-- අලුත් Share බොත්තම මෙතන -->
+          <button class="action-btn" onclick="sharePost(${p.id})">🔗 Share</button>
         </div>
         <div class="comments-section" id="comments-section-${p.id}" style="display:none;">
           <div id="comments-list-${p.id}"></div>
@@ -536,6 +538,29 @@ async function addComment(postId){
   loadPostDetails(postId);
 }
 
+// ===== SHARE POST =====
+function sharePost(postId){
+  if(!currentUser){ openAuth('login'); return; }
+  // ලින්ක් එක හදාගන්නවා (මේකෙන් කෙලින්ම පෝස්ට් එකට යන්න පුළුවන්)
+  const url = window.location.origin + window.location.pathname + '?post=' + postId;
+  
+  if(navigator.share) {
+    // ෆෝන් එකේ Native Share Menu එක එනවා
+    navigator.share({
+      title: 'Your Place 2026 - Post',
+      text: 'Check out this post on Your Place 2026!',
+      url: url
+    }).catch(err => console.log('Share failed:', err));
+  } else {
+    // Native Share නැත්නම්, ලින්ක් එක Copy කරනවා
+    navigator.clipboard.writeText(url).then(()=>{
+      toast('🔗 Link Copied! Share it with friends.');
+    }).catch(()=>{
+      prompt('Copy this link to share:', url);
+    });
+  }
+}
+
 // ===== SINGLE POST VIEW (වෙනස් කරපු තැන) =====
 async function viewSinglePost(postId){
   if(!postId) return;
@@ -569,6 +594,7 @@ async function viewSinglePost(postId){
         <div class="post-actions">
           <button class="action-btn like-btn" onclick="toggleLike(${p.id})" data-post="${p.id}"><span class="heart">🤍</span> Like</button>
           <button class="action-btn" onclick="toggleComments(${p.id})">💬 Comment</button>
+          <button class="action-btn" onclick="sharePost(${p.id})">🔗 Share</button>
         </div>
         <div class="comments-section" id="comments-section-${p.id}" style="display:block;">
           <div id="comments-list-${p.id}"></div>

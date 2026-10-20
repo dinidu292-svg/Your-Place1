@@ -342,12 +342,14 @@ async function handleAuth(e){
       const username=$('authUsername').value.trim();
       const password=$('authPassword').value;
       if(!username||!password) throw new Error('Username and password required');
-      // වෙනස්කම: @example.com භාවිතා කරයි
+      
+      // වෙනස්කම 1: @example.com භාවිතා කරයි
       const email=username.toLowerCase().replace(/\s+/g,'')+'@example.com';
+      
       const {data,error}=await sb.auth.signInWithPassword({email,password});
       if(error) throw error;
       
-      // .maybeSingle() භාවිතා කරයි (406 error එක නිවැරදි කිරීමට)
+      // වෙනස්කම 2: .maybeSingle() භාවිතා කරයි (406 error එක නිවැරදි කිරීමට)
       const {data:prof, error: pErr}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
       if(pErr) throw pErr;
       

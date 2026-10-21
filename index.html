@@ -146,84 +146,29 @@
   .share-app { width:44px; height:44px; border-radius:50%; background:#f0f2f5; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; transition:background .2s; }
   .share-app:hover { background:#e4e6eb; }
 
-  /* ===== REELS (LIST VIEW) ===== */
-  .reels-container { display: flex; flex-direction: column; gap: 16px; align-items: center; }
-  .reel-card { background: #000; border-radius: 12px; overflow: hidden; position: relative; width: 100%; max-width: 400px; aspect-ratio: 9/16; box-shadow: 0 4px 12px rgba(0,0,0,.2); cursor: pointer; }
-  .reel-video { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
-  .reel-card .reel-overlay-info {
-    position: absolute; left: 12px; bottom: 12px; right: 12px;
-    display: flex; align-items: center; gap: 8px;
-    color: #fff; z-index: 2;
-    text-shadow: 0 1px 4px rgba(0,0,0,.8);
-  }
-  .reel-card .reel-overlay-info .avatar {
-    width: 32px; height: 32px; border: 1.5px solid #fff; font-size: 13px;
-    cursor: pointer;
-  }
-  .reel-card .reel-overlay-info .reel-username {
-    font-weight: 700; font-size: 13px;
-  }
-  .reel-card .reel-overlay-info .follow-btn-sm {
-    background: transparent; color: #fff; border: 1px solid #fff;
-    padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700;
-    cursor: pointer; margin-left: 4px;
-  }
-  .reel-card .reel-overlay-info .follow-btn-sm.following {
-    background: #fff; color: #000;
-  }
-  .reel-card .reel-caption-overlay {
-    position: absolute; left: 12px; right: 12px; bottom: 52px;
-    color: #fff; font-size: 13px; z-index: 2;
-    text-shadow: 0 1px 4px rgba(0,0,0,.8);
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
+  /* REELS LIST */
+  .reels-container { display:flex; flex-direction:column; gap:16px; align-items:center; }
+  .reel-card { background:#000; border-radius:12px; overflow:hidden; position:relative; width:100%; max-width:400px; aspect-ratio:9/16; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; }
+  .reel-video { width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; }
+  .reel-card .reel-caption-overlay { position:absolute; left:12px; right:12px; bottom:56px; color:#fff; font-size:13px; z-index:2; text-shadow:0 1px 4px rgba(0,0,0,.8); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .reel-card .reel-overlay-info { position:absolute; left:12px; bottom:12px; right:12px; display:flex; align-items:center; gap:8px; color:#fff; z-index:2; text-shadow:0 1px 4px rgba(0,0,0,.8); }
+  .reel-card .reel-overlay-info .avatar { width:32px; height:32px; border:1.5px solid #fff; font-size:13px; cursor:pointer; }
+  .reel-card .reel-overlay-info .reel-username { font-weight:700; font-size:13px; }
+  .reel-card .reel-overlay-info .follow-btn-sm { background:transparent; color:#fff; border:1px solid #fff; padding:3px 10px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer; margin-left:4px; }
+  .reel-card .reel-overlay-info .follow-btn-sm.following { background:#fff; color:#000; }
 
-  /* ===== REEL FULLSCREEN VIEWER ===== */
-  .reel-viewer {
-    position: fixed; inset: 0; background: #000; z-index: 10000;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
-  .reel-viewer-inner {
-    position: relative; width: 100%; height: 100%;
-    max-width: 500px; margin: 0 auto;
-  }
-  .reel-viewer video {
-    width: 100%; height: 100%; object-fit: contain; background: #000;
-    display: block;
-  }
-  .reel-viewer .viewer-back {
-    position: absolute; top: 16px; left: 12px; z-index: 20;
-    background: rgba(0,0,0,.4); border: none; color: #fff;
-    width: 40px; height: 40px; border-radius: 50%;
-    font-size: 22px; cursor: pointer; display: flex; align-items: center; justify-content: center;
-  }
-  .reel-viewer .viewer-profile {
-    position: absolute; left: 12px; bottom: 24px; right: 12px;
-    display: flex; align-items: center; gap: 10px; z-index: 20;
-    color: #fff;
-  }
-  .reel-viewer .viewer-profile .avatar {
-    width: 40px; height: 40px; border: 2px solid #fff; font-size: 16px;
-  }
-  .reel-viewer .viewer-profile .vp-name {
-    font-weight: 700; font-size: 15px; text-shadow: 0 1px 4px rgba(0,0,0,.8);
-  }
-  .reel-viewer .viewer-profile .vp-follow {
-    background: transparent; color: #fff; border: 1.5px solid #fff;
-    padding: 4px 12px; border-radius: 6px; font-size: 12px; font-weight: 700;
-    cursor: pointer;
-  }
-  .reel-viewer .viewer-profile .vp-follow.following {
-    background: #fff; color: #000;
-  }
-  .reel-viewer .viewer-caption {
-    position: absolute; left: 12px; right: 12px; bottom: 76px;
-    color: #fff; font-size: 13px; z-index: 20;
-    text-shadow: 0 1px 4px rgba(0,0,0,.8);
-  }
-  .reel-viewer .viewer-tap-zone {
-    position: absolute; inset: 0; z-index: 10;
-  }
+  /* REEL FULLSCREEN VIEWER */
+  .reel-viewer { position:fixed; inset:0; background:#000; z-index:10000; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; }
+  .reel-viewer-inner { position:relative; width:100%; height:100%; max-width:500px; margin:0 auto; will-change:transform,opacity; }
+  .reel-viewer video { width:100%; height:100%; object-fit:contain; background:#000; display:block; }
+  .reel-viewer .viewer-back { position:absolute; top:16px; left:12px; z-index:20; background:rgba(0,0,0,.4); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .reel-viewer .viewer-profile { position:absolute; left:12px; bottom:24px; right:12px; display:flex; align-items:center; gap:10px; z-index:20; color:#fff; }
+  .reel-viewer .viewer-profile .avatar { width:40px; height:40px; border:2px solid #fff; font-size:16px; }
+  .reel-viewer .viewer-profile .vp-name { font-weight:700; font-size:15px; text-shadow:0 1px 4px rgba(0,0,0,.8); }
+  .reel-viewer .viewer-profile .vp-follow { background:transparent; color:#fff; border:1.5px solid #fff; padding:4px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; }
+  .reel-viewer .viewer-profile .vp-follow.following { background:#fff; color:#000; }
+  .reel-viewer .viewer-caption { position:absolute; left:12px; right:12px; bottom:76px; color:#fff; font-size:13px; z-index:20; text-shadow:0 1px 4px rgba(0,0,0,.8); }
+  .reel-viewer .viewer-tap-zone { position:absolute; inset:0; z-index:10; }
 
   .footer { text-align:center; padding:24px; color:#65676b; font-size:13px; background:#fff; border-top:1px solid #e4e6eb; margin-top:auto; }
   .footer a { color:#1877f2; text-decoration:none; font-weight:700; cursor:pointer; }
@@ -855,7 +800,7 @@ async function createPost(){
   }catch(ex){ toast('Failed: '+ex.message); btn.disabled=false; btn.textContent='Post'; }
 }
 
-// ===== REELS (MODIFIED) =====
+/* ================= REELS (NEW) ================= */
 async function renderReels(){
   const el=$('panel-reels');
   el.innerHTML='<div class="card"><div class="loader"></div></div>';
@@ -869,18 +814,21 @@ async function renderReels(){
       return;
     }
 
-    // fetch profiles for reel owners
     const ownerIds = [...new Set(videoPosts.map(v=>v.user_id))];
     const {data:ownerProfs} = await sb.from('profiles').select('id,username,avatar_url').in('id', ownerIds);
     const ownerMap = {};
     (ownerProfs||[]).forEach(p => ownerMap[p.id] = p);
 
-    // check follow status
     let followingSet = new Set();
     if(currentUser){
       const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id);
       (myFollows||[]).forEach(f => followingSet.add(f.following_id));
     }
+
+    window._reelCache = {};
+    videoPosts.forEach(v => window._reelCache[v.id] = v);
+    window._reelOwnerMap = ownerMap;
+    window._reelFollowingSet = followingSet;
 
     el.innerHTML = `<div class="card" style="padding:16px; margin-bottom:16px; text-align:center;">
       <button class="btn primary" onclick="openUploadReel()">➕ Upload New Reel</button>
@@ -903,12 +851,6 @@ async function renderReels(){
       }).join('')}
     </div>`;
 
-    // store data for viewer
-    window._reelCache = {};
-    videoPosts.forEach(v => window._reelCache[v.id] = v);
-    window._reelOwnerMap = ownerMap;
-    window._reelFollowingSet = followingSet;
-
   } catch(ex) {
     console.error(ex);
     el.innerHTML = '<div class="card"><div class="empty-state">Error loading reels</div></div>';
@@ -929,7 +871,7 @@ async function toggleFollowFromReel(userId, btn){
   }
 }
 
-// ===== REEL FULLSCREEN VIEWER =====
+/* ===== FULLSCREEN REEL VIEWER ===== */
 function openReelViewer(reelId){
   const reel = window._reelCache?.[reelId];
   if(!reel) return;
@@ -958,22 +900,16 @@ function openReelViewer(reelId){
   document.body.appendChild(viewer);
   currentReelViewer = viewer;
 
-  // Play video
   const vid = $('reelViewerVideo');
   vid.play().catch(()=>{});
 
-  // Tap = toggle pause (not close)
   const tapZone = $('reelTapZone');
-  let tapTimer = null;
   tapZone.addEventListener('click', () => {
     if(vid.paused){ vid.play(); }
     else { vid.pause(); }
   });
 
-  // Swipe back gesture
   setupReelSwipeBack(viewer);
-
-  // ESC to close (desktop)
   document.addEventListener('keydown', reelEscHandler);
 }
 
@@ -1005,7 +941,6 @@ function setupReelSwipeBack(viewer){
     dragging = false;
     const dx = currentX - startX;
     if(isHorizontal && dx > 80){
-      // close
       inner.style.transition = 'transform .2s, opacity .2s';
       inner.style.transform = 'translateX(100%)';
       inner.style.opacity = '0';
@@ -1021,7 +956,6 @@ function setupReelSwipeBack(viewer){
   viewer.addEventListener('touchstart', onStart, { passive: true });
   viewer.addEventListener('touchmove', onMove, { passive: true });
   viewer.addEventListener('touchend', onEnd);
-  // mouse fallback (desktop swipe with mouse drag)
   viewer.addEventListener('mousedown', onStart);
   viewer.addEventListener('mousemove', onMove);
   viewer.addEventListener('mouseup', onEnd);

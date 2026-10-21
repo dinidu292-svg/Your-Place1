@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -122,6 +122,14 @@
   .chat-input-bar input { flex:1; padding:10px 16px; border-radius:20px; border:none; background:#f0f2f5; font-size:14px; font-family:inherit; outline:none; }
   .chat-input-bar button { background:#1877f2; color:#fff; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:16px; }
 
+  /* ONLINE USERS PANEL */
+  .online-panel { background:#fff; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,.1); padding:16px; margin-bottom:16px; }
+  .online-panel h4 { font-size:14px; color:#65676b; margin-bottom:12px; text-transform:uppercase; letter-spacing:1px; }
+  .online-user { display:flex; align-items:center; gap:8px; padding:8px 0; border-bottom:1px solid #f0f2f5; }
+  .online-user:last-child { border-bottom:none; }
+  .online-dot { width:8px; height:8px; background:#22c55e; border-radius:50%; box-shadow:0 0 8px #22c55e; }
+  .online-name { font-weight:600; font-size:14px; }
+
   /* MODAL */
   .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:9999; padding:16px; }
   .modal-overlay.show { display:flex; }
@@ -152,8 +160,8 @@
 
   /* REELS */
   .reels-container { display: flex; flex-direction: column; gap: 16px; align-items: center; }
-  .reel-card { background: #000; border-radius: 12px; overflow: hidden; position: relative; width: 100%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
-  .reel-video { width: 100%; max-height: 600px; object-fit: contain; display: block; }
+  .reel-card { background: #000; border-radius: 12px; overflow: hidden; position: relative; width: 100%; max-width: 400px; aspect-ratio: 9/16; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+  .reel-video { width: 100%; height: 100%; object-fit: contain; display: block; cursor: pointer; }
   .reel-info { padding: 12px; background: #fff; }
   .reel-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
   .reel-info p { font-size: 12px; color: #65676b; }
@@ -336,6 +344,7 @@ let chatChannel = null;
 let chatMessages = [];
 let currentRooms = [];
 let feedChannel = null;
+let presenceChannel = null;
 
 const INVITE_LINK = window.location.origin + window.location.pathname;
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ebf4ff'/><circle cx='50' cy='35' r='20' fill='%231877f2'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%231877f2'/></svg>";
@@ -432,7 +441,7 @@ async function handleAuth(e){
       currentUser={id:data.user.id,username:prof?prof.username:email.split('@')[0]};
       currentProfile=prof;
       toast('Welcome back, '+currentUser.username+'! 👋');
-      closeAuth(); updateHeader(); switchPanel('feed'); subscribeFeed();
+      closeAuth(); updateHeader(); switchPanel('feed'); subscribeFeed(); subscribePresence();
       $('authEmail').value='';$('authPassword').value='';
     } else {
       const username=$('authUsername').value.trim();
@@ -450,7 +459,7 @@ async function handleAuth(e){
       } else {
         currentUser={id:data.user.id,username};
         toast('Account created! 🎉');
-        closeAuth(); updateHeader(); switchPanel('feed'); subscribeFeed();
+        closeAuth(); updateHeader(); switchPanel('feed'); subscribeFeed(); subscribePresence();
         $('authUsername').value='';$('authPassword').value='';$('authEmail').value='';
       }
     }
@@ -467,6 +476,7 @@ async function doLogout(){
   if(!confirm('Logout?')) return;
   if(feedChannel){ sb.removeChannel(feedChannel); feedChannel=null; }
   if(chatChannel){ sb.removeChannel(chatChannel); chatChannel=null; }
+  if(presenceChannel){ sb.removeChannel(presenceChannel); presenceChannel=null; }
   await sb.auth.signOut();
   currentUser=null; currentProfile=null;
   updateHeader(); switchPanel('feed');
@@ -823,7 +833,7 @@ async function renderReels(){
     <div class="reels-container">
       ${videoPosts.map(v => `
         <div class="reel-card">
-          <video class="reel-video" controls src="${v.video_url}"></video>
+          <video class="reel-video" onclick="toggleVideo(this)" src="${v.video_url}"></video>
           <div class="reel-info">
             <h4>${escapeHTML(v.username)}</h4>
             <p>${escapeHTML(v.caption||'')}</p>
@@ -835,6 +845,19 @@ async function renderReels(){
   } catch(ex) {
     console.error(ex);
     el.innerHTML = '<div class="card"><div class="empty-state">Error loading reels</div></div>';
+  }
+}
+
+// ===== REELS PLAY/PAUSE (Instagram Style) =====
+function toggleVideo(video) {
+  document.querySelectorAll('.reel-video').forEach(v => {
+    if (v !== video) v.pause();
+  });
+
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
   }
 }
 
@@ -879,6 +902,41 @@ async function uploadReel(){
     toast('Failed: ' + ex.message);
   }
   btn.disabled = false; btn.textContent = 'Upload';
+}
+
+// ===== PRESENCE (ONLINE USERS) =====
+function subscribePresence(){
+  if(presenceChannel) return;
+  presenceChannel = sb.channel('presence-room', {
+    config: { presence: { key: currentUser.id } }
+  });
+  
+  presenceChannel.on('presence', { event: 'sync' }, () => {
+    const state = presenceChannel.presenceState();
+    const onlineUsers = [];
+    for (const id in state) {
+      if (state[id] && state[id].length > 0) {
+        onlineUsers.push(state[id][0].username);
+      }
+    }
+    renderOnlineUsers(onlineUsers);
+  });
+  
+  presenceChannel.subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await presenceChannel.track({ username: currentUser.username });
+    }
+  });
+}
+
+function renderOnlineUsers(users){
+  const list = $('onlineList');
+  if(!list) return;
+  if(users.length === 0){
+    list.innerHTML = '<div style="font-size:13px;color:#65676b;">No one else online</div>';
+    return;
+  }
+  list.innerHTML = users.map(u => `<div class="online-user"><div class="online-dot"></div><div class="online-name">${escapeHTML(u)}</div></div>`).join('');
 }
 
 // ===== SEARCH =====
@@ -1229,6 +1287,7 @@ async function init(){
     currentProfile=prof;
   }
   updateHeader(); renderFeed(); subscribeFeed();
+  if(currentUser) subscribePresence();
 }
 
 $('authOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeAuth(); });

@@ -51,6 +51,7 @@
   .post-time { font-size:12px; color:#65676b; }
   
   .post-image { width:100%; max-height:500px; object-fit:cover; display:block; background:#f0f2f5; cursor:pointer; }
+  .post-video { width:100%; max-height:500px; object-fit:contain; display:block; background:#000; }
   
   .post-stats { display:flex; justify-content:space-between; padding:10px 16px; color:#65676b; font-size:13px; }
   .post-actions { display:flex; border-top:1px solid #e4e6eb; padding:4px 8px; }
@@ -88,16 +89,6 @@
   .grid-posts { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; background:#fff; border-radius:8px; overflow:hidden; }
   .grid-posts img { width:100%; aspect-ratio:1; object-fit:cover; cursor:pointer; transition:opacity .2s; }
   .grid-posts img:hover { opacity:.85; }
-
-  /* FOUNDER PAGE */
-  .founder-page { text-align: center; padding: 40px 20px; }
-  .founder-image { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #1877f2; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,.15); }
-  .founder-name { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
-  .founder-role { font-size: 14px; color: #1877f2; font-weight: 700; letter-spacing: 1px; margin-bottom: 20px; }
-  .founder-bio { font-size: 15px; color: #4b4f56; max-width: 600px; margin: 0 auto 24px auto; line-height: 1.6; }
-  .founder-socials { display: flex; justify-content: center; gap: 16px; margin-top: 20px; }
-  .founder-socials a { font-size: 24px; text-decoration: none; color: #1877f2; transition: transform .2s; }
-  .founder-socials a:hover { transform: scale(1.2); }
 
   /* SEARCH */
   .search-input { width:100%; padding:12px 16px; border-radius:8px; border:1px solid #e4e6eb; background:#fff; font-size:15px; font-family:inherit; outline:none; margin-bottom:16px; }
@@ -542,6 +533,7 @@ async function renderFeed(){
     el.innerHTML=posts.map(p=>{
       const isOwn = currentUser && p.user_id === currentUser.id;
       const profile = profileMap[p.user_id] || {id:p.user_id, username:p.username};
+      const isVideo = p.video_url && p.video_url.length > 0;
       return `
       <div class="card" data-post-id="${p.id}">
         <div class="post-header">
@@ -552,7 +544,10 @@ async function renderFeed(){
           </div>
           ${isOwn ? `<button class="action-btn delete-btn" onclick="deletePost(${p.id})" title="Delete Post">🗑️</button>` : ''}
         </div>
-        ${p.image_url?`<img class="post-image" src="${p.image_url}" alt="" loading="lazy" onclick="viewSinglePost(${p.id})">`:''}
+        ${isVideo 
+          ? `<video class="post-video" controls src="${p.video_url}"></video>`
+          : (p.image_url?`<img class="post-image" src="${p.image_url}" alt="" loading="lazy" onclick="viewSinglePost(${p.id})">`:'')
+        }
         <div class="post-caption"><strong>${escapeHTML(profile.username)}</strong> ${escapeHTML(p.caption||'')}</div>
         <div class="post-stats" id="stats-${p.id}"></div>
         <div class="post-actions">
@@ -726,6 +721,7 @@ async function viewSinglePost(postId){
     const {data:prof} = await sb.from('profiles').select('*').eq('id',p.user_id).maybeSingle();
     const isOwn = currentUser && p.user_id === currentUser.id;
     const profile = prof || {id:p.user_id, username:p.username};
+    const isVideo = p.video_url && p.video_url.length > 0;
 
     el.innerHTML = `
       <div class="card" style="margin-bottom:16px;">
@@ -738,7 +734,10 @@ async function viewSinglePost(postId){
           </div>
           ${isOwn ? `<button class="action-btn delete-btn" onclick="deletePost(${p.id})">🗑️</button>` : ''}
         </div>
-        ${p.image_url?`<img class="post-image" src="${p.image_url}" alt="">`:''}
+        ${isVideo 
+          ? `<video class="post-video" controls src="${p.video_url}"></video>`
+          : (p.image_url?`<img class="post-image" src="${p.image_url}" alt="">`:'')
+        }
         <div class="post-caption"><strong>${escapeHTML(profile.username)}</strong> ${escapeHTML(p.caption||'')}</div>
         <div class="post-stats" id="stats-${p.id}"></div>
         <div class="post-actions">
@@ -811,7 +810,7 @@ async function renderReels(){
   
   try {
     const {data:allPosts} = await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(50);
-    const videoPosts = (allPosts||[]).filter(p => p.image_url && (p.image_url.endsWith('.mp4') || p.image_url.endsWith('.webm') || p.image_url.endsWith('.mov')));
+    const videoPosts = (allPosts||[]).filter(p => p.video_url && p.video_url.length > 0);
     
     if(videoPosts.length === 0){
       el.innerHTML = `<div class="card"><div class="empty-state"><div class="icon">🎬</div><p>No reels yet. Be the first to upload!</p><button class="btn primary" style="margin-top:12px;" onclick="openUploadReel()">Upload Reel</button></div></div>`;
@@ -824,7 +823,7 @@ async function renderReels(){
     <div class="reels-container">
       ${videoPosts.map(v => `
         <div class="reel-card">
-          <video class="reel-video" controls src="${v.image_url}"></video>
+          <video class="reel-video" controls src="${v.video_url}"></video>
           <div class="reel-info">
             <h4>${escapeHTML(v.username)}</h4>
             <p>${escapeHTML(v.caption||'')}</p>
@@ -865,7 +864,8 @@ async function uploadReel(){
     const { error: insErr } = await sb.from('posts').insert([{
       user_id: currentUser.id,
       username: currentUser.username,
-      image_url: publicUrl,
+      video_url: publicUrl,
+      image_url: null,
       caption: caption
     }]);
     if(insErr) throw insErr;

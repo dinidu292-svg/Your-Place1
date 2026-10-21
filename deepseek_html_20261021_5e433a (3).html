@@ -344,7 +344,6 @@
 <div class="header">
   <div class="logo" onclick="switchPanel('feed')">
     <span>📸</span> Your Place 2026
-    <span style="color:#d93025; font-size:12px; margin-left:10px; font-weight:800; background:#ffe5e5; padding:2px 6px; border-radius:4px;">v3.0 ONLINE FIX</span>
   </div>
   <div class="header-right" id="headerRight"></div>
 </div>
@@ -1047,7 +1046,7 @@ async function uploadReel(){
 }
 
 /* ============================================================
-   PRESENCE & ONLINE STATUS (DEBUGGED)
+   PRESENCE & ONLINE STATUS
    ============================================================ */
 function subscribePresence(){
   if(presenceChannel) return;
@@ -1061,7 +1060,6 @@ function subscribePresence(){
         onlineUsersMap.set(id, state[id][0].username);
       }
     }
-    console.log("Online users updated:", Array.from(onlineUsersMap.keys()));
     
     if(activeRoomId){
       refreshRoomHeader();
@@ -1072,10 +1070,8 @@ function subscribePresence(){
   });
   
   presenceChannel.subscribe(async (status) => {
-    console.log("Presence status:", status);
     if(status === 'SUBSCRIBED'){
       await presenceChannel.track({ username: currentUser.username });
-      console.log("Tracking user online:", currentUser.username);
     }
   });
 }
@@ -1221,7 +1217,7 @@ async function uploadAvatar(e, userId){
 }
 
 /* ============================================================
-   CHAT with ONLINE STATUS
+   CHAT WITH ONLINE STATUS
    ============================================================ */
 async function renderChatList(){
   const el=$('panel-chat');
@@ -1243,7 +1239,7 @@ async function renderChatList(){
     }));
     currentRooms=roomsWithInfo;
     
-    // ඔන්ලයින් ඉන්න අය වෙනම පෙන්නන්න ලිස්ට් එකක් හදමු
+    // උඩින්ම පෙන්නන "Online Now" ලිස්ට් එක
     let onlineUsersHTML = '';
     const onlineList = Array.from(onlineUsersMap.values()).filter(name => name !== currentUser.username);
     if(onlineList.length > 0){

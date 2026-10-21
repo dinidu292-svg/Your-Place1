@@ -310,6 +310,23 @@
   </div>
 </div>
 
+<!-- UPLOAD REEL MODAL -->
+<div class="modal-overlay" id="uploadReelOverlay">
+  <div class="modal-box">
+    <button class="close-x" onclick="closeUploadReel()">×</button>
+    <h2>Upload Reel</h2>
+    <div class="modal-field">
+      <label>Video (Max 10MB)</label>
+      <input type="file" accept="video/*" id="reelFile" style="padding:8px; border:2px dashed #e2e8f0;">
+    </div>
+    <div class="modal-field">
+      <label>Caption</label>
+      <input id="reelCaption" type="text" placeholder="Write a caption..." maxlength="100">
+    </div>
+    <button class="modal-submit" id="uploadReelBtn" onclick="uploadReel()">Upload</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -793,11 +810,6 @@ async function renderReels(){
   el.innerHTML='<div class="card"><div class="loader"></div></div>';
   
   try {
-    const {data:videos,error}=await sb.from('posts').select('*').eq('is_video', true).order('created_at',{ascending:false}).limit(20);
-    // මෙතනදී අපි posts table එකේ is_video කියලා column එකක් තියෙනවද බලන්න ඕන. 
-    // දැනට එහෙම column එකක් නැති නිසා, අපි පෝස්ට් වල caption එකේ [VIDEO] කියලා තියෙනවද බලමු.
-    
-    // සරලව කරන්න: posts table එකේ image_url එක .mp4 වලින් ඉවර වෙනවා නම් ඒක වීඩියෝ එකක්.
     const {data:allPosts} = await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(50);
     const videoPosts = (allPosts||[]).filter(p => p.image_url && (p.image_url.endsWith('.mp4') || p.image_url.endsWith('.webm') || p.image_url.endsWith('.mov')));
     

@@ -153,12 +153,13 @@
     width:100%; max-width:400px; aspect-ratio:9/16;
     box-shadow:0 4px 12px rgba(0,0,0,.2);
     cursor:pointer;
+    touch-action: manipulation;
   }
   .reel-card video {
     width:100%; height:100%; object-fit:cover; display:block;
     background:#000;
+    pointer-events: none;
   }
-  /* OVERLAY captures clicks reliably on iOS/Android (video elements can eat taps) */
   .reel-click-overlay {
     position:absolute; inset:0; z-index:1; cursor:pointer;
   }
@@ -218,6 +219,7 @@
   .reel-viewer video {
     width:100%; height:100%; object-fit:contain;
     background:#000; display:block;
+    pointer-events: none;
   }
   .reel-viewer .viewer-back {
     position:absolute; top:14px; left:12px; z-index:20;
@@ -270,6 +272,40 @@
   }
   .reel-viewer .viewer-profile .vp-follow.following {
     background:#fff; color:#000;
+  }
+
+  /* ========== ONLINE STATUS INDICATORS ========== */
+  .avatar-wrap {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .online-badge {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 13px;
+    height: 13px;
+    background: #22c55e;
+    border: 2.5px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 6px rgba(34,197,94,.6);
+    z-index: 2;
+    animation: pulse-online 2s infinite;
+  }
+  @keyframes pulse-online {
+    0%, 100% { box-shadow: 0 0 6px rgba(34,197,94,.6); }
+    50% { box-shadow: 0 0 10px rgba(34,197,94,.95); }
+  }
+  .chat-status {
+    font-size: 12px;
+    color: #65676b;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .chat-status.online {
+    color: #22c55e;
+    font-weight: 600;
   }
 
   .footer { text-align:center; padding:24px; color:#65676b; font-size:13px; background:#fff; border-top:1px solid #e4e6eb; margin-top:auto; }
@@ -429,6 +465,9 @@ let currentRooms = [];
 let feedChannel = null;
 let presenceChannel = null;
 let currentReelViewer = null;
+let onlineUsersMap = new Map();
+let activeRoomMembers = [];
+let activeRoomIsGroup = false;
 
 const INVITE_LINK = window.location.origin + window.location.pathname;
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ebf4ff'/><circle cx='50' cy='35' r='20' fill='%231877f2'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%231877f2'/></svg>";
@@ -530,6 +569,7 @@ async function doLogout(){
   closeReelViewer();
   await sb.auth.signOut();
   currentUser=null; currentProfile=null;
+  onlineUsersMap.clear();
   updateHeader(); switchPanel('feed'); toast('Logged out');
 }
 
@@ -747,7 +787,7 @@ async function createPost(){
 }
 
 /* ============================================================
-   REELS — FULLY REWRITTEN
+   REELS
    ============================================================ */
 async function renderReels(){
   const el=$('panel-reels');
@@ -773,7 +813,6 @@ async function renderReels(){
       (myFollows||[]).forEach(f => followingSet.add(f.following_id));
     }
 
-    // Store cache BEFORE rendering
     window._reelCache = {};
     videoPosts.forEach(v => window._reelCache[String(v.id)] = v);
     window._reelOwnerMap = ownerMap;
@@ -805,19 +844,22 @@ async function renderReels(){
     html += `</div>`;
     el.innerHTML = html;
 
-    // Attach click handlers (event delegation — no inline onclick issues)
     el.querySelectorAll('.reel-card').forEach(card => {
       const reelId = card.dataset.reelId;
 
-      // Card click → fullscreen
-      card.addEventListener('click', (e) => {
-        // ignore if clicked on follow button or avatar (they have their own handlers)
-        if(e.target.closest('.follow-btn-sm')) return;
-        if(e.target.closest('.avatar')) return;
-        openReelViewer(reelId);
-      });
+      const clickOverlay = card.querySelector('.reel-click-overlay');
+      if(clickOverlay){
+        clickOverlay.addEventListener('click', (e) => {
+          e.stopPropagation();
+          openReelViewer(reelId);
+        });
+        clickOverlay.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openReelViewer(reelId);
+        }, { passive: false });
+      }
 
-      // Follow button
       const followBtn = card.querySelector('.follow-btn-sm');
       if(followBtn){
         followBtn.addEventListener('click', (e) => {
@@ -826,7 +868,6 @@ async function renderReels(){
         });
       }
 
-      // Show first frame preview
       const vid = card.querySelector('video');
       if(vid){
         vid.addEventListener('loadedmetadata', () => {
@@ -855,7 +896,6 @@ async function toggleFollowFromReel(userId, btn){
   }
 }
 
-/* ============ FULLSCREEN REEL VIEWER ============ */
 function openReelViewer(reelId){
   const reel = window._reelCache?.[String(reelId)];
   if(!reel){ console.warn('Reel not found in cache:', reelId); return; }
@@ -888,7 +928,6 @@ function openReelViewer(reelId){
   const vid = $('reelViewerVideo');
   const pauseIcon = $('viewerPauseIcon');
 
-  // Play with fallback
   const tryPlay = vid.play();
   if(tryPlay !== undefined){
     tryPlay.catch(() => {
@@ -897,23 +936,19 @@ function openReelViewer(reelId){
     });
   }
 
-  // Pause icon state
   vid.addEventListener('play', () => pauseIcon.classList.remove('show'));
   vid.addEventListener('pause', () => pauseIcon.classList.add('show'));
 
-  // Tap zone — toggle play/pause
   $('reelTapZone').addEventListener('click', () => {
     if(vid.paused) vid.play().catch(()=>{});
     else vid.pause();
   });
 
-  // Back button
   $('viewerBackBtn').addEventListener('click', (e) => {
     e.stopPropagation();
     closeReelViewer();
   });
 
-  // Follow button inside viewer
   const vBtn = $('viewerFollowBtn');
   if(vBtn){
     vBtn.addEventListener('click', (e) => {
@@ -926,7 +961,6 @@ function openReelViewer(reelId){
   document.addEventListener('keydown', reelEscHandler);
 }
 
-/* Swipe right to go back (works touch + mouse) */
 function setupReelSwipeBack(viewer){
   let startX = 0, startY = 0, currentX = 0, dragging = false, isHorizontal = false;
   const inner = viewer.querySelector('.reel-viewer-inner');
@@ -1011,15 +1045,47 @@ async function uploadReel(){
   btn.disabled=false; btn.textContent='Upload';
 }
 
+/* ============================================================
+   PRESENCE & ONLINE STATUS
+   ============================================================ */
 function subscribePresence(){
   if(presenceChannel) return;
-  presenceChannel=sb.channel('presence-room',{config:{presence:{key:currentUser.id}}});
-  presenceChannel.on('presence',{event:'sync'},()=>{
-    const state=presenceChannel.presenceState(), onlineUsers=[];
-    for(const id in state){ if(state[id]&&state[id].length>0) onlineUsers.push(state[id][0].username); }
-    renderOnlineUsers(onlineUsers);
+  presenceChannel = sb.channel('presence-room', { config: { presence: { key: currentUser.id } } });
+  presenceChannel.on('presence', { event: 'sync' }, () => {
+    const state = presenceChannel.presenceState();
+    onlineUsersMap.clear();
+    for(const id in state){
+      if(state[id] && state[id].length > 0){
+        onlineUsersMap.set(id, state[id][0].username);
+      }
+    }
+    if(activeRoomId){
+      refreshRoomHeader();
+    } else if(document.getElementById('panel-chat')?.classList.contains('active')){
+      renderChatList();
+    }
+    renderOnlineUsers(Array.from(onlineUsersMap.values()));
   });
-  presenceChannel.subscribe(async(status)=>{ if(status==='SUBSCRIBED') await presenceChannel.track({username:currentUser.username}); });
+  presenceChannel.subscribe(async (status) => {
+    if(status === 'SUBSCRIBED'){
+      await presenceChannel.track({ username: currentUser.username });
+    }
+  });
+}
+
+function refreshRoomHeader(){
+  const el = $('chatStatusText');
+  if(!el || !activeRoomId) return;
+  if(!activeRoomIsGroup){
+    const other = activeRoomMembers.find(m => m.user_id !== currentUser.id);
+    const isOnline = other && onlineUsersMap.has(other.user_id);
+    el.textContent = isOnline ? '🟢 Online' : '⚪ Offline';
+    el.className = 'chat-status ' + (isOnline ? 'online' : '');
+  } else {
+    const onlineCount = activeRoomMembers.filter(m => m.user_id !== currentUser.id && onlineUsersMap.has(m.user_id)).length;
+    el.textContent = onlineCount > 0 ? '🟢 ' + onlineCount + ' online' : '⚪ No one online';
+    el.className = 'chat-status ' + (onlineCount > 0 ? 'online' : '');
+  }
 }
 
 function renderOnlineUsers(users){
@@ -1147,6 +1213,9 @@ async function uploadAvatar(e, userId){
   }catch(ex){ toast('Failed: '+ex.message); }
 }
 
+/* ============================================================
+   CHAT with ONLINE STATUS
+   ============================================================ */
 async function renderChatList(){
   const el=$('panel-chat');
   if(!currentUser){ el.innerHTML='<div class="card"><div class="empty-state"><p>Login to chat</p><button class="btn primary" style="margin-top:12px;" onclick="openAuth(\'login\')">Login</button></div></div>'; return; }
@@ -1169,10 +1238,29 @@ async function renderChatList(){
     el.innerHTML=`
       <div class="chat-list-header"><h2>Chats</h2><button class="btn primary" onclick="openNewChat()">+ New</button></div>
       <div>${roomsWithInfo.length===0?'<div class="card"><div class="empty-state">No chats yet. Start a new one!</div></div>'
-        :roomsWithInfo.map(r=>`<div class="room-item" onclick="openRoom(${r.id})">
-            ${r.is_group?`<div class="avatar" style="width:48px;height:48px;font-size:20px;">👥</div>`:(r.avatarProfile?avatarHTML(r.avatarProfile,48,false):`<div class="avatar" style="width:48px;height:48px;">${escapeHTML(r.displayName).charAt(0).toUpperCase()}</div>`)}
-            <div class="info"><div class="name">${escapeHTML(r.displayName)}</div><div class="preview">${r.lastMsg?escapeHTML(r.lastMsg.text.substring(0,20)):'No messages yet'}</div></div>
-          </div>`).join('')}</div>`;
+        :roomsWithInfo.map(r=>{
+            let avatarPart = '', onlineLine = '';
+            if(r.is_group){
+              avatarPart = `<div class="avatar" style="width:48px;height:48px;font-size:20px;">👥</div>`;
+              const onlineCount = (r.members||[]).filter(m => m.user_id !== currentUser.id && onlineUsersMap.has(m.user_id)).length;
+              if(onlineCount > 0){ onlineLine = `<span style="color:#22c55e;font-weight:600;">🟢 ${onlineCount} online</span> · `; }
+            } else {
+              const other = (r.members||[]).find(m => m.user_id !== currentUser.id);
+              const isOnline = other && onlineUsersMap.has(other.user_id);
+              const inner = r.avatarProfile
+                ? avatarHTML(r.avatarProfile, 48, false)
+                : `<div class="avatar" style="width:48px;height:48px;">${escapeHTML(r.displayName).charAt(0).toUpperCase()}</div>`;
+              avatarPart = `<div class="avatar-wrap">${inner}${isOnline?'<div class="online-badge"></div>':''}</div>`;
+              if(isOnline){ onlineLine = `<span style="color:#22c55e;font-weight:600;">🟢 Online</span> · `; }
+            }
+            return `<div class="room-item" onclick="openRoom(${r.id})">
+              ${avatarPart}
+              <div class="info">
+                <div class="name">${escapeHTML(r.displayName)}</div>
+                <div class="preview">${onlineLine}${r.lastMsg?escapeHTML(r.lastMsg.text.substring(0,20)):'No messages yet'}</div>
+              </div>
+            </div>`;
+          }).join('')}</div>`;
   }catch(ex){ console.error(ex); el.innerHTML='<div class="card"><div class="empty-state">Error loading chats</div></div>'; }
 }
 
@@ -1191,7 +1279,14 @@ function switchNewChatTab(mode){
 }
 function renderContactPicker(){
   const picker=$('contactPicker'); if(!picker) return;
-  picker.innerHTML=allUsersCache.map(u=>`<div class="contact-pick ${selectedContacts.has(u.id)?'selected':''}" onclick="toggleContact('${u.id}')">${avatarHTML(u,36,false)}<div style="font-weight:600;font-size:14px;">${escapeHTML(u.username)}</div></div>`).join('')||'<p style="color:#65676b;text-align:center;padding:20px;">No other users yet</p>';
+  picker.innerHTML=allUsersCache.map(u=>{
+    const isOnline = onlineUsersMap.has(u.id);
+    const inner = avatarHTML(u,36,false);
+    return `<div class="contact-pick ${selectedContacts.has(u.id)?'selected':''}" onclick="toggleContact('${u.id}')">
+      <div class="avatar-wrap">${inner}${isOnline?'<div class="online-badge"></div>':''}</div>
+      <div style="font-weight:600;font-size:14px;">${escapeHTML(u.username)}</div>
+    </div>`;
+  }).join('')||'<p style="color:#65676b;text-align:center;padding:20px;">No other users yet</p>';
 }
 function toggleContact(userId){
   if(newChatMode==='dm'){ selectedContacts.clear(); selectedContacts.add(userId); }
@@ -1245,8 +1340,28 @@ async function openRoom(roomId){
     const {data:members}=await sb.from('room_members').select('*').eq('room_id',roomId);
     let roomTitle=room.name||'Chat', isGroup=room.is_group;
     if(!isGroup){ const other=(members||[]).find(m=>m.user_id!==currentUser.id); if(other) roomTitle=other.username; }
+
+    activeRoomMembers = members || [];
+    activeRoomIsGroup = !!isGroup;
+
+    let statusHTML = '';
+    if(!isGroup){
+      const other = activeRoomMembers.find(m => m.user_id !== currentUser.id);
+      const isOnline = other && onlineUsersMap.has(other.user_id);
+      statusHTML = `<div class="chat-status ${isOnline?'online':''}" id="chatStatusText">${isOnline?'🟢 Online':'⚪ Offline'}</div>`;
+    } else {
+      const onlineCount = activeRoomMembers.filter(m => m.user_id !== currentUser.id && onlineUsersMap.has(m.user_id)).length;
+      statusHTML = `<div class="chat-status ${onlineCount>0?'online':''}" id="chatStatusText">${onlineCount > 0 ? '🟢 ' + onlineCount + ' online' : '⚪ No one online'}</div>`;
+    }
+
     el.innerHTML=`<div class="chat-container">
-      <div class="chat-header"><button class="back-btn" onclick="backToChatList()">←</button><div style="flex:1;font-weight:700;">${escapeHTML(roomTitle)}${isGroup?' 👥':''}</div></div>
+      <div class="chat-header">
+        <button class="back-btn" onclick="backToChatList()">←</button>
+        <div style="flex:1;">
+          <div style="font-weight:700;">${escapeHTML(roomTitle)}${isGroup?' 👥':''}</div>
+          ${statusHTML}
+        </div>
+      </div>
       <div class="chat-messages" id="chatMessagesBox"><div class="loader"></div></div>
       <div class="chat-input-bar">
         <input id="chatInput" placeholder="Type a message..." maxlength="500" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}">
@@ -1256,7 +1371,15 @@ async function openRoom(roomId){
     await loadRoomMessages(); subscribeRoom(roomId);
   }catch(ex){ el.innerHTML='<div class="card"><div class="empty-state">Error loading room</div></div>'; }
 }
-function backToChatList(){ if(chatChannel){ sb.removeChannel(chatChannel); chatChannel=null; } activeRoomId=null; renderChatList(); }
+
+function backToChatList(){
+  if(chatChannel){ sb.removeChannel(chatChannel); chatChannel=null; }
+  activeRoomId=null;
+  activeRoomMembers=[];
+  activeRoomIsGroup=false;
+  renderChatList();
+}
+
 async function loadRoomMessages(){
   const box=$('chatMessagesBox'); if(!box||!activeRoomId) return;
   const {data,error}=await sb.from('chat_messages').select('*').eq('room_id',activeRoomId).order('created_at',{ascending:true}).limit(100);

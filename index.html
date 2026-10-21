@@ -146,29 +146,131 @@
   .share-app { width:44px; height:44px; border-radius:50%; background:#f0f2f5; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; transition:background .2s; }
   .share-app:hover { background:#e4e6eb; }
 
-  /* REELS LIST */
+  /* ========== REELS LIST ========== */
   .reels-container { display:flex; flex-direction:column; gap:16px; align-items:center; }
-  .reel-card { background:#000; border-radius:12px; overflow:hidden; position:relative; width:100%; max-width:400px; aspect-ratio:9/16; box-shadow:0 4px 12px rgba(0,0,0,.2); cursor:pointer; }
-  .reel-video { width:100%; height:100%; object-fit:contain; display:block; pointer-events:none; }
-  .reel-card .reel-caption-overlay { position:absolute; left:12px; right:12px; bottom:56px; color:#fff; font-size:13px; z-index:2; text-shadow:0 1px 4px rgba(0,0,0,.8); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .reel-card .reel-overlay-info { position:absolute; left:12px; bottom:12px; right:12px; display:flex; align-items:center; gap:8px; color:#fff; z-index:2; text-shadow:0 1px 4px rgba(0,0,0,.8); }
-  .reel-card .reel-overlay-info .avatar { width:32px; height:32px; border:1.5px solid #fff; font-size:13px; cursor:pointer; }
-  .reel-card .reel-overlay-info .reel-username { font-weight:700; font-size:13px; }
-  .reel-card .reel-overlay-info .follow-btn-sm { background:transparent; color:#fff; border:1px solid #fff; padding:3px 10px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer; margin-left:4px; }
-  .reel-card .reel-overlay-info .follow-btn-sm.following { background:#fff; color:#000; }
+  .reel-card {
+    background:#000; border-radius:12px; overflow:hidden; position:relative;
+    width:100%; max-width:400px; aspect-ratio:9/16;
+    box-shadow:0 4px 12px rgba(0,0,0,.2);
+    cursor:pointer;
+  }
+  .reel-card video {
+    width:100%; height:100%; object-fit:cover; display:block;
+    background:#000;
+  }
+  /* OVERLAY captures clicks reliably on iOS/Android (video elements can eat taps) */
+  .reel-click-overlay {
+    position:absolute; inset:0; z-index:1; cursor:pointer;
+  }
+  .reel-card .reel-overlay-info {
+    position:absolute; left:10px; right:10px; bottom:10px;
+    display:flex; align-items:center; gap:8px;
+    color:#fff; z-index:3;
+    text-shadow:0 1px 4px rgba(0,0,0,.9);
+    pointer-events:none;
+  }
+  .reel-card .reel-overlay-info .avatar {
+    width:34px; height:34px; font-size:13px;
+    border:1.5px solid #fff; cursor:pointer;
+    pointer-events:auto;
+  }
+  .reel-card .reel-overlay-info .reel-username {
+    font-weight:700; font-size:13px; flex:1; min-width:0;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .reel-card .reel-overlay-info .follow-btn-sm {
+    background:transparent; color:#fff;
+    border:1.5px solid #fff; padding:3px 10px; border-radius:4px;
+    font-size:11px; font-weight:700; cursor:pointer;
+    pointer-events:auto;
+  }
+  .reel-card .reel-overlay-info .follow-btn-sm.following {
+    background:#fff; color:#000;
+  }
+  .reel-card .reel-caption-overlay {
+    position:absolute; left:10px; right:10px; bottom:52px;
+    color:#fff; font-size:12px; z-index:3;
+    text-shadow:0 1px 4px rgba(0,0,0,.9);
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    pointer-events:none;
+  }
+  .reel-card .reel-play-hint {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    color:rgba(255,255,255,.85); font-size:56px;
+    z-index:2; pointer-events:none;
+    text-shadow:0 2px 12px rgba(0,0,0,.6);
+  }
 
-  /* REEL FULLSCREEN VIEWER */
-  .reel-viewer { position:fixed; inset:0; background:#000; z-index:10000; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; }
-  .reel-viewer-inner { position:relative; width:100%; height:100%; max-width:500px; margin:0 auto; will-change:transform,opacity; }
-  .reel-viewer video { width:100%; height:100%; object-fit:contain; background:#000; display:block; }
-  .reel-viewer .viewer-back { position:absolute; top:16px; left:12px; z-index:20; background:rgba(0,0,0,.4); border:none; color:#fff; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .reel-viewer .viewer-profile { position:absolute; left:12px; bottom:24px; right:12px; display:flex; align-items:center; gap:10px; z-index:20; color:#fff; }
-  .reel-viewer .viewer-profile .avatar { width:40px; height:40px; border:2px solid #fff; font-size:16px; }
-  .reel-viewer .viewer-profile .vp-name { font-weight:700; font-size:15px; text-shadow:0 1px 4px rgba(0,0,0,.8); }
-  .reel-viewer .viewer-profile .vp-follow { background:transparent; color:#fff; border:1.5px solid #fff; padding:4px 12px; border-radius:6px; font-size:12px; font-weight:700; cursor:pointer; }
-  .reel-viewer .viewer-profile .vp-follow.following { background:#fff; color:#000; }
-  .reel-viewer .viewer-caption { position:absolute; left:12px; right:12px; bottom:76px; color:#fff; font-size:13px; z-index:20; text-shadow:0 1px 4px rgba(0,0,0,.8); }
-  .reel-viewer .viewer-tap-zone { position:absolute; inset:0; z-index:10; }
+  /* ========== FULLSCREEN REEL VIEWER ========== */
+  .reel-viewer {
+    position:fixed; inset:0; background:#000;
+    z-index:10000; display:flex;
+    align-items:center; justify-content:center;
+    overflow:hidden;
+    touch-action:pan-y;
+  }
+  .reel-viewer-inner {
+    position:relative; width:100%; height:100%;
+    max-width:500px; margin:0 auto;
+    will-change:transform,opacity;
+  }
+  .reel-viewer video {
+    width:100%; height:100%; object-fit:contain;
+    background:#000; display:block;
+  }
+  .reel-viewer .viewer-back {
+    position:absolute; top:14px; left:12px; z-index:20;
+    background:rgba(0,0,0,.5); border:none; color:#fff;
+    width:42px; height:42px; border-radius:50%;
+    font-size:22px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    backdrop-filter:blur(6px);
+  }
+  .reel-viewer .viewer-back:hover { background:rgba(0,0,0,.7); }
+  .reel-viewer .viewer-tap-zone {
+    position:absolute; inset:0; z-index:10;
+  }
+  .reel-viewer .viewer-pause-icon {
+    position:absolute; top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    color:rgba(255,255,255,.9); font-size:72px;
+    z-index:15; pointer-events:none;
+    opacity:0; transition:opacity .2s;
+    text-shadow:0 2px 16px rgba(0,0,0,.7);
+  }
+  .reel-viewer .viewer-pause-icon.show { opacity:1; }
+  .reel-viewer .viewer-caption {
+    position:absolute; left:12px; right:12px; bottom:78px;
+    color:#fff; font-size:13px; z-index:20;
+    text-shadow:0 1px 4px rgba(0,0,0,.9);
+    pointer-events:none;
+  }
+  .reel-viewer .viewer-profile {
+    position:absolute; left:12px; right:12px; bottom:20px;
+    display:flex; align-items:center; gap:10px;
+    z-index:20; color:#fff;
+    pointer-events:none;
+  }
+  .reel-viewer .viewer-profile .avatar {
+    width:40px; height:40px; border:2px solid #fff; font-size:16px;
+    pointer-events:auto; cursor:pointer;
+  }
+  .reel-viewer .viewer-profile .vp-name {
+    font-weight:700; font-size:15px;
+    text-shadow:0 1px 4px rgba(0,0,0,.9);
+    flex:1; min-width:0;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .reel-viewer .viewer-profile .vp-follow {
+    background:transparent; color:#fff;
+    border:1.5px solid #fff; padding:5px 14px;
+    border-radius:6px; font-size:12px; font-weight:700;
+    cursor:pointer; pointer-events:auto;
+  }
+  .reel-viewer .viewer-profile .vp-follow.following {
+    background:#fff; color:#000;
+  }
 
   .footer { text-align:center; padding:24px; color:#65676b; font-size:13px; background:#fff; border-top:1px solid #e4e6eb; margin-top:auto; }
   .footer a { color:#1877f2; text-decoration:none; font-weight:700; cursor:pointer; }
@@ -259,14 +361,8 @@
   <div class="modal-box">
     <button class="close-x" onclick="closeEditProfile()">×</button>
     <h2>Edit Profile</h2>
-    <div class="modal-field">
-      <label>Username</label>
-      <input id="editUsername" type="text" maxlength="20">
-    </div>
-    <div class="modal-field">
-      <label>Bio</label>
-      <textarea id="editBio" rows="3" placeholder="Tell us about yourself..." maxlength="200"></textarea>
-    </div>
+    <div class="modal-field"><label>Username</label><input id="editUsername" type="text" maxlength="20"></div>
+    <div class="modal-field"><label>Bio</label><textarea id="editBio" rows="3" placeholder="Tell us about yourself..." maxlength="200"></textarea></div>
     <button class="modal-submit" id="editProfileBtn" onclick="saveProfile()">Save Changes</button>
   </div>
 </div>
@@ -307,14 +403,8 @@
   <div class="modal-box">
     <button class="close-x" onclick="closeUploadReel()">×</button>
     <h2>Upload Reel</h2>
-    <div class="modal-field">
-      <label>Video (Max 10MB)</label>
-      <input type="file" accept="video/*" id="reelFile" style="padding:8px; border:2px dashed #e2e8f0;">
-    </div>
-    <div class="modal-field">
-      <label>Caption</label>
-      <input id="reelCaption" type="text" placeholder="Write a caption..." maxlength="100">
-    </div>
+    <div class="modal-field"><label>Video (Max 10MB)</label><input type="file" accept="video/*" id="reelFile" style="padding:8px; border:2px dashed #e2e8f0;"></div>
+    <div class="modal-field"><label>Caption</label><input id="reelCaption" type="text" placeholder="Write a caption..." maxlength="100"></div>
     <button class="modal-submit" id="uploadReelBtn" onclick="uploadReel()">Upload</button>
   </div>
 </div>
@@ -378,92 +468,58 @@ document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>
 function updateHeader(){
   const box=$('headerRight');
   if(currentUser){
-    box.innerHTML=`
-      <button class="btn" onclick="openInvite()">✉️ Invite</button>
-      <button class="btn" onclick="doLogout()">Logout</button>`;
+    box.innerHTML=`<button class="btn" onclick="openInvite()">✉️ Invite</button><button class="btn" onclick="doLogout()">Logout</button>`;
   } else {
     box.innerHTML=`<button class="btn" onclick="openAuth('login')">Login</button><button class="btn primary" onclick="openAuth('signup')">Sign Up</button>`;
   }
 }
 
-function openAuth(mode){
-  authMode=mode||'login';
-  $('authOverlay').classList.add('show');
-  $('authError').style.display='none';
-  switchAuthTab(authMode);
-}
+function openAuth(mode){ authMode=mode||'login'; $('authOverlay').classList.add('show'); $('authError').style.display='none'; switchAuthTab(authMode); }
 function closeAuth(){ $('authOverlay').classList.remove('show'); }
 function switchAuthTab(mode){
-  authMode=mode;
-  const isLogin=mode==='login';
-  $('tabLogin').classList.toggle('active',isLogin);
-  $('tabSignup').classList.toggle('active',!isLogin);
-  
-  $('emailField').style.display = 'block';
-  $('usernameField').style.display = isLogin ? 'none' : 'block';
-  
-  $('authEmail').required = true;
-  $('authUsername').required = !isLogin;
-  
-  $('authSubmitBtn').textContent = isLogin ? 'Login' : 'Create Account';
-  $('authError').style.display='none';
+  authMode=mode; const isLogin=mode==='login';
+  $('tabLogin').classList.toggle('active',isLogin); $('tabSignup').classList.toggle('active',!isLogin);
+  $('emailField').style.display='block'; $('usernameField').style.display=isLogin?'none':'block';
+  $('authEmail').required=true; $('authUsername').required=!isLogin;
+  $('authSubmitBtn').textContent=isLogin?'Login':'Create Account'; $('authError').style.display='none';
 }
 
 async function handleAuth(e){
   e.preventDefault();
   const btn=$('authSubmitBtn'), err=$('authError');
   err.style.display='none'; btn.disabled=true; btn.textContent='Please wait...';
-  
   try{
     if(authMode==='login'){
-      const email=$('authEmail').value.trim();
-      const password=$('authPassword').value;
-      if(!email || !password) throw new Error('Email and password required');
-      
+      const email=$('authEmail').value.trim(), password=$('authPassword').value;
+      if(!email||!password) throw new Error('Email and password required');
       const {data,error}=await sb.auth.signInWithPassword({email,password});
       if(error) throw error;
-      
-      let {data:prof, error: pErr}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
+      let {data:prof,error:pErr}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
       if(pErr) throw pErr;
-      
-      if(!prof) {
-        const newUsername = email.split('@')[0];
-        const {data:newProf, error: insErr} = await sb.from('profiles').insert([{id: data.user.id, username: newUsername}]).select().single();
-        if(!insErr) prof = newProf;
+      if(!prof){
+        const {data:newProf,error:insErr}=await sb.from('profiles').insert([{id:data.user.id,username:email.split('@')[0]}]).select().single();
+        if(!insErr) prof=newProf;
       }
-      
-      currentUser={id:data.user.id,username:prof?prof.username:email.split('@')[0]};
-      currentProfile=prof;
+      currentUser={id:data.user.id,username:prof?prof.username:email.split('@')[0]}; currentProfile=prof;
       toast('Welcome back, '+currentUser.username+'! 👋');
       closeAuth(); updateHeader(); switchPanel('feed'); subscribeFeed(); subscribePresence();
-      $('authEmail').value='';$('authPassword').value='';
+      $('authEmail').value=''; $('authPassword').value='';
     } else {
-      const username=$('authUsername').value.trim();
-      const password=$('authPassword').value;
-      const email=$('authEmail').value.trim();
+      const username=$('authUsername').value.trim(), password=$('authPassword').value, email=$('authEmail').value.trim();
       if(!username||!password||!email) throw new Error('All fields required');
       if(username.length<3) throw new Error('Username must be 3+ characters');
       if(password.length<6) throw new Error('Password must be 6+ characters');
-      
       const {data,error}=await sb.auth.signUp({email,password,options:{data:{username}}});
       if(error) throw error;
-      
-      if(data.user && !data.session){
-        toast('Check your email to confirm, then login.');
-      } else {
-        currentUser={id:data.user.id,username};
-        toast('Account created! 🎉');
+      if(data.user && !data.session){ toast('Check your email to confirm, then login.'); }
+      else {
+        currentUser={id:data.user.id,username}; toast('Account created! 🎉');
         closeAuth(); updateHeader(); switchPanel('feed'); subscribeFeed(); subscribePresence();
-        $('authUsername').value='';$('authPassword').value='';$('authEmail').value='';
+        $('authUsername').value=''; $('authPassword').value=''; $('authEmail').value='';
       }
     }
-  }catch(ex){
-    console.error(ex);
-    err.textContent='❌ '+(ex.message||'Error');
-    err.style.display='block';
-  }finally{
-    btn.disabled=false; btn.textContent=authMode==='login'?'Login':'Create Account';
-  }
+  }catch(ex){ console.error(ex); err.textContent='❌ '+(ex.message||'Error'); err.style.display='block'; }
+  finally{ btn.disabled=false; btn.textContent=authMode==='login'?'Login':'Create Account'; }
 }
 
 async function doLogout(){
@@ -471,23 +527,20 @@ async function doLogout(){
   if(feedChannel){ sb.removeChannel(feedChannel); feedChannel=null; }
   if(chatChannel){ sb.removeChannel(chatChannel); chatChannel=null; }
   if(presenceChannel){ sb.removeChannel(presenceChannel); presenceChannel=null; }
+  closeReelViewer();
   await sb.auth.signOut();
   currentUser=null; currentProfile=null;
-  updateHeader(); switchPanel('feed');
-  toast('Logged out');
+  updateHeader(); switchPanel('feed'); toast('Logged out');
 }
 
 sb.auth.onAuthStateChange(async(event,session)=>{
   if(event==='SIGNED_OUT'||!session){ currentUser=null; currentProfile=null; }
   else if(session && !currentUser){
     let {data:prof}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
-    
-    if(!prof) {
-      const newUsername = session.user.email.split('@')[0];
-      const {data:newProf} = await sb.from('profiles').insert([{id: session.user.id, username: newUsername}]).select().single();
-      prof = newProf;
+    if(!prof){
+      const {data:newProf}=await sb.from('profiles').insert([{id:session.user.id,username:session.user.email.split('@')[0]}]).select().single();
+      prof=newProf;
     }
-    
     if(prof) currentUser={id:session.user.id,username:prof.username};
     currentProfile=prof;
   }
@@ -495,61 +548,41 @@ sb.auth.onAuthStateChange(async(event,session)=>{
 });
 
 function renderFounder(){
-  const el = $('panel-founder');
-  el.innerHTML = `
-    <div class="card founder-page">
-      <img src="https://ui-avatars.com/api/?name=Dinidu+Wijesinghe&background=1877f2&color=fff&size=150" alt="Founder" class="founder-image">
-      <div class="founder-name">Dinidu Wijesinghe</div>
-      <div class="founder-role">FOUNDER & CEO</div>
-      <div class="founder-bio">
-        Hi there! I'm Dinidu, the creator behind Your Place 2026. 
-        I built this platform with a simple vision: to create a safe, fun, and fast space for friends to connect, share moments, and chat without distractions. 
-        Thank you for being a part of this journey. Let's build a great community together!
-      </div>
-      <div class="founder-socials">
-        <a href="#" title="Email">📧</a>
-        <a href="#" title="LinkedIn">💼</a>
-        <a href="#" title="GitHub">💻</a>
-      </div>
-    </div>
-  `;
+  const el=$('panel-founder');
+  el.innerHTML=`<div class="card founder-page">
+    <img src="https://ui-avatars.com/api/?name=Dinidu+Wijesinghe&background=1877f2&color=fff&size=150" alt="Founder" class="founder-image">
+    <div class="founder-name">Dinidu Wijesinghe</div>
+    <div class="founder-role">FOUNDER & CEO</div>
+    <div class="founder-bio">Hi there! I'm Dinidu, the creator behind Your Place 2026. I built this platform with a simple vision: to create a safe, fun, and fast space for friends to connect, share moments, and chat without distractions. Thank you for being a part of this journey. Let's build a great community together!</div>
+    <div class="founder-socials"><a href="#" title="Email">📧</a><a href="#" title="LinkedIn">💼</a><a href="#" title="GitHub">💻</a></div>
+  </div>`;
 }
 
 async function renderFeed(){
   const el=$('panel-feed');
   el.innerHTML='<div class="card"><div class="loader"></div></div>';
   subscribeFeed();
-
   try{
     const {data:posts,error}=await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(20);
     if(error) throw error;
-    if(!posts||posts.length===0){
-      el.innerHTML='<div class="card"><div class="empty-state"><div class="icon">📷</div><p>No posts yet. Be the first to post!</p></div></div>';
-      return;
-    }
-    const userIds = [...new Set(posts.map(p=>p.user_id))];
-    const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url').in('id',userIds);
-    const profileMap = {};
-    (profiles||[]).forEach(p => profileMap[p.id] = p);
-
+    if(!posts||posts.length===0){ el.innerHTML='<div class="card"><div class="empty-state"><div class="icon">📷</div><p>No posts yet. Be the first to post!</p></div></div>'; return; }
+    const userIds=[...new Set(posts.map(p=>p.user_id))];
+    const {data:profiles}=await sb.from('profiles').select('id,username,avatar_url').in('id',userIds);
+    const profileMap={}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
     el.innerHTML=posts.map(p=>{
-      const isOwn = currentUser && p.user_id === currentUser.id;
-      const profile = profileMap[p.user_id] || {id:p.user_id, username:p.username};
-      const isVideo = p.video_url && p.video_url.length > 0;
-      return `
-      <div class="card" data-post-id="${p.id}">
+      const isOwn=currentUser&&p.user_id===currentUser.id;
+      const profile=profileMap[p.user_id]||{id:p.user_id,username:p.username};
+      const isVideo=p.video_url&&p.video_url.length>0;
+      return `<div class="card" data-post-id="${p.id}">
         <div class="post-header">
-          ${avatarHTML(profile, 40)}
+          ${avatarHTML(profile,40)}
           <div class="post-info" onclick="viewUserProfile('${p.user_id}')">
             <div class="post-name">${escapeHTML(profile.username)}</div>
             <div class="post-time">${timeAgo(p.created_at)}</div>
           </div>
-          ${isOwn ? `<button class="action-btn delete-btn" onclick="deletePost(${p.id})" title="Delete Post">🗑️</button>` : ''}
+          ${isOwn?`<button class="action-btn delete-btn" onclick="deletePost(${p.id})">🗑️</button>`:''}
         </div>
-        ${isVideo 
-          ? `<video class="post-video" controls src="${p.video_url}"></video>`
-          : (p.image_url?`<img class="post-image" src="${p.image_url}" alt="" loading="lazy" onclick="viewSinglePost(${p.id})">`:'')
-        }
+        ${isVideo?`<video class="post-video" controls src="${p.video_url}"></video>`:(p.image_url?`<img class="post-image" src="${p.image_url}" onclick="viewSinglePost(${p.id})">`:'')}
         <div class="post-caption"><strong>${escapeHTML(profile.username)}</strong> ${escapeHTML(p.caption||'')}</div>
         <div class="post-stats" id="stats-${p.id}"></div>
         <div class="post-actions">
@@ -564,69 +597,49 @@ async function renderFeed(){
             <button onclick="addComment(${p.id})">Post</button>
           </div>
         </div>
-      </div>
-    `}).join('');
+      </div>`;
+    }).join('');
     posts.forEach(p=>loadPostDetails(p.id));
-  }catch(ex){
-    console.error(ex);
-    el.innerHTML='<div class="card"><div class="empty-state"><div class="icon">⚠️</div><p>Failed to load</p></div></div>';
-  }
+  }catch(ex){ console.error(ex); el.innerHTML='<div class="card"><div class="empty-state"><div class="icon">⚠️</div><p>Failed to load</p></div></div>'; }
 }
 
 function subscribeFeed(){
   if(feedChannel){ sb.removeChannel(feedChannel); }
-  feedChannel = sb.channel('feed-updates')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' }, (payload) => {
-      if(document.getElementById('panel-feed').classList.contains('active')) renderFeed();
-    }).subscribe();
+  feedChannel=sb.channel('feed-updates').on('postgres_changes',{event:'*',schema:'public',table:'posts'},()=>{
+    if(document.getElementById('panel-feed').classList.contains('active')) renderFeed();
+  }).subscribe();
 }
 
 async function deletePost(postId){
   if(!confirm('Delete this post?')) return;
-  try {
-    const { error } = await sb.from('posts').delete().eq('id', postId);
-    if(error) throw error;
-    toast('Post deleted 🗑️'); renderFeed();
-  } catch(ex) { toast('Failed: ' + ex.message); }
+  try{ const {error}=await sb.from('posts').delete().eq('id',postId); if(error) throw error; toast('Post deleted 🗑️'); renderFeed(); }
+  catch(ex){ toast('Failed: '+ex.message); }
 }
 
 async function loadPostDetails(postId){
   const {data:likes}=await sb.from('likes').select('user_id').eq('post_id',postId);
   const {data:comments}=await sb.from('comments').select('*').eq('post_id',postId).order('created_at',{ascending:true}).limit(10);
   const statsEl=$('stats-'+postId);
-  if(statsEl) statsEl.innerHTML = `<span>❤️ ${(likes||[]).length} likes</span><span>💬 ${(comments||[]).length} comments</span>`;
-  if(currentUser && likes && likes.some(l=>l.user_id===currentUser.id)){
+  if(statsEl) statsEl.innerHTML=`<span>❤️ ${(likes||[]).length} likes</span><span>💬 ${(comments||[]).length} comments</span>`;
+  if(currentUser&&likes&&likes.some(l=>l.user_id===currentUser.id)){
     const btn=document.querySelector(`.like-btn[data-post="${postId}"]`);
     if(btn){ btn.classList.add('liked'); btn.querySelector('.heart').textContent='❤️'; }
   }
   const cList=$('comments-list-'+postId);
-  if(cList){
-    cList.innerHTML = (comments||[]).map(c=>`
-      <div class="comment">
-        <div class="avatar" style="width:28px;height:28px;font-size:12px;">${escapeHTML(c.username).charAt(0).toUpperCase()}</div>
-        <div class="bubble"><strong>${escapeHTML(c.username)}</strong>${escapeHTML(c.text)}</div>
-      </div>`).join('');
-  }
+  if(cList){ cList.innerHTML=(comments||[]).map(c=>`<div class="comment"><div class="avatar" style="width:28px;height:28px;font-size:12px;">${escapeHTML(c.username).charAt(0).toUpperCase()}</div><div class="bubble"><strong>${escapeHTML(c.username)}</strong>${escapeHTML(c.text)}</div></div>`).join(''); }
 }
 
-function toggleComments(postId){
-  const sec = $('comments-section-'+postId);
-  if(sec) sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
-}
-
+function toggleComments(postId){ const sec=$('comments-section-'+postId); if(sec) sec.style.display=sec.style.display==='none'?'block':'none'; }
 async function toggleLike(postId){
   if(!currentUser){ openAuth('login'); return; }
   const {data:existing}=await sb.from('likes').select('id').eq('user_id',currentUser.id).eq('post_id',postId).maybeSingle();
-  if(existing){ await sb.from('likes').delete().eq('id',existing.id); }
-  else { await sb.from('likes').insert([{user_id:currentUser.id,post_id:postId}]); }
+  if(existing) await sb.from('likes').delete().eq('id',existing.id);
+  else await sb.from('likes').insert([{user_id:currentUser.id,post_id:postId}]);
   loadPostDetails(postId);
 }
-
 async function addComment(postId){
   if(!currentUser){ openAuth('login'); return; }
-  const inp=$('cinput-'+postId);
-  const text=inp.value.trim();
-  if(!text) return;
+  const inp=$('cinput-'+postId), text=inp.value.trim(); if(!text) return;
   inp.value='';
   await sb.from('comments').insert([{user_id:currentUser.id,username:currentUser.username,post_id:postId,text}]);
   loadPostDetails(postId);
@@ -634,135 +647,70 @@ async function addComment(postId){
 
 function sharePost(postId){
   if(!currentUser){ openAuth('login'); return; }
-  const url = window.location.origin + window.location.pathname + '?post=' + postId;
-  
-  if(navigator.share) {
-    navigator.share({
-      title: 'Your Place 2026 - Post',
-      text: 'Check out this post on Your Place 2026!',
-      url: url
-    }).catch(err => console.log('Share failed:', err));
-  } else {
-    navigator.clipboard.writeText(url).then(()=>{
-      toast('🔗 Link Copied! Share it with friends.');
-    }).catch(()=>{
-      prompt('Copy this link to share:', url);
-    });
-  }
+  const url=window.location.origin+window.location.pathname+'?post='+postId;
+  if(navigator.share) navigator.share({title:'Your Place 2026 - Post',text:'Check out this post!',url}).catch(()=>{});
+  else navigator.clipboard.writeText(url).then(()=>toast('🔗 Link Copied!')).catch(()=>prompt('Copy:',url));
 }
-
 function shareProfile(userId){
-  const url = window.location.origin + window.location.pathname + '?profile=' + userId;
-  
-  if(navigator.share) {
-    navigator.share({
-      title: 'Your Place 2026 - Profile',
-      text: 'Check out this profile on Your Place 2026!',
-      url: url
-    }).catch(err => console.log('Share failed:', err));
-  } else {
-    navigator.clipboard.writeText(url).then(()=>{
-      toast('🔗 Profile Link Copied!');
-    }).catch(()=>{
-      prompt('Copy this link to share:', url);
-    });
-  }
+  const url=window.location.origin+window.location.pathname+'?profile='+userId;
+  if(navigator.share) navigator.share({title:'Your Place 2026 - Profile',text:'Check out this profile!',url}).catch(()=>{});
+  else navigator.clipboard.writeText(url).then(()=>toast('🔗 Profile Link Copied!')).catch(()=>prompt('Copy:',url));
 }
 
-function openInvite(){
-  $('inviteLinkInput').value = INVITE_LINK;
-  $('inviteOverlay').classList.add('show');
-}
+function openInvite(){ $('inviteLinkInput').value=INVITE_LINK; $('inviteOverlay').classList.add('show'); }
 function closeInvite(){ $('inviteOverlay').classList.remove('show'); }
-
 function copyInviteLink(){
-  const input = $('inviteLinkInput');
-  input.select();
-  input.setSelectionRange(0, 99999);
-  
-  navigator.clipboard.writeText(input.value).then(()=>{
-    toast('✅ Link Copied! Share it with friends.');
-  }).catch(()=>{
-    document.execCommand('copy');
-    toast('✅ Link Copied!');
-  });
+  const input=$('inviteLinkInput'); input.select(); input.setSelectionRange(0,99999);
+  navigator.clipboard.writeText(input.value).then(()=>toast('✅ Link Copied!')).catch(()=>{ document.execCommand('copy'); toast('✅ Link Copied!'); });
 }
-
-function shareWhatsApp(){
-  const text = encodeURIComponent('Join me on Your Place 2026! 🚀\n\n' + INVITE_LINK);
-  window.open('https://wa.me/?text=' + text, '_blank');
-}
-
-function shareNative(){
-  if(navigator.share) {
-    navigator.share({
-      title: 'Your Place 2026',
-      text: 'Join me on Your Place 2026! 🚀',
-      url: INVITE_LINK
-    }).catch(err => console.log('Share failed:', err));
-  } else {
-    copyInviteLink();
-  }
-}
+function shareWhatsApp(){ const text=encodeURIComponent('Join me on Your Place 2026! 🚀\n\n'+INVITE_LINK); window.open('https://wa.me/?text='+text,'_blank'); }
+function shareNative(){ if(navigator.share) navigator.share({title:'Your Place 2026',text:'Join me! 🚀',url:INVITE_LINK}).catch(()=>{}); else copyInviteLink(); }
 
 async function viewSinglePost(postId){
   if(!postId) return;
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const el = $('panel-single-post');
-  el.classList.add('active');
-  el.innerHTML = '<div class="card"><div class="loader"></div></div>';
-  
-  try {
-    const {data:p} = await sb.from('posts').select('*').eq('id',postId).single();
+  const el=$('panel-single-post'); el.classList.add('active'); el.innerHTML='<div class="card"><div class="loader"></div></div>';
+  try{
+    const {data:p}=await sb.from('posts').select('*').eq('id',postId).single();
     if(!p) throw new Error('Post not found');
-    const {data:prof} = await sb.from('profiles').select('*').eq('id',p.user_id).maybeSingle();
-    const isOwn = currentUser && p.user_id === currentUser.id;
-    const profile = prof || {id:p.user_id, username:p.username};
-    const isVideo = p.video_url && p.video_url.length > 0;
-
-    el.innerHTML = `
-      <div class="card" style="margin-bottom:16px;">
-        <div class="post-header">
-          <button class="back-btn" onclick="viewUserProfile('${p.user_id}')" style="margin-right:4px;">←</button>
-          ${avatarHTML(profile, 40)}
-          <div class="post-info" onclick="viewUserProfile('${p.user_id}')">
-            <div class="post-name">${escapeHTML(profile.username)}</div>
-            <div class="post-time">${timeAgo(p.created_at)}</div>
-          </div>
-          ${isOwn ? `<button class="action-btn delete-btn" onclick="deletePost(${p.id})">🗑️</button>` : ''}
+    const {data:prof}=await sb.from('profiles').select('*').eq('id',p.user_id).maybeSingle();
+    const isOwn=currentUser&&p.user_id===currentUser.id;
+    const profile=prof||{id:p.user_id,username:p.username};
+    const isVideo=p.video_url&&p.video_url.length>0;
+    el.innerHTML=`<div class="card" style="margin-bottom:16px;">
+      <div class="post-header">
+        <button class="back-btn" onclick="viewUserProfile('${p.user_id}')" style="margin-right:4px;">←</button>
+        ${avatarHTML(profile,40)}
+        <div class="post-info" onclick="viewUserProfile('${p.user_id}')">
+          <div class="post-name">${escapeHTML(profile.username)}</div>
+          <div class="post-time">${timeAgo(p.created_at)}</div>
         </div>
-        ${isVideo 
-          ? `<video class="post-video" controls src="${p.video_url}"></video>`
-          : (p.image_url?`<img class="post-image" src="${p.image_url}" alt="">`:'')
-        }
-        <div class="post-caption"><strong>${escapeHTML(profile.username)}</strong> ${escapeHTML(p.caption||'')}</div>
-        <div class="post-stats" id="stats-${p.id}"></div>
-        <div class="post-actions">
-          <button class="action-btn like-btn" onclick="toggleLike(${p.id})" data-post="${p.id}"><span class="heart">🤍</span> Like</button>
-          <button class="action-btn" onclick="toggleComments(${p.id})">💬 Comment</button>
-          <button class="action-btn" onclick="sharePost(${p.id})">🔗 Share</button>
+        ${isOwn?`<button class="action-btn delete-btn" onclick="deletePost(${p.id})">🗑️</button>`:''}
+      </div>
+      ${isVideo?`<video class="post-video" controls src="${p.video_url}"></video>`:(p.image_url?`<img class="post-image" src="${p.image_url}">`:'')}
+      <div class="post-caption"><strong>${escapeHTML(profile.username)}</strong> ${escapeHTML(p.caption||'')}</div>
+      <div class="post-stats" id="stats-${p.id}"></div>
+      <div class="post-actions">
+        <button class="action-btn like-btn" onclick="toggleLike(${p.id})" data-post="${p.id}"><span class="heart">🤍</span> Like</button>
+        <button class="action-btn" onclick="toggleComments(${p.id})">💬 Comment</button>
+        <button class="action-btn" onclick="sharePost(${p.id})">🔗 Share</button>
+      </div>
+      <div class="comments-section" id="comments-section-${p.id}" style="display:block;">
+        <div id="comments-list-${p.id}"></div>
+        <div class="comment-input">
+          <input placeholder="Write a comment..." id="cinput-${p.id}" onkeydown="if(event.key==='Enter')addComment(${p.id})">
+          <button onclick="addComment(${p.id})">Post</button>
         </div>
-        <div class="comments-section" id="comments-section-${p.id}" style="display:block;">
-          <div id="comments-list-${p.id}"></div>
-          <div class="comment-input">
-            <input placeholder="Write a comment..." id="cinput-${p.id}" onkeydown="if(event.key==='Enter')addComment(${p.id})">
-            <button onclick="addComment(${p.id})">Post</button>
-          </div>
-        </div>
-      </div>`;
+      </div>
+    </div>`;
     loadPostDetails(p.id);
-  } catch(ex) {
-    el.innerHTML = '<div class="card"><div class="empty-state">Post not found</div></div>';
-  }
+  }catch(ex){ el.innerHTML='<div class="card"><div class="empty-state">Post not found</div></div>'; }
 }
 
 function renderUpload(){
   const el=$('panel-upload');
-  if(!currentUser){
-    el.innerHTML='<div class="card"><div class="empty-state"><p>Please login to post</p><button class="btn primary" style="margin-top:12px;" onclick="openAuth(\'login\')">Login</button></div></div>';
-    return;
-  }
+  if(!currentUser){ el.innerHTML='<div class="card"><div class="empty-state"><p>Please login to post</p><button class="btn primary" style="margin-top:12px;" onclick="openAuth(\'login\')">Login</button></div></div>'; return; }
   el.innerHTML=`<div class="card" style="padding:24px;">
     <h3 style="margin-bottom:16px;">Create Post</h3>
     <input type="file" accept="image/*" id="postFile" style="display:none" onchange="previewPost(event)">
@@ -775,15 +723,13 @@ function renderUpload(){
 
 let postFileObj=null;
 function previewPost(e){
-  const f=e.target.files[0];
-  if(!f) return;
+  const f=e.target.files[0]; if(!f) return;
   if(f.size>5*1024*1024){ toast('Max 5MB'); return; }
   postFileObj=f;
   const r=new FileReader();
   r.onload=ev=>{ const img=$('postPreview'); img.src=ev.target.result; img.style.display='block'; $('postBtn').disabled=false; };
   r.readAsDataURL(f);
 }
-
 async function createPost(){
   if(!currentUser||!postFileObj) return;
   const btn=$('postBtn'); btn.disabled=true; btn.textContent='Uploading...';
@@ -800,7 +746,9 @@ async function createPost(){
   }catch(ex){ toast('Failed: '+ex.message); btn.disabled=false; btn.textContent='Post'; }
 }
 
-/* ================= REELS (NEW) ================= */
+/* ============================================================
+   REELS — FULLY REWRITTEN
+   ============================================================ */
 async function renderReels(){
   const el=$('panel-reels');
   el.innerHTML='<div class="card"><div class="loader"></div></div>';
@@ -825,35 +773,71 @@ async function renderReels(){
       (myFollows||[]).forEach(f => followingSet.add(f.following_id));
     }
 
+    // Store cache BEFORE rendering
     window._reelCache = {};
-    videoPosts.forEach(v => window._reelCache[v.id] = v);
+    videoPosts.forEach(v => window._reelCache[String(v.id)] = v);
     window._reelOwnerMap = ownerMap;
     window._reelFollowingSet = followingSet;
 
-    el.innerHTML = `<div class="card" style="padding:16px; margin-bottom:16px; text-align:center;">
+    let html = `<div class="card" style="padding:16px; margin-bottom:16px; text-align:center;">
       <button class="btn primary" onclick="openUploadReel()">➕ Upload New Reel</button>
     </div>
-    <div class="reels-container">
-      ${videoPosts.map(v => {
-        const owner = ownerMap[v.user_id] || {id:v.user_id, username:v.username};
-        const isMe = currentUser && currentUser.id === v.user_id;
-        const isFollow = followingSet.has(v.user_id);
-        return `
-        <div class="reel-card" onclick="openReelViewer(${v.id})">
-          <video class="reel-video" src="${v.video_url}" muted playsinline preload="metadata"></video>
+    <div class="reels-container">`;
+
+    html += videoPosts.map(v => {
+      const owner = ownerMap[v.user_id] || {id:v.user_id, username:v.username};
+      const isMe = currentUser && currentUser.id === v.user_id;
+      const isFollow = followingSet.has(v.user_id);
+      return `
+        <div class="reel-card" data-reel-id="${v.id}">
+          <video src="${v.video_url}" muted playsinline preload="metadata" webkit-playsinline></video>
+          <div class="reel-click-overlay"></div>
+          <div class="reel-play-hint">▶</div>
           <div class="reel-caption-overlay">${escapeHTML(v.caption||'')}</div>
           <div class="reel-overlay-info">
-            ${avatarHTML(owner, 32)}
+            ${avatarHTML(owner, 34)}
             <div class="reel-username">${escapeHTML(owner.username)}</div>
-            ${!isMe ? `<button class="follow-btn-sm ${isFollow?'following':''}" onclick="event.stopPropagation(); toggleFollowFromReel('${v.user_id}', this)">${isFollow?'Following':'Follow'}</button>` : ''}
+            ${!isMe ? `<button class="follow-btn-sm ${isFollow?'following':''}" data-follow-user="${v.user_id}">${isFollow?'Following':'Follow'}</button>` : ''}
           </div>
         </div>`;
-      }).join('')}
-    </div>`;
+    }).join('');
+
+    html += `</div>`;
+    el.innerHTML = html;
+
+    // Attach click handlers (event delegation — no inline onclick issues)
+    el.querySelectorAll('.reel-card').forEach(card => {
+      const reelId = card.dataset.reelId;
+
+      // Card click → fullscreen
+      card.addEventListener('click', (e) => {
+        // ignore if clicked on follow button or avatar (they have their own handlers)
+        if(e.target.closest('.follow-btn-sm')) return;
+        if(e.target.closest('.avatar')) return;
+        openReelViewer(reelId);
+      });
+
+      // Follow button
+      const followBtn = card.querySelector('.follow-btn-sm');
+      if(followBtn){
+        followBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          toggleFollowFromReel(followBtn.dataset.followUser, followBtn);
+        });
+      }
+
+      // Show first frame preview
+      const vid = card.querySelector('video');
+      if(vid){
+        vid.addEventListener('loadedmetadata', () => {
+          try { vid.currentTime = 0.1; } catch(e){}
+        }, { once: true });
+      }
+    });
 
   } catch(ex) {
-    console.error(ex);
-    el.innerHTML = '<div class="card"><div class="empty-state">Error loading reels</div></div>';
+    console.error('renderReels error:', ex);
+    el.innerHTML = '<div class="card"><div class="empty-state">Error loading reels: ' + escapeHTML(ex.message) + '</div></div>';
   }
 }
 
@@ -871,12 +855,12 @@ async function toggleFollowFromReel(userId, btn){
   }
 }
 
-/* ===== FULLSCREEN REEL VIEWER ===== */
+/* ============ FULLSCREEN REEL VIEWER ============ */
 function openReelViewer(reelId){
-  const reel = window._reelCache?.[reelId];
-  if(!reel) return;
+  const reel = window._reelCache?.[String(reelId)];
+  if(!reel){ console.warn('Reel not found in cache:', reelId); return; }
   closeReelViewer();
-  
+
   const owner = window._reelOwnerMap?.[reel.user_id] || {id:reel.user_id, username:reel.username};
   const isMe = currentUser && currentUser.id === reel.user_id;
   const isFollow = window._reelFollowingSet?.has(reel.user_id);
@@ -886,14 +870,15 @@ function openReelViewer(reelId){
   viewer.id = 'reelViewer';
   viewer.innerHTML = `
     <div class="reel-viewer-inner">
-      <video id="reelViewerVideo" src="${reel.video_url}" playsinline webkit-playsinline autoplay loop></video>
+      <video id="reelViewerVideo" src="${reel.video_url}" playsinline webkit-playsinline loop preload="auto"></video>
       <div class="viewer-tap-zone" id="reelTapZone"></div>
-      <button class="viewer-back" onclick="closeReelViewer()">←</button>
+      <div class="viewer-pause-icon" id="viewerPauseIcon">▶</div>
+      <button class="viewer-back" id="viewerBackBtn" title="Back">←</button>
       <div class="viewer-caption">${escapeHTML(reel.caption||'')}</div>
       <div class="viewer-profile">
-        ${avatarHTML(owner, 40)}
+        ${avatarHTML(owner, 40, false)}
         <div class="vp-name">${escapeHTML(owner.username)}</div>
-        ${!isMe ? `<button class="vp-follow ${isFollow?'following':''}" onclick="event.stopPropagation(); toggleFollowFromReelViewer('${reel.user_id}', this)">${isFollow?'Following':'Follow'}</button>` : ''}
+        ${!isMe ? `<button class="vp-follow ${isFollow?'following':''}" id="viewerFollowBtn" data-user-id="${reel.user_id}">${isFollow?'Following':'Follow'}</button>` : ''}
       </div>
     </div>
   `;
@@ -901,18 +886,47 @@ function openReelViewer(reelId){
   currentReelViewer = viewer;
 
   const vid = $('reelViewerVideo');
-  vid.play().catch(()=>{});
+  const pauseIcon = $('viewerPauseIcon');
 
-  const tapZone = $('reelTapZone');
-  tapZone.addEventListener('click', () => {
-    if(vid.paused){ vid.play(); }
-    else { vid.pause(); }
+  // Play with fallback
+  const tryPlay = vid.play();
+  if(tryPlay !== undefined){
+    tryPlay.catch(() => {
+      vid.muted = true;
+      vid.play().catch(()=>{});
+    });
+  }
+
+  // Pause icon state
+  vid.addEventListener('play', () => pauseIcon.classList.remove('show'));
+  vid.addEventListener('pause', () => pauseIcon.classList.add('show'));
+
+  // Tap zone — toggle play/pause
+  $('reelTapZone').addEventListener('click', () => {
+    if(vid.paused) vid.play().catch(()=>{});
+    else vid.pause();
   });
+
+  // Back button
+  $('viewerBackBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeReelViewer();
+  });
+
+  // Follow button inside viewer
+  const vBtn = $('viewerFollowBtn');
+  if(vBtn){
+    vBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleFollowFromReel(vBtn.dataset.userId, vBtn);
+    });
+  }
 
   setupReelSwipeBack(viewer);
   document.addEventListener('keydown', reelEscHandler);
 }
 
+/* Swipe right to go back (works touch + mouse) */
 function setupReelSwipeBack(viewer){
   let startX = 0, startY = 0, currentX = 0, dragging = false, isHorizontal = false;
   const inner = viewer.querySelector('.reel-viewer-inner');
@@ -921,6 +935,7 @@ function setupReelSwipeBack(viewer){
     const t = e.touches ? e.touches[0] : e;
     startX = t.clientX; startY = t.clientY; currentX = startX;
     dragging = true; isHorizontal = false;
+    inner.style.transition = 'none';
   };
   const onMove = (e) => {
     if(!dragging) return;
@@ -933,20 +948,19 @@ function setupReelSwipeBack(viewer){
     if(isHorizontal && dx > 0){
       currentX = t.clientX;
       inner.style.transform = `translateX(${dx}px)`;
-      inner.style.opacity = String(1 - dx / 400);
+      inner.style.opacity = String(Math.max(0, 1 - dx / 400));
     }
   };
   const onEnd = () => {
     if(!dragging) return;
     dragging = false;
     const dx = currentX - startX;
+    inner.style.transition = 'transform .2s ease-out, opacity .2s ease-out';
     if(isHorizontal && dx > 80){
-      inner.style.transition = 'transform .2s, opacity .2s';
       inner.style.transform = 'translateX(100%)';
       inner.style.opacity = '0';
       setTimeout(closeReelViewer, 180);
     } else {
-      inner.style.transition = 'transform .2s, opacity .2s';
       inner.style.transform = '';
       inner.style.opacity = '';
     }
@@ -956,105 +970,62 @@ function setupReelSwipeBack(viewer){
   viewer.addEventListener('touchstart', onStart, { passive: true });
   viewer.addEventListener('touchmove', onMove, { passive: true });
   viewer.addEventListener('touchend', onEnd);
+  viewer.addEventListener('touchcancel', onEnd);
   viewer.addEventListener('mousedown', onStart);
   viewer.addEventListener('mousemove', onMove);
   viewer.addEventListener('mouseup', onEnd);
+  viewer.addEventListener('mouseleave', onEnd);
 }
 
-function reelEscHandler(e){
-  if(e.key === 'Escape') closeReelViewer();
-}
+function reelEscHandler(e){ if(e.key === 'Escape') closeReelViewer(); }
 
 function closeReelViewer(){
   const v = $('reelViewer');
   if(v){
     const vid = $('reelViewerVideo');
-    if(vid) vid.pause();
+    if(vid){ try { vid.pause(); } catch(e){} }
     v.remove();
   }
   currentReelViewer = null;
   document.removeEventListener('keydown', reelEscHandler);
 }
 
-async function toggleFollowFromReelViewer(userId, btn){
-  await toggleFollowFromReel(userId, btn);
-}
-
-function openUploadReel(){
-  if(!currentUser){ openAuth('login'); return; }
-  $('uploadReelOverlay').classList.add('show');
-}
+function openUploadReel(){ if(!currentUser){ openAuth('login'); return; } $('uploadReelOverlay').classList.add('show'); }
 function closeUploadReel(){ $('uploadReelOverlay').classList.remove('show'); }
 
 async function uploadReel(){
-  const fileInput = $('reelFile');
-  const caption = $('reelCaption').value.trim();
-  const file = fileInput.files[0];
-  if(!file) { toast('Please choose a video'); return; }
-  if(file.size > 10*1024*1024) { toast('Max 10MB'); return; }
-  
-  const btn = $('uploadReelBtn');
-  btn.disabled = true; btn.textContent = 'Uploading...';
-  
-  try {
-    const ext = file.name.split('.').pop();
-    const path = `${currentUser.id}/${Date.now()}.${ext}`;
-    const { error: upErr } = await sb.storage.from('videos').upload(path, file);
+  const fileInput=$('reelFile'), caption=$('reelCaption').value.trim(), file=fileInput.files[0];
+  if(!file){ toast('Please choose a video'); return; }
+  if(file.size > 10*1024*1024){ toast('Max 10MB'); return; }
+  const btn=$('uploadReelBtn'); btn.disabled=true; btn.textContent='Uploading...';
+  try{
+    const ext=file.name.split('.').pop();
+    const path=`${currentUser.id}/${Date.now()}.${ext}`;
+    const {error:upErr}=await sb.storage.from('videos').upload(path,file);
     if(upErr) throw upErr;
-    const { data:{ publicUrl } } = sb.storage.from('videos').getPublicUrl(path);
-    
-    const { error: insErr } = await sb.from('posts').insert([{
-      user_id: currentUser.id,
-      username: currentUser.username,
-      video_url: publicUrl,
-      image_url: null,
-      caption: caption
-    }]);
+    const {data:{publicUrl}}=sb.storage.from('videos').getPublicUrl(path);
+    const {error:insErr}=await sb.from('posts').insert([{user_id:currentUser.id,username:currentUser.username,video_url:publicUrl,image_url:null,caption}]);
     if(insErr) throw insErr;
-    
-    toast('Reel uploaded! 🎬');
-    fileInput.value = '';
-    $('reelCaption').value = '';
-    closeUploadReel();
-    renderReels();
-  } catch(ex) {
-    toast('Failed: ' + ex.message);
-  }
-  btn.disabled = false; btn.textContent = 'Upload';
+    toast('Reel uploaded! 🎬'); fileInput.value=''; $('reelCaption').value=''; closeUploadReel(); renderReels();
+  }catch(ex){ toast('Failed: '+ex.message); }
+  btn.disabled=false; btn.textContent='Upload';
 }
 
 function subscribePresence(){
   if(presenceChannel) return;
-  presenceChannel = sb.channel('presence-room', {
-    config: { presence: { key: currentUser.id } }
-  });
-  
-  presenceChannel.on('presence', { event: 'sync' }, () => {
-    const state = presenceChannel.presenceState();
-    const onlineUsers = [];
-    for (const id in state) {
-      if (state[id] && state[id].length > 0) {
-        onlineUsers.push(state[id][0].username);
-      }
-    }
+  presenceChannel=sb.channel('presence-room',{config:{presence:{key:currentUser.id}}});
+  presenceChannel.on('presence',{event:'sync'},()=>{
+    const state=presenceChannel.presenceState(), onlineUsers=[];
+    for(const id in state){ if(state[id]&&state[id].length>0) onlineUsers.push(state[id][0].username); }
     renderOnlineUsers(onlineUsers);
   });
-  
-  presenceChannel.subscribe(async (status) => {
-    if (status === 'SUBSCRIBED') {
-      await presenceChannel.track({ username: currentUser.username });
-    }
-  });
+  presenceChannel.subscribe(async(status)=>{ if(status==='SUBSCRIBED') await presenceChannel.track({username:currentUser.username}); });
 }
 
 function renderOnlineUsers(users){
-  const list = $('onlineList');
-  if(!list) return;
-  if(users.length === 0){
-    list.innerHTML = '<div style="font-size:13px;color:#65676b;">No one else online</div>';
-    return;
-  }
-  list.innerHTML = users.map(u => `<div class="online-user"><div class="online-dot"></div><div class="online-name">${escapeHTML(u)}</div></div>`).join('');
+  const list=$('onlineList'); if(!list) return;
+  if(users.length===0){ list.innerHTML='<div style="font-size:13px;color:#65676b;">No one else online</div>'; return; }
+  list.innerHTML=users.map(u=>`<div class="online-user"><div class="online-dot"></div><div class="online-name">${escapeHTML(u)}</div></div>`).join('');
 }
 
 async function renderSearch(){
@@ -1066,15 +1037,13 @@ async function renderSearch(){
 async function doSearch(){
   const q=($('userSearch')?.value||'').toLowerCase();
   const {data:users}=await sb.from('profiles').select('*').limit(50);
-  const list=$('userList');
-  if(!list) return;
+  const list=$('userList'); if(!list) return;
   const filtered=(users||[]).filter(u=>!q||u.username.toLowerCase().includes(q));
   if(filtered.length===0){ list.innerHTML='<div class="card"><div class="empty-state">No users found</div></div>'; return; }
   const {data:myFollows}=currentUser?await sb.from('follows').select('following_id').eq('follower_id',currentUser.id):{data:[]};
   const followingSet=new Set((myFollows||[]).map(f=>f.following_id));
   list.innerHTML=filtered.map(u=>{
-    const isMe=currentUser&&u.id===currentUser.id;
-    const isFollowing=followingSet.has(u.id);
+    const isMe=currentUser&&u.id===currentUser.id, isFollowing=followingSet.has(u.id);
     return `<div class="user-row" onclick="viewUserProfile('${u.id}')">
       ${avatarHTML(u,44,false)}
       <div class="info"><div class="name">${escapeHTML(u.username)}</div></div>
@@ -1094,37 +1063,27 @@ async function viewUserProfile(userId){
   if(!userId) return;
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  const el = $('panel-other-profile');
-  el.classList.add('active');
-  el.innerHTML = '<div class="card"><div class="loader"></div></div>';
-  
-  try {
-    const {data:prof} = await sb.from('profiles').select('*').eq('id',userId).maybeSingle();
-    const {data:posts} = await sb.from('posts').select('*').eq('user_id',userId).order('created_at',{ascending:false});
-    const {data:followers} = await sb.from('follows').select('id').eq('following_id',userId);
-    const {data:following} = await sb.from('follows').select('id').eq('follower_id',userId);
-    
-    const visiblePosts = posts || [];
-    const isMe = currentUser && currentUser.id === userId;
-    let isFollowing = false;
+  const el=$('panel-other-profile'); el.classList.add('active'); el.innerHTML='<div class="card"><div class="loader"></div></div>';
+  try{
+    const {data:prof}=await sb.from('profiles').select('*').eq('id',userId).maybeSingle();
+    const {data:posts}=await sb.from('posts').select('*').eq('user_id',userId).order('created_at',{ascending:false});
+    const {data:followers}=await sb.from('follows').select('id').eq('following_id',userId);
+    const {data:following}=await sb.from('follows').select('id').eq('follower_id',userId);
+    const visiblePosts=posts||[], isMe=currentUser&&currentUser.id===userId;
+    let isFollowing=false;
     if(currentUser && !isMe){
-      const {data:check} = await sb.from('follows').select('id').eq('follower_id',currentUser.id).eq('following_id',userId).maybeSingle();
-      isFollowing = !!check;
+      const {data:check}=await sb.from('follows').select('id').eq('follower_id',currentUser.id).eq('following_id',userId).maybeSingle();
+      isFollowing=!!check;
     }
-    const avatarURL = prof?.avatar_url || '';
-    const initial = (prof?.username||'User').charAt(0).toUpperCase();
-    
-    el.innerHTML = `
+    const avatarURL=prof?.avatar_url||'', initial=(prof?.username||'User').charAt(0).toUpperCase();
+    el.innerHTML=`
       <div class="profile-cover"></div>
       <div class="profile-header-content">
         <div class="profile-avatar-wrap">
-          <div class="avatar lg">${avatarURL ? `<img src="${avatarURL}">` : initial}</div>
-          ${isMe ? `<label class="edit-avatar-btn" for="avatarFile">📷</label><input type="file" id="avatarFile" accept="image/*" style="display:none" onchange="uploadAvatar(event, '${userId}')">` : ''}
+          <div class="avatar lg">${avatarURL?`<img src="${avatarURL}">`:initial}</div>
+          ${isMe?`<label class="edit-avatar-btn" for="avatarFile">📷</label><input type="file" id="avatarFile" accept="image/*" style="display:none" onchange="uploadAvatar(event,'${userId}')">`:''}
         </div>
-        <div class="profile-name">
-          ${escapeHTML(prof?.username||'User')}
-          <button class="action-btn" onclick="shareProfile('${userId}')" title="Share Profile" style="font-size:18px; padding:4px; flex:0;">🔗</button>
-        </div>
+        <div class="profile-name">${escapeHTML(prof?.username||'User')}<button class="action-btn" onclick="shareProfile('${userId}')" style="font-size:18px;padding:4px;flex:0;">🔗</button></div>
         <div class="profile-bio">${escapeHTML(prof?.bio||'No bio yet')}</div>
         <div class="profile-stats">
           <div class="stat-item"><div class="stat-num">${visiblePosts.length}</div><div class="stat-label">Posts</div></div>
@@ -1132,103 +1091,59 @@ async function viewUserProfile(userId){
           <div class="stat-item" onclick="showFollowingList('${userId}')"><div class="stat-num">${(following||[]).length}</div><div class="stat-label">Following</div></div>
         </div>
         <div class="profile-actions">
-          ${!isMe ? `<button class="btn primary ${isFollowing?'following':''}" onclick="toggleFollow('${userId}', this)">${isFollowing?'Following':'Follow'}</button>` 
-                  : `<button class="btn" onclick="openEditProfile()">Edit Profile</button>`}
+          ${!isMe?`<button class="btn primary ${isFollowing?'following':''}" onclick="toggleFollow('${userId}',this)">${isFollowing?'Following':'Follow'}</button>`:`<button class="btn" onclick="openEditProfile()">Edit Profile</button>`}
         </div>
       </div>
-      <div class="grid-posts">
-        ${visiblePosts.map(p=>p.image_url?`<img src="${p.image_url}" onclick="viewSinglePost(${p.id})">`:'').join('')}
-      </div>
+      <div class="grid-posts">${visiblePosts.map(p=>p.image_url?`<img src="${p.image_url}" onclick="viewSinglePost(${p.id})">`:'').join('')}</div>
       ${visiblePosts.length===0?'<div class="card"><div class="empty-state">No posts yet</div></div>':''}
     `;
-  } catch(ex) { 
-    console.error(ex);
-    el.innerHTML = '<div class="card"><div class="empty-state">Error loading profile</div></div>'; 
-  }
+  }catch(ex){ console.error(ex); el.innerHTML='<div class="card"><div class="empty-state">Error loading profile</div></div>'; }
 }
 
-async function renderProfile(userId){
-  if(!currentUser){ $('panel-profile').innerHTML='<div class="card"><div class="empty-state">Please login</div></div>'; return; }
-  viewUserProfile(currentUser.id);
-}
+async function renderProfile(userId){ if(!currentUser){ $('panel-profile').innerHTML='<div class="card"><div class="empty-state">Please login</div></div>'; return; } viewUserProfile(currentUser.id); }
 
-function openEditProfile(){
-  if(!currentProfile) {
-    toast('Profile loading... try again'); 
-    return;
-  }
-  $('editUsername').value = currentProfile.username || '';
-  $('editBio').value = currentProfile.bio || '';
-  $('editProfileOverlay').classList.add('show');
-}
+function openEditProfile(){ if(!currentProfile){ toast('Profile loading... try again'); return; } $('editUsername').value=currentProfile.username||''; $('editBio').value=currentProfile.bio||''; $('editProfileOverlay').classList.add('show'); }
 function closeEditProfile(){ $('editProfileOverlay').classList.remove('show'); }
-
 async function saveProfile(){
   if(!currentUser) return;
-  const btn = $('editProfileBtn');
-  btn.disabled = true; btn.textContent = 'Saving...';
-  const newUsername = $('editUsername').value.trim();
-  const newBio = $('editBio').value.trim();
-  if(!newUsername || newUsername.length < 3){ toast('Username must be 3+ chars'); btn.disabled=false; btn.textContent='Save Changes'; return; }
-  
-  try {
-    const { error } = await sb.from('profiles').update({ username: newUsername, bio: newBio }).eq('id', currentUser.id);
+  const btn=$('editProfileBtn'); btn.disabled=true; btn.textContent='Saving...';
+  const newUsername=$('editUsername').value.trim(), newBio=$('editBio').value.trim();
+  if(!newUsername||newUsername.length<3){ toast('Username must be 3+ chars'); btn.disabled=false; btn.textContent='Save Changes'; return; }
+  try{
+    const {error}=await sb.from('profiles').update({username:newUsername,bio:newBio}).eq('id',currentUser.id);
     if(error) throw error;
-    
-    currentUser.username = newUsername;
-    currentProfile.username = newUsername;
-    currentProfile.bio = newBio;
-    toast('Profile updated! ✅');
-    closeEditProfile();
-    
-    renderFeed(); 
-    viewUserProfile(currentUser.id);
-  } catch(ex) { 
-    toast('Failed: ' + ex.message); 
-  }
-  btn.disabled = false; btn.textContent = 'Save Changes';
+    currentUser.username=newUsername; currentProfile.username=newUsername; currentProfile.bio=newBio;
+    toast('Profile updated! ✅'); closeEditProfile(); renderFeed(); viewUserProfile(currentUser.id);
+  }catch(ex){ toast('Failed: '+ex.message); }
+  btn.disabled=false; btn.textContent='Save Changes';
 }
 
 async function showFollowersList(userId){
-  const el = $('panel-other-profile');
-  const {data:followers} = await sb.from('follows').select('follower_id').eq('following_id', userId);
-  const ids = (followers||[]).map(f=>f.follower_id);
-  let users = [];
-  if(ids.length > 0) { const {data} = await sb.from('profiles').select('*').in('id', ids); users = data || []; }
-  el.innerHTML = `<div class="card" style="padding:16px;">
-    <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-      <button class="back-btn" onclick="viewUserProfile('${userId}')">←</button><h3>Followers</h3>
-    </div>
-    ${users.map(u=>`<div class="user-row" onclick="viewUserProfile('${u.id}')">${avatarHTML(u,44,false)}<div class="info"><div class="name">${escapeHTML(u.username)}</div></div></div>`).join('') || '<p style="color:#65676b; text-align:center;">No followers yet</p>'}
-  </div>`;
+  const el=$('panel-other-profile');
+  const {data:followers}=await sb.from('follows').select('follower_id').eq('following_id',userId);
+  const ids=(followers||[]).map(f=>f.follower_id);
+  let users=[]; if(ids.length>0){ const {data}=await sb.from('profiles').select('*').in('id',ids); users=data||[]; }
+  el.innerHTML=`<div class="card" style="padding:16px;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><button class="back-btn" onclick="viewUserProfile('${userId}')">←</button><h3>Followers</h3></div>
+    ${users.map(u=>`<div class="user-row" onclick="viewUserProfile('${u.id}')">${avatarHTML(u,44,false)}<div class="info"><div class="name">${escapeHTML(u.username)}</div></div></div>`).join('')||'<p style="color:#65676b;text-align:center;">No followers yet</p>'}</div>`;
 }
-
 async function showFollowingList(userId){
-  const el = $('panel-other-profile');
-  const {data:following} = await sb.from('follows').select('following_id').eq('follower_id', userId);
-  const ids = (following||[]).map(f=>f.following_id);
-  let users = [];
-  if(ids.length > 0) { const {data} = await sb.from('profiles').select('*').in('id', ids); users = data || []; }
-  el.innerHTML = `<div class="card" style="padding:16px;">
-    <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-      <button class="back-btn" onclick="viewUserProfile('${userId}')">←</button><h3>Following</h3>
-    </div>
-    ${users.map(u=>`<div class="user-row" onclick="viewUserProfile('${u.id}')">${avatarHTML(u,44,false)}<div class="info"><div class="name">${escapeHTML(u.username)}</div></div></div>`).join('') || '<p style="color:#65676b; text-align:center;">Not following anyone yet</p>'}
-  </div>`;
+  const el=$('panel-other-profile');
+  const {data:following}=await sb.from('follows').select('following_id').eq('follower_id',userId);
+  const ids=(following||[]).map(f=>f.following_id);
+  let users=[]; if(ids.length>0){ const {data}=await sb.from('profiles').select('*').in('id',ids); users=data||[]; }
+  el.innerHTML=`<div class="card" style="padding:16px;"><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;"><button class="back-btn" onclick="viewUserProfile('${userId}')">←</button><h3>Following</h3></div>
+    ${users.map(u=>`<div class="user-row" onclick="viewUserProfile('${u.id}')">${avatarHTML(u,44,false)}<div class="info"><div class="name">${escapeHTML(u.username)}</div></div></div>`).join('')||'<p style="color:#65676b;text-align:center;">Not following anyone yet</p>'}</div>`;
 }
 
 async function uploadAvatar(e, userId){
-  const f=e.target.files[0];
-  if(!f) return;
+  const f=e.target.files[0]; if(!f) return;
   try{
-    const ext=f.name.split('.').pop();
-    const path=`${userId}/avatar.${ext}`;
+    const ext=f.name.split('.').pop(), path=`${userId}/avatar.${ext}`;
     const {error}=await sb.storage.from('avatars').upload(path,f,{upsert:true});
     if(error) throw error;
     const {data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path);
     await sb.from('profiles').update({avatar_url:publicUrl}).eq('id',userId);
-    toast('Avatar updated!');
-    viewUserProfile(userId);
+    toast('Avatar updated!'); viewUserProfile(userId);
   }catch(ex){ toast('Failed: '+ex.message); }
 }
 
@@ -1236,165 +1151,148 @@ async function renderChatList(){
   const el=$('panel-chat');
   if(!currentUser){ el.innerHTML='<div class="card"><div class="empty-state"><p>Login to chat</p><button class="btn primary" style="margin-top:12px;" onclick="openAuth(\'login\')">Login</button></div></div>'; return; }
   el.innerHTML='<div class="card"><div class="loader"></div></div>';
-  
-  try {
-    const {data:myMemberships} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
-    const roomIds = (myMemberships||[]).map(m=>m.room_id);
-    let rooms = [];
-    if(roomIds.length > 0){ const {data:roomData} = await sb.from('chat_rooms').select('*').in('id', roomIds).order('created_at',{ascending:false}); rooms = roomData || []; }
-    
-    const roomsWithInfo = await Promise.all(rooms.map(async room => {
-      const {data:members} = await sb.from('room_members').select('*').eq('room_id', room.id);
-      const {data:lastMsgs} = await sb.from('chat_messages').select('*').eq('room_id', room.id).order('created_at',{ascending:false}).limit(1);
-      let displayName = room.name || 'Chat';
-      let avatarProfile = null;
+  try{
+    const {data:myMemberships}=await sb.from('room_members').select('room_id').eq('user_id',currentUser.id);
+    const roomIds=(myMemberships||[]).map(m=>m.room_id);
+    let rooms=[]; if(roomIds.length>0){ const {data:roomData}=await sb.from('chat_rooms').select('*').in('id',roomIds).order('created_at',{ascending:false}); rooms=roomData||[]; }
+    const roomsWithInfo=await Promise.all(rooms.map(async room=>{
+      const {data:members}=await sb.from('room_members').select('*').eq('room_id',room.id);
+      const {data:lastMsgs}=await sb.from('chat_messages').select('*').eq('room_id',room.id).order('created_at',{ascending:false}).limit(1);
+      let displayName=room.name||'Chat', avatarProfile=null;
       if(!room.is_group){
-        const other = (members||[]).find(m => m.user_id !== currentUser.id);
-        if(other){ displayName = other.username; const {data:prof} = await sb.from('profiles').select('*').eq('id', other.user_id).maybeSingle(); avatarProfile = prof; }
+        const other=(members||[]).find(m=>m.user_id!==currentUser.id);
+        if(other){ displayName=other.username; const {data:prof}=await sb.from('profiles').select('*').eq('id',other.user_id).maybeSingle(); avatarProfile=prof; }
       }
-      return { ...room, members: members||[], lastMsg: (lastMsgs||[])[0], displayName, avatarProfile };
+      return {...room,members:members||[],lastMsg:(lastMsgs||[])[0],displayName,avatarProfile};
     }));
-    currentRooms = roomsWithInfo;
-    
+    currentRooms=roomsWithInfo;
     el.innerHTML=`
       <div class="chat-list-header"><h2>Chats</h2><button class="btn primary" onclick="openNewChat()">+ New</button></div>
-      <div>${roomsWithInfo.length === 0 ? '<div class="card"><div class="empty-state">No chats yet. Start a new one!</div></div>' 
-        : roomsWithInfo.map(r => `<div class="room-item" onclick="openRoom(${r.id})">
-            ${r.is_group ? `<div class="avatar" style="width:48px;height:48px;font-size:20px;">👥</div>` : (r.avatarProfile ? avatarHTML(r.avatarProfile,48,false) : `<div class="avatar" style="width:48px;height:48px;">${escapeHTML(r.displayName).charAt(0).toUpperCase()}</div>`)}
-            <div class="info"><div class="name">${escapeHTML(r.displayName)}</div><div class="preview">${r.lastMsg ? escapeHTML(r.lastMsg.text.substring(0,20)) : 'No messages yet'}</div></div>
+      <div>${roomsWithInfo.length===0?'<div class="card"><div class="empty-state">No chats yet. Start a new one!</div></div>'
+        :roomsWithInfo.map(r=>`<div class="room-item" onclick="openRoom(${r.id})">
+            ${r.is_group?`<div class="avatar" style="width:48px;height:48px;font-size:20px;">👥</div>`:(r.avatarProfile?avatarHTML(r.avatarProfile,48,false):`<div class="avatar" style="width:48px;height:48px;">${escapeHTML(r.displayName).charAt(0).toUpperCase()}</div>`)}
+            <div class="info"><div class="name">${escapeHTML(r.displayName)}</div><div class="preview">${r.lastMsg?escapeHTML(r.lastMsg.text.substring(0,20)):'No messages yet'}</div></div>
           </div>`).join('')}</div>`;
-  } catch(ex) { 
-    console.error(ex);
-    el.innerHTML='<div class="card"><div class="empty-state">Error loading chats</div></div>'; 
-  }
+  }catch(ex){ console.error(ex); el.innerHTML='<div class="card"><div class="empty-state">Error loading chats</div></div>'; }
 }
 
 async function openNewChat(){
   if(!currentUser){ openAuth('login'); return; }
-  selectedContacts.clear(); newChatMode = 'dm'; switchNewChatTab('dm'); $('newChatOverlay').classList.add('show'); $('groupName').value = '';
-  const {data:users} = await sb.from('profiles').select('*');
-  allUsersCache = (users||[]).filter(u => u.id !== currentUser.id);
+  selectedContacts.clear(); newChatMode='dm'; switchNewChatTab('dm'); $('newChatOverlay').classList.add('show'); $('groupName').value='';
+  const {data:users}=await sb.from('profiles').select('*');
+  allUsersCache=(users||[]).filter(u=>u.id!==currentUser.id);
   renderContactPicker();
 }
 function closeNewChat(){ $('newChatOverlay').classList.remove('show'); }
 function switchNewChatTab(mode){
-  newChatMode = mode;
-  $('tabDM').classList.toggle('active', mode==='dm'); $('tabGroup').classList.toggle('active', mode==='group');
-  $('groupNameField').style.display = mode==='group' ? 'block' : 'none'; selectedContacts.clear(); renderContactPicker();
+  newChatMode=mode;
+  $('tabDM').classList.toggle('active',mode==='dm'); $('tabGroup').classList.toggle('active',mode==='group');
+  $('groupNameField').style.display=mode==='group'?'block':'none'; selectedContacts.clear(); renderContactPicker();
 }
 function renderContactPicker(){
-  const picker = $('contactPicker');
-  if(!picker) return;
-  picker.innerHTML = allUsersCache.map(u => `<div class="contact-pick ${selectedContacts.has(u.id)?'selected':''}" onclick="toggleContact('${u.id}')">${avatarHTML(u,36,false)}<div style="font-weight:600; font-size:14px;">${escapeHTML(u.username)}</div></div>`).join('') || '<p style="color:#65676b; text-align:center; padding:20px;">No other users yet</p>';
+  const picker=$('contactPicker'); if(!picker) return;
+  picker.innerHTML=allUsersCache.map(u=>`<div class="contact-pick ${selectedContacts.has(u.id)?'selected':''}" onclick="toggleContact('${u.id}')">${avatarHTML(u,36,false)}<div style="font-weight:600;font-size:14px;">${escapeHTML(u.username)}</div></div>`).join('')||'<p style="color:#65676b;text-align:center;padding:20px;">No other users yet</p>';
 }
 function toggleContact(userId){
-  if(newChatMode === 'dm'){ selectedContacts.clear(); selectedContacts.add(userId); }
+  if(newChatMode==='dm'){ selectedContacts.clear(); selectedContacts.add(userId); }
   else { if(selectedContacts.has(userId)) selectedContacts.delete(userId); else selectedContacts.add(userId); }
   renderContactPicker();
 }
-
 async function createChat(){
-  if(selectedContacts.size === 0){ toast('Pick at least one contact'); return; }
-  if(newChatMode === 'group' && selectedContacts.size < 2){ toast('Pick at least 2 for a group'); return; }
-  const btn = $('createChatBtn'); btn.disabled = true; btn.textContent = 'Creating...';
-  try {
+  if(selectedContacts.size===0){ toast('Pick at least one contact'); return; }
+  if(newChatMode==='group' && selectedContacts.size<2){ toast('Pick at least 2 for a group'); return; }
+  const btn=$('createChatBtn'); btn.disabled=true; btn.textContent='Creating...';
+  try{
     let roomId;
-    if(newChatMode === 'dm'){
-      const otherId = [...selectedContacts][0];
-      const {data:myRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
-      const myRoomIds = (myRooms||[]).map(m=>m.room_id);
-      if(myRoomIds.length > 0){
-        const {data:theirMemberships} = await sb.from('room_members').select('room_id').eq('user_id', otherId).in('room_id', myRoomIds);
+    if(newChatMode==='dm'){
+      const otherId=[...selectedContacts][0];
+      const {data:myRooms}=await sb.from('room_members').select('room_id').eq('user_id',currentUser.id);
+      const myRoomIds=(myRooms||[]).map(m=>m.room_id);
+      if(myRoomIds.length>0){
+        const {data:theirMemberships}=await sb.from('room_members').select('room_id').eq('user_id',otherId).in('room_id',myRoomIds);
         for(const tm of (theirMemberships||[])){
-          const {data:room} = await sb.from('chat_rooms').select('*').eq('id', tm.room_id).single();
-          if(room && !room.is_group){ roomId = room.id; break; }
+          const {data:room}=await sb.from('chat_rooms').select('*').eq('id',tm.room_id).single();
+          if(room && !room.is_group){ roomId=room.id; break; }
         }
       }
       if(!roomId){
-        const {data:newRoom, error} = await sb.from('chat_rooms').insert([{is_group:false, created_by: currentUser.id}]).select().single();
+        const {data:newRoom,error}=await sb.from('chat_rooms').insert([{is_group:false,created_by:currentUser.id}]).select().single();
         if(error) throw error;
-        roomId = newRoom.id;
-        await sb.from('room_members').insert([{room_id: roomId, user_id: currentUser.id, username: currentUser.username},{room_id: roomId, user_id: otherId, username: (allUsersCache.find(u=>u.id===otherId)||{}).username}]);
+        roomId=newRoom.id;
+        await sb.from('room_members').insert([
+          {room_id:roomId,user_id:currentUser.id,username:currentUser.username},
+          {room_id:roomId,user_id:otherId,username:(allUsersCache.find(u=>u.id===otherId)||{}).username}
+        ]);
       }
     } else {
-      const groupName = $('groupName').value.trim() || 'Group';
-      const {data:newRoom, error} = await sb.from('chat_rooms').insert([{name: groupName, is_group: true, created_by: currentUser.id}]).select().single();
+      const groupName=$('groupName').value.trim()||'Group';
+      const {data:newRoom,error}=await sb.from('chat_rooms').insert([{name:groupName,is_group:true,created_by:currentUser.id}]).select().single();
       if(error) throw error;
-      roomId = newRoom.id;
-      const members = [{room_id: roomId, user_id: currentUser.id, username: currentUser.username}];
-      selectedContacts.forEach(id => { const u = allUsersCache.find(x=>x.id===id); if(u) members.push({room_id: roomId, user_id: id, username: u.username}); });
+      roomId=newRoom.id;
+      const members=[{room_id:roomId,user_id:currentUser.id,username:currentUser.username}];
+      selectedContacts.forEach(id=>{ const u=allUsersCache.find(x=>x.id===id); if(u) members.push({room_id:roomId,user_id:id,username:u.username}); });
       await sb.from('room_members').insert(members);
     }
     toast('Chat created!'); closeNewChat(); openRoom(roomId);
-  } catch(ex) { toast('Error: ' + ex.message); btn.disabled = false; btn.textContent = 'Create Chat'; }
+  }catch(ex){ toast('Error: '+ex.message); btn.disabled=false; btn.textContent='Create Chat'; }
 }
 
 async function openRoom(roomId){
-  activeRoomId = roomId;
-  const el = $('panel-chat'); el.innerHTML = '<div class="card"><div class="loader"></div></div>';
-  try {
-    const {data:room} = await sb.from('chat_rooms').select('*').eq('id', roomId).single();
-    const {data:members} = await sb.from('room_members').select('*').eq('room_id', roomId);
-    let roomTitle = room.name || 'Chat'; let isGroup = room.is_group;
-    if(!isGroup){ const other = (members||[]).find(m => m.user_id !== currentUser.id); if(other) roomTitle = other.username; }
-    
-    el.innerHTML = `<div class="chat-container">
-        <div class="chat-header"><button class="back-btn" onclick="backToChatList()">←</button><div style="flex:1; font-weight:700;">${escapeHTML(roomTitle)}${isGroup?' 👥':''}</div></div>
-        <div class="chat-messages" id="chatMessagesBox"><div class="loader"></div></div>
-        
-        <div class="chat-input-bar">
-          <input id="chatInput" placeholder="Type a message..." maxlength="500" onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendChat();}">
-          <button id="sendChatBtn" onclick="sendChat()">➤</button>
-        </div>
-      </div>`;
-      
+  activeRoomId=roomId;
+  const el=$('panel-chat'); el.innerHTML='<div class="card"><div class="loader"></div></div>';
+  try{
+    const {data:room}=await sb.from('chat_rooms').select('*').eq('id',roomId).single();
+    const {data:members}=await sb.from('room_members').select('*').eq('room_id',roomId);
+    let roomTitle=room.name||'Chat', isGroup=room.is_group;
+    if(!isGroup){ const other=(members||[]).find(m=>m.user_id!==currentUser.id); if(other) roomTitle=other.username; }
+    el.innerHTML=`<div class="chat-container">
+      <div class="chat-header"><button class="back-btn" onclick="backToChatList()">←</button><div style="flex:1;font-weight:700;">${escapeHTML(roomTitle)}${isGroup?' 👥':''}</div></div>
+      <div class="chat-messages" id="chatMessagesBox"><div class="loader"></div></div>
+      <div class="chat-input-bar">
+        <input id="chatInput" placeholder="Type a message..." maxlength="500" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}">
+        <button id="sendChatBtn" onclick="sendChat()">➤</button>
+      </div>
+    </div>`;
     await loadRoomMessages(); subscribeRoom(roomId);
-  } catch(ex) { el.innerHTML = '<div class="card"><div class="empty-state">Error loading room</div></div>'; }
+  }catch(ex){ el.innerHTML='<div class="card"><div class="empty-state">Error loading room</div></div>'; }
 }
-function backToChatList(){ if(chatChannel){ sb.removeChannel(chatChannel); chatChannel=null; } activeRoomId = null; renderChatList(); }
+function backToChatList(){ if(chatChannel){ sb.removeChannel(chatChannel); chatChannel=null; } activeRoomId=null; renderChatList(); }
 async function loadRoomMessages(){
-  const box = $('chatMessagesBox'); if(!box || !activeRoomId) return;
-  const {data, error} = await sb.from('chat_messages').select('*').eq('room_id', activeRoomId).order('created_at', {ascending: true}).limit(100);
-  if(error) return; chatMessages = data || []; renderRoomMessages();
+  const box=$('chatMessagesBox'); if(!box||!activeRoomId) return;
+  const {data,error}=await sb.from('chat_messages').select('*').eq('room_id',activeRoomId).order('created_at',{ascending:true}).limit(100);
+  if(error) return; chatMessages=data||[]; renderRoomMessages();
 }
 function renderRoomMessages(){
-  const box = $('chatMessagesBox'); if(!box) return;
-  if(chatMessages.length === 0){ box.innerHTML = `<p style="color:#65676b;text-align:center;padding:20px;">No messages yet. Say hi! 👋</p>`; return; }
-  
-  box.innerHTML = chatMessages.map(m => {
-    const isSelf = currentUser && m.user_id === currentUser.id;
-    return `<div class="chat-msg ${isSelf ? 'self' : ''}">
-      <div class="bubble"><strong>${isSelf ? '' : escapeHTML(m.username)+': '}</strong>${escapeHTML(m.text)}</div>
-    </div>`;
+  const box=$('chatMessagesBox'); if(!box) return;
+  if(chatMessages.length===0){ box.innerHTML=`<p style="color:#65676b;text-align:center;padding:20px;">No messages yet. Say hi! 👋</p>`; return; }
+  box.innerHTML=chatMessages.map(m=>{
+    const isSelf=currentUser&&m.user_id===currentUser.id;
+    return `<div class="chat-msg ${isSelf?'self':''}"><div class="bubble"><strong>${isSelf?'':escapeHTML(m.username)+': '}</strong>${escapeHTML(m.text)}</div></div>`;
   }).join('');
-  box.scrollTop = box.scrollHeight;
+  box.scrollTop=box.scrollHeight;
 }
 async function sendChat(){
-  if(!currentUser || !activeRoomId) return;
-  const input = $('chatInput'); const text = input.value.trim(); if(!text) return;
-  input.value = '';
-  const {error} = await sb.from('chat_messages').insert([{room_id: activeRoomId, user_id: currentUser.id, username: currentUser.username, text}]);
-  if(error) toast('Failed: ' + error.message);
+  if(!currentUser||!activeRoomId) return;
+  const input=$('chatInput'), text=input.value.trim(); if(!text) return;
+  input.value='';
+  const {error}=await sb.from('chat_messages').insert([{room_id:activeRoomId,user_id:currentUser.id,username:currentUser.username,text}]);
+  if(error) toast('Failed: '+error.message);
 }
 function subscribeRoom(roomId){
   if(chatChannel){ sb.removeChannel(chatChannel); }
-  chatChannel = sb.channel('room-' + roomId)
-    .on('postgres_changes', {event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `room_id=eq.${roomId}`}, (payload) => {
-      chatMessages.push(payload.new); if(chatMessages.length > 100) chatMessages.shift(); renderRoomMessages();
-    }).subscribe();
+  chatChannel=sb.channel('room-'+roomId).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`room_id=eq.${roomId}`},(payload)=>{
+    chatMessages.push(payload.new); if(chatMessages.length>100) chatMessages.shift(); renderRoomMessages();
+  }).subscribe();
 }
 
 async function init(){
   const {data:{session}}=await sb.auth.getSession();
   if(session){
     let {data:prof}=await sb.from('profiles').select('*').eq('id',session.user.id).maybeSingle();
-    
-    if(!prof) {
-      const newUsername = session.user.email.split('@')[0];
-      const {data:newProf} = await sb.from('profiles').insert([{id: session.user.id, username: newUsername}]).select().single();
-      prof = newProf;
+    if(!prof){
+      const {data:newProf}=await sb.from('profiles').insert([{id:session.user.id,username:session.user.email.split('@')[0]}]).select().single();
+      prof=newProf;
     }
-    
     if(prof) currentUser={id:session.user.id,username:prof.username};
     currentProfile=prof;
   }

@@ -344,6 +344,7 @@
 <div class="header">
   <div class="logo" onclick="switchPanel('feed')">
     <span>📸</span> Your Place 2026
+    <span style="color:#d93025; font-size:12px; margin-left:10px; font-weight:800; background:#ffe5e5; padding:2px 6px; border-radius:4px;">v3.0 ONLINE FIX</span>
   </div>
   <div class="header-right" id="headerRight"></div>
 </div>
@@ -1046,11 +1047,12 @@ async function uploadReel(){
 }
 
 /* ============================================================
-   PRESENCE & ONLINE STATUS
+   PRESENCE & ONLINE STATUS (DEBUGGED)
    ============================================================ */
 function subscribePresence(){
   if(presenceChannel) return;
   presenceChannel = sb.channel('presence-room', { config: { presence: { key: currentUser.id } } });
+  
   presenceChannel.on('presence', { event: 'sync' }, () => {
     const state = presenceChannel.presenceState();
     onlineUsersMap.clear();
@@ -1059,6 +1061,8 @@ function subscribePresence(){
         onlineUsersMap.set(id, state[id][0].username);
       }
     }
+    console.log("Online users updated:", Array.from(onlineUsersMap.keys()));
+    
     if(activeRoomId){
       refreshRoomHeader();
     } else if(document.getElementById('panel-chat')?.classList.contains('active')){
@@ -1066,9 +1070,12 @@ function subscribePresence(){
     }
     renderOnlineUsers(Array.from(onlineUsersMap.values()));
   });
+  
   presenceChannel.subscribe(async (status) => {
+    console.log("Presence status:", status);
     if(status === 'SUBSCRIBED'){
       await presenceChannel.track({ username: currentUser.username });
+      console.log("Tracking user online:", currentUser.username);
     }
   });
 }
@@ -1236,10 +1243,25 @@ async function renderChatList(){
     }));
     currentRooms=roomsWithInfo;
     
-    // Debug: Log online users
-    console.log("Online users:", Array.from(onlineUsersMap.keys()));
+    // ඔන්ලයින් ඉන්න අය වෙනම පෙන්නන්න ලිස්ට් එකක් හදමු
+    let onlineUsersHTML = '';
+    const onlineList = Array.from(onlineUsersMap.values()).filter(name => name !== currentUser.username);
+    if(onlineList.length > 0){
+      onlineUsersHTML = `
+        <div class="card" style="padding:16px; margin-bottom:16px; background:#f0fdf4; border:1px solid #bbf7d0;">
+          <h4 style="font-size:14px; color:#166534; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+            <span style="display:inline-block; width:10px; height:10px; background:#22c55e; border-radius:50%; animation:pulse-online 2s infinite;"></span>
+            Online Now (${onlineList.length})
+          </h4>
+          <div style="display:flex; flex-wrap:wrap; gap:12px;">
+            ${onlineList.map(name => `<div style="display:flex; align-items:center; gap:6px; background:#fff; padding:6px 12px; border-radius:20px; font-size:13px; font-weight:600; border:1px solid #dcfce7;"><span style="color:#22c55e;">●</span> ${escapeHTML(name)}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
 
     el.innerHTML=`
+      ${onlineUsersHTML}
       <div class="chat-list-header"><h2>Chats</h2><button class="btn primary" onclick="openNewChat()">+ New</button></div>
       <div>${roomsWithInfo.length===0?'<div class="card"><div class="empty-state">No chats yet. Start a new one!</div></div>'
         :roomsWithInfo.map(r=>{

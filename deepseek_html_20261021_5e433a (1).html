@@ -1235,6 +1235,10 @@ async function renderChatList(){
       return {...room,members:members||[],lastMsg:(lastMsgs||[])[0],displayName,avatarProfile};
     }));
     currentRooms=roomsWithInfo;
+    
+    // Debug: Log online users
+    console.log("Online users:", Array.from(onlineUsersMap.keys()));
+
     el.innerHTML=`
       <div class="chat-list-header"><h2>Chats</h2><button class="btn primary" onclick="openNewChat()">+ New</button></div>
       <div>${roomsWithInfo.length===0?'<div class="card"><div class="empty-state">No chats yet. Start a new one!</div></div>'
@@ -1243,15 +1247,25 @@ async function renderChatList(){
             if(r.is_group){
               avatarPart = `<div class="avatar" style="width:48px;height:48px;font-size:20px;">👥</div>`;
               const onlineCount = (r.members||[]).filter(m => m.user_id !== currentUser.id && onlineUsersMap.has(m.user_id)).length;
-              if(onlineCount > 0){ onlineLine = `<span style="color:#22c55e;font-weight:600;">🟢 ${onlineCount} online</span> · `; }
+              if(onlineCount > 0){ 
+                onlineLine = `<span style="color:#22c55e;font-weight:600;">🟢 ${onlineCount} online</span> · `; 
+              } else {
+                onlineLine = `<span style="color:#9ca3af;font-weight:500;">⚪ Offline</span> · `;
+              }
             } else {
               const other = (r.members||[]).find(m => m.user_id !== currentUser.id);
               const isOnline = other && onlineUsersMap.has(other.user_id);
               const inner = r.avatarProfile
                 ? avatarHTML(r.avatarProfile, 48, false)
                 : `<div class="avatar" style="width:48px;height:48px;">${escapeHTML(r.displayName).charAt(0).toUpperCase()}</div>`;
+              
               avatarPart = `<div class="avatar-wrap">${inner}${isOnline?'<div class="online-badge"></div>':''}</div>`;
-              if(isOnline){ onlineLine = `<span style="color:#22c55e;font-weight:600;">🟢 Online</span> · `; }
+              
+              if(isOnline){ 
+                onlineLine = `<span style="color:#22c55e;font-weight:600;">🟢 Online</span> · `; 
+              } else {
+                onlineLine = `<span style="color:#9ca3af;font-weight:500;">⚪ Offline</span> · `;
+              }
             }
             return `<div class="room-item" onclick="openRoom(${r.id})">
               ${avatarPart}

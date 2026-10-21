@@ -159,6 +159,14 @@
   .share-app { width:44px; height:44px; border-radius:50%; background:#f0f2f5; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; transition:background .2s; }
   .share-app:hover { background:#e4e6eb; }
 
+  /* REELS */
+  .reels-container { display: flex; flex-direction: column; gap: 16px; align-items: center; }
+  .reel-card { background: #000; border-radius: 12px; overflow: hidden; position: relative; width: 100%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,.2); }
+  .reel-video { width: 100%; max-height: 600px; object-fit: contain; display: block; }
+  .reel-info { padding: 12px; background: #fff; }
+  .reel-info h4 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .reel-info p { font-size: 12px; color: #65676b; }
+
   /* FOOTER */
   .footer { text-align:center; padding:24px; color:#65676b; font-size:13px; background:#fff; border-top:1px solid #e4e6eb; margin-top:auto; }
   .footer a { color:#1877f2; text-decoration:none; font-weight:700; cursor:pointer; }
@@ -206,6 +214,7 @@
 <div class="nav">
   <button class="nav-btn active" data-panel="feed"><span class="nav-icon">🏠</span>Home</button>
   <button class="nav-btn" data-panel="upload"><span class="nav-icon">➕</span>Post</button>
+  <button class="nav-btn" data-panel="reels"><span class="nav-icon">🎬</span>Reels</button>
   <button class="nav-btn" data-panel="search"><span class="nav-icon">🔍</span>Search</button>
   <button class="nav-btn" data-panel="chat"><span class="nav-icon">💬</span>Chat</button>
   <button class="nav-btn" data-panel="profile"><span class="nav-icon">👤</span>Profile</button>
@@ -216,6 +225,7 @@
   <div class="content-area">
     <div class="panel active" id="panel-feed"></div>
     <div class="panel" id="panel-upload"></div>
+    <div class="panel" id="panel-reels"></div>
     <div class="panel" id="panel-search"></div>
     <div class="panel" id="panel-chat"></div>
     <div class="panel" id="panel-profile"></div>
@@ -346,6 +356,7 @@ function switchPanel(name){
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+name));
   if(name==='feed') renderFeed();
   if(name==='upload') renderUpload();
+  if(name==='reels') renderReels();
   if(name==='search') renderSearch();
   if(name==='chat') renderChatList();
   if(name==='profile' && currentUser) renderProfile(currentUser.id);
@@ -776,6 +787,88 @@ async function createPost(){
   }catch(ex){ toast('Failed: '+ex.message); btn.disabled=false; btn.textContent='Post'; }
 }
 
+// ===== REELS =====
+async function renderReels(){
+  const el=$('panel-reels');
+  el.innerHTML='<div class="card"><div class="loader"></div></div>';
+  
+  try {
+    const {data:videos,error}=await sb.from('posts').select('*').eq('is_video', true).order('created_at',{ascending:false}).limit(20);
+    // මෙතනදී අපි posts table එකේ is_video කියලා column එකක් තියෙනවද බලන්න ඕන. 
+    // දැනට එහෙම column එකක් නැති නිසා, අපි පෝස්ට් වල caption එකේ [VIDEO] කියලා තියෙනවද බලමු.
+    
+    // සරලව කරන්න: posts table එකේ image_url එක .mp4 වලින් ඉවර වෙනවා නම් ඒක වීඩියෝ එකක්.
+    const {data:allPosts} = await sb.from('posts').select('*').order('created_at',{ascending:false}).limit(50);
+    const videoPosts = (allPosts||[]).filter(p => p.image_url && (p.image_url.endsWith('.mp4') || p.image_url.endsWith('.webm') || p.image_url.endsWith('.mov')));
+    
+    if(videoPosts.length === 0){
+      el.innerHTML = `<div class="card"><div class="empty-state"><div class="icon">🎬</div><p>No reels yet. Be the first to upload!</p><button class="btn primary" style="margin-top:12px;" onclick="openUploadReel()">Upload Reel</button></div></div>`;
+      return;
+    }
+
+    el.innerHTML = `<div class="card" style="padding:16px; margin-bottom:16px; text-align:center;">
+      <button class="btn primary" onclick="openUploadReel()">➕ Upload New Reel</button>
+    </div>
+    <div class="reels-container">
+      ${videoPosts.map(v => `
+        <div class="reel-card">
+          <video class="reel-video" controls src="${v.image_url}"></video>
+          <div class="reel-info">
+            <h4>${escapeHTML(v.username)}</h4>
+            <p>${escapeHTML(v.caption||'')}</p>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+
+  } catch(ex) {
+    console.error(ex);
+    el.innerHTML = '<div class="card"><div class="empty-state">Error loading reels</div></div>';
+  }
+}
+
+function openUploadReel(){
+  if(!currentUser){ openAuth('login'); return; }
+  $('uploadReelOverlay').classList.add('show');
+}
+function closeUploadReel(){ $('uploadReelOverlay').classList.remove('show'); }
+
+async function uploadReel(){
+  const fileInput = $('reelFile');
+  const caption = $('reelCaption').value.trim();
+  const file = fileInput.files[0];
+  if(!file) { toast('Please choose a video'); return; }
+  if(file.size > 10*1024*1024) { toast('Max 10MB'); return; }
+  
+  const btn = $('uploadReelBtn');
+  btn.disabled = true; btn.textContent = 'Uploading...';
+  
+  try {
+    const ext = file.name.split('.').pop();
+    const path = `${currentUser.id}/${Date.now()}.${ext}`;
+    const { error: upErr } = await sb.storage.from('videos').upload(path, file);
+    if(upErr) throw upErr;
+    const { data:{ publicUrl } } = sb.storage.from('videos').getPublicUrl(path);
+    
+    const { error: insErr } = await sb.from('posts').insert([{
+      user_id: currentUser.id,
+      username: currentUser.username,
+      image_url: publicUrl,
+      caption: caption
+    }]);
+    if(insErr) throw insErr;
+    
+    toast('Reel uploaded! 🎬');
+    fileInput.value = '';
+    $('reelCaption').value = '';
+    closeUploadReel();
+    renderReels();
+  } catch(ex) {
+    toast('Failed: ' + ex.message);
+  }
+  btn.disabled = false; btn.textContent = 'Upload';
+}
+
 // ===== SEARCH =====
 async function renderSearch(){
   const el=$('panel-search');
@@ -1130,6 +1223,7 @@ $('authOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) cl
 $('editProfileOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeEditProfile(); });
 $('newChatOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeNewChat(); });
 $('inviteOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeInvite(); });
+$('uploadReelOverlay').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeUploadReel(); });
 
 init();
 </script>

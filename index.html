@@ -129,7 +129,7 @@
 
   /* VIEW POST MODAL */
   #viewPostOverlay .modal-box { max-width: 500px; padding: 0; overflow: hidden; background: var(--bg-color); }
-  .post-viewer-header { display: flex; align-items: center; gap: 10px; padding: 15px; border-bottom: 1px solid var(--border); }
+  .post-viewer-header { display: flex; align-items: center; gap: 10px; padding: 15px; border-bottom: 1px solid var(--border); padding-top: 55px; }
   .post-viewer-media { width: 100%; max-height: 60vh; object-fit: contain; background: #000; display: block; }
   .post-viewer-actions { padding: 15px; }
 
@@ -151,6 +151,35 @@
   .progress-segment { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s linear; }
   .story-media { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+  /* ===== INLINE REEL PLAYER ===== */
+  .post-media-wrap { position: relative; background: #000; overflow: hidden; }
+  .reel-video { cursor: pointer; }
+  .reel-play-overlay {
+    position: absolute; inset: 0; display: flex; justify-content: center; align-items: center;
+    background: rgba(0,0,0,0.25); cursor: pointer; z-index: 2;
+  }
+  .reel-play-overlay.hidden { display: none; }
+  .reel-play-overlay .play-circle {
+    width: 72px; height: 72px; border-radius: 50%; background: rgba(0,0,0,0.55);
+    border: 2px solid rgba(255,255,255,0.85); display: flex; justify-content: center; align-items: center;
+    color: #fff; font-size: 26px; padding-left: 5px; box-shadow: 0 0 25px rgba(0,0,0,0.6);
+  }
+  .reel-back-btn {
+    position: absolute; top: 12px; left: 12px; z-index: 5; display: none;
+    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff;
+    padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700;
+    cursor: pointer; align-items: center; gap: 6px; backdrop-filter: blur(6px);
+  }
+  .reel-back-btn.show { display: inline-flex; }
+
+  /* ===== MODAL BACK BUTTON ===== */
+  .modal-back-btn {
+    position: absolute; top: 15px; left: 15px; z-index: 10;
+    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff;
+    padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700;
+    cursor: pointer; backdrop-filter: blur(6px);
+  }
 
   /* ABOUT CREATOR */
   .creator-card { margin: 20px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; text-align: center; }
@@ -203,14 +232,14 @@
 
 <div class="modal-overlay" id="viewPostOverlay">
   <div class="modal-box">
-    <button style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); border:none; color:white; width:30px; height:30px; border-radius:50%; cursor:pointer; z-index:10;" onclick="$('viewPostOverlay').style.display='none'">×</button>
+    <button class="modal-back-btn" onclick="closeViewPost()">← Back</button>
     <div id="viewPostContent"></div>
   </div>
 </div>
 
 <div class="modal-overlay" id="viewProfileOverlay">
   <div class="modal-box">
-    <button style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); border:none; color:white; width:30px; height:30px; border-radius:50%; cursor:pointer; z-index:10;" onclick="$('viewProfileOverlay').style.display='none'">×</button>
+    <button class="modal-back-btn" onclick="closeViewProfile()">← Back</button>
     <div class="vp-cover"></div>
     <div class="vp-content">
       <div class="vp-avatar"><img id="vpAvatar" src=""></div>
@@ -294,6 +323,7 @@ function toast(msg){ const t=$('toast'); t.textContent=msg; t.style.transform='t
 
 // NAVIGATION
 function switchPanel(name){
+  pauseAllReels();
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.panel === name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   $(`panel-${name}`).classList.add('active');
@@ -374,6 +404,10 @@ async function viewUserProfile(userId) {
     $('vpBio').textContent = prof.bio || 'No bio yet.';
     if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
   }
+}
+
+function closeViewProfile() {
+  $('viewProfileOverlay').style.display = 'none';
 }
 
 async function messageUser() {
@@ -810,9 +844,19 @@ async function renderFeed() {
           ${isOwn ? `<button class="delete-btn" onclick="deletePost(${p.id})">🗑️</button>` : ''}
         </div>
         
+        ${isVideo ? `
+        <div class="post-media-wrap" id="reel-wrap-${p.id}">
+          <video id="reel-video-${p.id}" src="${p.video_url}" playsinline preload="metadata" muted
+                 class="post-media reel-video" onended="stopReel(${p.id})"></video>
+          <div class="reel-play-overlay" id="reel-overlay-${p.id}" onclick="playReel(${p.id})">
+            <div class="play-circle">▶</div>
+          </div>
+          <button class="reel-back-btn" id="reel-back-${p.id}"
+                  onclick="event.stopPropagation(); stopReel(${p.id})">← Back</button>
+        </div>` : `
         <div onclick="viewPost(${p.id})" style="cursor:pointer;">
-          ${isVideo ? `<video src="${p.video_url}" playsinline class="post-media"></video>` : `<img src="${p.image_url}" class="post-image" onerror="this.src='${DEFAULT_PFP}'">`}
-        </div>
+          <img src="${p.image_url}" class="post-image" onerror="this.src='${DEFAULT_PFP}'">
+        </div>`}
         
         <div class="post-actions">
           <div class="action-btn ${hasLiked ? 'liked' : ''}" onclick="toggleLike(${p.id}, this)">
@@ -876,6 +920,60 @@ async function toggleLike(postId, btn) {
   } catch(ex) { btn.classList.toggle('liked'); toast('Error liking post'); }
 }
 
+// ================= INLINE REEL PLAYER =================
+let activeReelId = null;
+
+function playReel(postId) {
+  if (activeReelId && activeReelId !== postId) stopReel(activeReelId);
+
+  const video   = $(`reel-video-${postId}`);
+  const overlay = $(`reel-overlay-${postId}`);
+  const backBtn = $(`reel-back-${postId}`);
+  if (!video) return;
+
+  activeReelId = postId;
+  video.muted = false;
+  video.controls = true;
+  if(overlay) overlay.classList.add('hidden');
+  if(backBtn) backBtn.classList.add('show');
+
+  const p = video.play();
+  if (p && p.catch) p.catch(() => { video.muted = true; video.play().catch(()=>{}); });
+}
+
+function stopReel(postId) {
+  const video   = $(`reel-video-${postId}`);
+  const overlay = $(`reel-overlay-${postId}`);
+  const backBtn = $(`reel-back-${postId}`);
+  if (!video) return;
+
+  video.pause();
+  try { video.currentTime = 0; } catch(e){}
+  video.controls = false;
+  video.muted = true;
+  if(overlay) overlay.classList.remove('hidden');
+  if(backBtn) backBtn.classList.remove('show');
+
+  if (activeReelId === postId) activeReelId = null;
+}
+
+function pauseAllReels() {
+  document.querySelectorAll('.reel-video').forEach(v => { if (!v.paused) v.pause(); });
+  document.querySelectorAll('.reel-back-btn.show').forEach(b => b.classList.remove('show'));
+  document.querySelectorAll('.reel-play-overlay.hidden').forEach(o => o.classList.remove('hidden'));
+  document.querySelectorAll('.reel-video').forEach(v => {
+    v.controls = false;
+    v.muted = true;
+  });
+  activeReelId = null;
+}
+
+function closeViewPost() {
+  const v = document.querySelector('#viewPostContent video');
+  if (v) v.pause();
+  $('viewPostOverlay').style.display = 'none';
+}
+
 // This handles the Modal View (clicking the image)
 async function viewPost(postId) {
   $('viewPostOverlay').style.display = 'flex';
@@ -933,7 +1031,7 @@ async function addCommentInModal(postId) {
 async function deletePost(postId) {
   if(!confirm('Delete this post?')) return;
   await sb.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id);
-  $('viewPostOverlay').style.display = 'none';
+  closeViewPost();
   renderFeed();
 }
 

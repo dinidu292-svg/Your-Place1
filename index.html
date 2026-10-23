@@ -3,117 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Your Place - Next Gen</title>
+<title>Your Place - Premium</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --bg-dark: #0f172a;
-    --bg-card: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --primary: #6366f1;
-    --primary-glow: rgba(99, 102, 241, 0.4);
-    --accent: #ec4899;
-    --border: #334155;
+    --bg-color: #09090b; /* Deep Space Black */
+    --surface: rgba(24, 24, 27, 0.6); /* Glass Surface */
+    --surface-hover: rgba(39, 39, 42, 0.8);
+    --border: rgba(255, 255, 255, 0.08);
+    --primary: #8b5cf6; /* Neon Violet */
+    --primary-glow: rgba(139, 92, 246, 0.3);
+    --accent: #ec4899; /* Neon Pink */
+    --text: #f4f4f5;
+    --text-muted: #a1a1aa;
     --danger: #ef4444;
     --success: #10b981;
+    --font: 'Outfit', sans-serif;
   }
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: 'Outfit', sans-serif; }
-  body { background: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; overflow-x: hidden; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: var(--font); }
+  body { background: var(--bg-color); color: var(--text); min-height: 100vh; display: flex; justify-content: center; overflow-x: hidden; background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, transparent 50%); }
   
-  /* LAYOUT */
-  .app-wrapper { width: 100%; max-width: 480px; background: var(--bg-dark); min-height: 100vh; position: relative; padding-bottom: 70px; }
-  @media(min-width: 768px) { .app-wrapper { max-width: 600px; } }
+  /* APP LAYOUT */
+  .app-wrapper { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding-bottom: 80px; background: transparent; }
+  @media(min-width: 768px) { .app-wrapper { max-width: 600px; border-left: 1px solid var(--border); border-right: 1px solid var(--border); box-shadow: 0 0 50px rgba(0,0,0,0.5); } }
 
-  /* TOP HEADER */
-  .header { position: sticky; top: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); z-index: 100; }
-  .logo { font-size: 22px; font-weight: 800; background: linear-gradient(to right, #818cf8, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; }
+  /* GLASS HEADER */
+  .header { position: sticky; top: 0; background: rgba(9, 9, 11, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); height: 65px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); z-index: 100; }
+  .logo { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; letter-spacing: -0.5px; }
   
-  /* BOTTOM NAV */
-  .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 480px; height: 65px; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-  @media(min-width: 768px) { .bottom-nav { max-width: 600px; } }
-  .nav-item { cursor: pointer; color: var(--text-muted); transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  /* FLOATING BOTTOM NAV */
+  .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 450px; height: 65px; background: rgba(24, 24, 27, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+  @media(min-width: 768px) { .bottom-nav { max-width: 570px; } }
+  .nav-item { cursor: pointer; color: var(--text-muted); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center; align-items: center; width: 50px; height: 50px; border-radius: 16px; }
   .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-  .nav-item.active { color: var(--primary); transform: translateY(-2px); }
-  .nav-item.active svg { stroke: var(--primary); filter: drop-shadow(0 0 8px var(--primary-glow)); }
+  .nav-item.active { color: var(--text); background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 4px 15px var(--primary-glow); transform: translateY(-5px); }
+  .nav-item.active svg { stroke: #fff; }
 
   /* PANELS */
-  .panel { display: none; animation: slideUp 0.3s ease; }
+  .panel { display: none; animation: fadeIn 0.4s ease-out; }
   .panel.active { display: block; }
-  @keyframes slideUp { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
 
-  /* STORIES BAR */
-  .stories-container { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; gap: 16px; overflow-x: auto; scrollbar-width: none; }
+  /* STORIES */
+  .stories-container { padding: 15px 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
   .stories-container::-webkit-scrollbar { display: none; }
-  .story-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; }
-  .story-ring { width: 68px; height: 68px; border-radius: 50%; padding: 3px; background: linear-gradient(45deg, #6366f1, #ec4899, #f59e0b); position: relative; }
-  .story-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-dark); background: #2a3441; object-fit: cover; }
-  .story-name { font-size: 11px; color: var(--text-muted); max-width: 68px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .add-story-btn { position: absolute; bottom: 0; right: 0; background: var(--primary); width: 22px; height: 22px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: white; border: 2px solid var(--bg-dark); font-weight: bold; font-size: 14px; }
+  .story-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+  .story-item:active { transform: scale(0.95); }
+  .story-ring { width: 70px; height: 70px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--primary), var(--accent)); position: relative; }
+  .story-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-color); object-fit: cover; }
+  .story-name { font-size: 12px; color: var(--text-muted); max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .add-story-btn { position: absolute; bottom: 0; right: 0; background: var(--surface); width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--text); border: 2px solid var(--bg-color); font-weight: bold; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
 
   /* POSTS */
-  .post { border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 15px; }
+  .post { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
   .post-header { display: flex; align-items: center; padding: 15px 20px; gap: 12px; }
-  .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--border); overflow: hidden; }
-  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); padding: 2px; border: 1px solid var(--border); overflow: hidden; flex-shrink: 0; }
+  .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
   .post-user { font-weight: 600; font-size: 15px; }
   .post-time { font-size: 12px; color: var(--text-muted); }
-  .post-media { width: 100%; max-height: 600px; object-fit: cover; display: block; background: #000; }
+  .post-media { width: 100%; max-height: 600px; object-fit: cover; display: block; }
   
   .post-actions { display: flex; padding: 15px 20px; gap: 20px; align-items: center; }
-  .action-btn { cursor: pointer; color: var(--text-main); transition: 0.1s; }
+  .action-btn { cursor: pointer; color: var(--text); transition: transform 0.2s; }
   .action-btn svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 2; }
-  .action-btn:active { transform: scale(0.8); }
-  .action-btn.liked svg { fill: var(--danger); stroke: var(--danger); filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.5)); }
+  .action-btn:active { transform: scale(0.7); }
+  .action-btn.liked svg { fill: var(--danger); stroke: var(--danger); filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6)); }
   
   .post-likes { padding: 0 20px; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
-  .post-caption { padding: 0 20px; font-size: 14px; line-height: 1.5; color: var(--text-muted); }
-  .post-caption strong { color: var(--text-main); font-weight: 600; margin-right: 6px; }
+  .post-caption { padding: 0 20px; font-size: 14px; line-height: 1.5; }
+  .post-caption strong { font-weight: 600; margin-right: 6px; }
+
+  /* UPLOAD PANEL */
+  .upload-card { margin: 20px; background: var(--surface); border: 1px dashed var(--primary); border-radius: 20px; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer; transition: 0.3s; }
+  .upload-card:hover { background: var(--surface-hover); border-color: var(--accent); }
+  .upload-icon { font-size: 40px; }
+  .preview-img { width: 100%; border-radius: 12px; margin-bottom: 15px; display: none; }
+  textarea { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 15px; color: var(--text); outline: none; resize: none; font-size: 15px; margin-bottom: 15px; }
+  textarea:focus { border-color: var(--primary); }
+  .btn-primary { width: 100%; padding: 15px; border-radius: 15px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; font-weight: 700; font-size: 16px; border: none; cursor: pointer; box-shadow: 0 5px 15px var(--primary-glow); transition: 0.2s; }
+  .btn-primary:active { transform: scale(0.98); }
 
   /* CHAT ROOM */
-  .chat-header { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 60px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 90; }
-  .chat-messages { padding: 20px; display: flex; flex-direction: column; gap: 16px; min-height: calc(100vh - 200px); }
+  .chat-header { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 65px; background: rgba(9, 9, 11, 0.8); backdrop-filter: blur(15px); z-index: 90; }
+  .chat-messages { padding: 20px; display: flex; flex-direction: column; gap: 16px; min-height: calc(100vh - 220px); }
   .msg { display: flex; gap: 10px; max-width: 80%; }
   .msg.self { align-self: flex-end; flex-direction: row-reverse; }
-  .msg-bubble { padding: 12px 18px; border-radius: 20px; font-size: 15px; background: var(--bg-card); color: var(--text-main); position: relative; border: 1px solid var(--border); }
-  .msg.self .msg-bubble { background: var(--primary); border-color: var(--primary); border-bottom-right-radius: 4px; }
+  .msg-bubble { padding: 14px 18px; border-radius: 22px; font-size: 15px; background: var(--surface); color: var(--text); position: relative; border: 1px solid var(--border); }
+  .msg.self .msg-bubble { background: linear-gradient(135deg, var(--primary), var(--accent)); border: none; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px var(--primary-glow); }
   .msg:not(.self) .msg-bubble { border-bottom-left-radius: 4px; }
-  .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 4px; text-align: right; }
-  .msg-img { max-width: 200px; border-radius: 12px; margin-bottom: 6px; display: block; }
+  .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 5px; text-align: right; }
+  .msg-img { max-width: 220px; border-radius: 12px; margin-bottom: 6px; display: block; }
   
-  .chat-input-area { position: fixed; bottom: 65px; width: 100%; max-width: 480px; background: var(--bg-card); border-top: 1px solid var(--border); padding: 10px 15px; display: flex; flex-direction: column; }
-  @media(min-width: 768px) { .chat-input-area { max-width: 600px; } }
-  .chat-tools { display: flex; gap: 15px; padding-bottom: 10px; color: var(--text-muted); }
-  .chat-tools svg { width: 24px; height: 24px; cursor: pointer; fill: none; stroke: currentColor; stroke-width: 2; }
+  .chat-input-area { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 450px; background: var(--surface); backdrop-filter: blur(20px); border: 1px solid var(--border); padding: 10px 15px; display: flex; flex-direction: column; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 99; }
+  @media(min-width: 768px) { .chat-input-area { max-width: 570px; } }
+  .chat-tools { display: flex; gap: 20px; padding: 5px 10px 10px; color: var(--text-muted); }
+  .chat-tools svg { width: 24px; height: 24px; cursor: pointer; fill: none; stroke: currentColor; stroke-width: 2; transition: 0.2s; }
+  .chat-tools svg:hover { color: var(--primary); }
   .chat-input-row { display: flex; gap: 10px; align-items: center; }
-  .chat-input-row input { flex: 1; padding: 14px 20px; border-radius: 25px; border: 1px solid var(--border); outline: none; font-size: 15px; background: var(--bg-dark); color: var(--text-main); }
-  .chat-send-btn { background: var(--primary); color: white; border: none; width: 48px; height: 48px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
+  .chat-input-row input { flex: 1; padding: 12px 18px; border-radius: 20px; border: 1px solid var(--border); outline: none; font-size: 15px; background: var(--bg-color); color: var(--text); }
+  .chat-send-btn { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px var(--primary-glow); }
 
-  /* STORY VIEWER (FULL SCREEN) */
-  .story-viewer { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
-  .story-progress-bar { display: flex; gap: 4px; padding: 10px 15px; }
-  .progress-segment { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
-  .story-header { display: flex; align-items: center; gap: 10px; padding: 0 15px; color: white; margin-bottom: 10px; }
-  .story-content { flex: 1; display: flex; justify-content: center; align-items: center; position: relative; }
-  .story-media { max-width: 100%; max-height: 100%; object-fit: contain; }
-  .story-nav { position: absolute; top: 0; bottom: 0; width: 50%; z-index: 10; cursor: pointer; }
+  /* PROFILE */
+  .profile-header { padding: 30px 20px; display: flex; align-items: center; gap: 20px; }
+  .profile-avatar { width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+  .profile-avatar img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-color); object-fit: cover; }
+  .grid-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 0 3px; }
+  .grid-posts img, .grid-posts video { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+  .grid-posts img:hover, .grid-posts video:hover { opacity: 0.8; }
 
-  /* MODALS & LOADERS */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-  .modal-box { background: var(--bg-card); width: 100%; max-width: 380px; border-radius: 20px; padding: 25px; border: 1px solid var(--border); }
+  /* MODALS & UTILS */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); width: 100%; max-width: 380px; border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
   .input-group { margin-bottom: 15px; }
-  .input-group input { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-dark); color: var(--text-main); outline: none; font-size: 15px; }
-  .btn { width: 100%; padding: 15px; border-radius: 12px; font-weight: 600; font-size: 16px; cursor: pointer; border: none; background: var(--primary); color: white; transition: 0.2s; }
-  .btn:active { transform: scale(0.98); }
+  .input-group input { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 15px; background: var(--bg-color); color: var(--text); outline: none; font-size: 15px; transition: 0.2s; }
+  .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
   
   .spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 50px auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  
   .hidden { display: none !important; }
+
+  /* STORY VIEWER */
+  .story-viewer { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+  .story-progress { display: flex; gap: 4px; padding: 15px; }
+  .progress-segment { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
+  .story-media { max-width: 100%; max-height: 100%; object-fit: contain; }
 </style>
 </head>
 <body>
@@ -142,15 +159,11 @@
 
 <!-- STORY VIEWER -->
 <div class="story-viewer" id="storyViewer">
-  <div class="story-progress-bar" id="storyProgress"></div>
-  <div class="story-header">
-    <div class="avatar" style="width:32px; height:32px; border:1px solid white;"><img id="storyAvatar" src=""></div>
-    <div style="font-weight:600; font-size:14px;" id="storyUser"></div>
-    <div style="margin-left:auto; cursor:pointer; font-size:24px;" onclick="closeStoryViewer()">×</div>
-  </div>
-  <div class="story-content">
-    <div class="story-nav" onclick="prevStory()"></div>
-    <div class="story-nav" style="right:0;" onclick="nextStory()"></div>
+  <div class="story-progress" id="storyProgress"></div>
+  <div style="padding: 0 15px; color:white; font-weight:600; display:flex; align-items:center; gap:10px;" id="storyHeader"></div>
+  <div style="flex:1; display:flex; justify-content:center; align-items:center; position:relative;" id="storyContent">
+    <div style="position:absolute; left:0; top:0; bottom:0; width:50%; z-index:10;" onclick="prevStory()"></div>
+    <div style="position:absolute; right:0; top:0; bottom:0; width:50%; z-index:10;" onclick="nextStory()"></div>
     <img id="storyMedia" class="story-media" src="">
   </div>
 </div>
@@ -158,15 +171,15 @@
 <!-- AUTH MODAL -->
 <div class="modal-overlay" id="authOverlay">
   <div class="modal-box">
-    <h2 style="text-align:center; margin-bottom:20px; font-weight:800;" id="authTitle">Create Account</h2>
+    <h2 style="text-align:center; margin-bottom:25px; font-weight:800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size:28px;" id="authTitle">Create Account</h2>
     <form id="authForm" onsubmit="handleAuth(event)">
-      <div class="input-group"><input id="authEmail" type="email" placeholder="Email" required></div>
+      <div class="input-group"><input id="authEmail" type="email" placeholder="Email Address" required></div>
       <div class="input-group" id="usernameGroup"><input id="authUsername" type="text" placeholder="Username" required></div>
       <div class="input-group"><input id="authPassword" type="password" placeholder="Password" required></div>
       <div id="authError" style="color:var(--danger); font-size:13px; text-align:center; margin-bottom:15px; display:none;"></div>
-      <button type="submit" class="btn" id="authSubmitBtn">Sign Up</button>
+      <button type="submit" class="btn-primary" id="authSubmitBtn">Sign Up</button>
     </form>
-    <div style="text-align:center; margin-top:20px; font-size:14px; color:var(--text-muted);" id="authToggleBox">
+    <div style="text-align:center; margin-top:25px; font-size:14px; color:var(--text-muted);" id="authToggleBox">
       Already have an account? <a href="#" onclick="toggleAuthMode(event)" style="color:var(--primary); font-weight:600; text-decoration:none;">Log In</a>
     </div>
   </div>
@@ -179,8 +192,8 @@
     <div class="input-group"><input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatar(event)" style="padding:10px; border:1px dashed var(--border);"></div>
     <div class="input-group"><input id="editUsername" type="text" placeholder="Username"></div>
     <div class="input-group"><input id="editBio" type="text" placeholder="Bio"></div>
-    <button class="btn" onclick="saveProfile()">Save Changes</button>
-    <button class="btn" style="background:transparent; color:var(--text-muted); margin-top:10px;" onclick="$('editProfileOverlay').style.display='none'">Cancel</button>
+    <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('editProfileOverlay').style.display='none'">Cancel</button>
   </div>
 </div>
 
@@ -188,13 +201,13 @@
 <div class="modal-overlay" id="addStoryOverlay">
   <div class="modal-box">
     <h2 style="margin-bottom:20px;">Add Story</h2>
-    <div class="input-group"><input type="file" id="storyFile" accept="image/*" style="padding:15px; border:1px dashed var(--border);"></div>
-    <button class="btn" onclick="uploadStory()" id="uploadStoryBtn">Upload to Story</button>
-    <button class="btn" style="background:transparent; color:var(--text-muted); margin-top:10px;" onclick="$('addStoryOverlay').style.display='none'">Cancel</button>
+    <div class="input-group"><input type="file" id="storyFile" accept="image/*" style="padding:15px; border:1px dashed var(--border); border-radius:15px;"></div>
+    <button class="btn-primary" onclick="uploadStory()" id="uploadStoryBtn">Upload to Story</button>
+    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('addStoryOverlay').style.display='none'">Cancel</button>
   </div>
 </div>
 
-<div id="toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%,-100px); background:var(--primary); color:#fff; padding:12px 24px; border-radius:30px; font-weight:600; z-index:99999; transition:0.3s; opacity:0; pointer-events:none; box-shadow:0 10px 20px rgba(0,0,0,0.3);"></div>
+<div id="toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%,-100px); background:var(--text); color:var(--bg-color); padding:12px 24px; border-radius:30px; font-weight:700; z-index:99999; transition:0.3s; opacity:0; pointer-events:none; box-shadow:0 10px 20px rgba(0,0,0,0.3);"></div>
 
 <script>
 const SUPABASE_URL = 'https://ujbepvlzrdvcmxpmdsez.supabase.co';
@@ -207,7 +220,7 @@ let activeRoomId = null, activeRoomMembers = [], chatChannel = null;
 let mediaRecorder, audioChunks = [], isRecording = false;
 let currentStories = [], currentStoryIndex = 0, storyTimer = null;
 
-const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231e293b'/><circle cx='50' cy='35' r='20' fill='%236366f1'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%236366f1'/></svg>";
+const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2318181b'/><circle cx='50' cy='35' r='20' fill='%238b5cf6'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%238b5cf6'/></svg>";
 
 function $(id){ return document.getElementById(id); }
 function escapeHTML(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -224,6 +237,7 @@ function switchPanel(name){
   if(name==='chat') renderChatList();
   if(name==='profile' && currentUser) renderProfile(currentUser.id);
   if(name==='search') renderSearch();
+  if(name==='upload') renderUpload();
 }
 
 // AUTH
@@ -285,18 +299,15 @@ async function renderFeed() {
     const likesRes = await sb.from('likes').select('*').in('post_id', postIds).then(r => r.data || []).catch(() => []);
     const commentsRes = await sb.from('comments').select('*').in('post_id', postIds).then(r => r.data || []).catch(() => []);
 
-    // STORIES BAR HTML
-    let storiesHTML = `
-      <div class="stories-container">
-        <div class="story-item" onclick="$('addStoryOverlay').style.display='flex'">
-          <div class="story-ring" style="background:var(--bg-card); border:1px dashed var(--text-muted); padding:0;">
-            <div style="width:100%; height:100%; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:28px; color:var(--primary);">+</div>
-          </div>
-          <div class="story-name">Add Story</div>
+    // STORIES
+    let storiesHTML = `<div class="stories-container">
+      <div class="story-item" onclick="$('addStoryOverlay').style.display='flex'">
+        <div class="story-ring" style="background: var(--surface); border: 1px solid var(--border);">
+          <div style="width:100%; height:100%; border-radius:50%; display:flex; justify-content:center; align-items:center; font-size:28px; color:var(--primary);">+</div>
         </div>
-    `;
+        <div class="story-name">Add Story</div>
+      </div>`;
 
-    // Group stories by user (simple approach: just show the first story of each user)
     const uniqueStoryUsers = new Set();
     (stories||[]).forEach(s => {
       if(!uniqueStoryUsers.has(s.user_id)) {
@@ -308,13 +319,12 @@ async function renderFeed() {
               <img src="${prof.avatar_url || DEFAULT_PFP}" class="story-img">
             </div>
             <div class="story-name">${escapeHTML(prof.username)}</div>
-          </div>
-        `;
+          </div>`;
       }
     });
     storiesHTML += `</div>`;
 
-    // POSTS HTML
+    // POSTS
     let postsHTML = posts.map(p => {
       const prof = profileMap[p.user_id] || {username: p.username, avatar_url: null};
       const isVideo = p.video_url && p.video_url.length > 0;
@@ -350,10 +360,10 @@ async function renderFeed() {
         
         <div style="padding: 10px 20px 0;" id="comments-${p.id}">
            <div id="comment-list-${p.id}" class="hidden">
-             ${postComments.map(c => `<div style="font-size:13px; margin-bottom:8px; color:var(--text-muted);"><strong style="color:var(--text-main);">${escapeHTML(c.username)}</strong> ${escapeHTML(c.text)}</div>`).join('')}
+             ${postComments.map(c => `<div style="font-size:13px; margin-bottom:8px; color:var(--text-muted);"><strong style="color:var(--text);">${escapeHTML(c.username)}</strong> ${escapeHTML(c.text)}</div>`).join('')}
            </div>
            <div style="display:flex; gap:10px; margin-top:10px;">
-             <input type="text" placeholder="Add a comment..." style="flex:1; background:transparent; border:none; outline:none; color:var(--text-main); font-size:14px;" onkeydown="if(event.key==='Enter')addComment(${p.id}, this)">
+             <input type="text" placeholder="Add a comment..." style="flex:1; background:transparent; border:none; outline:none; color:var(--text); font-size:14px;" onkeydown="if(event.key==='Enter')addComment(${p.id}, this)">
              <button style="background:none; border:none; color:var(--primary); font-weight:600; cursor:pointer;" onclick="addComment(${p.id}, this.previousElementSibling)">Post</button>
            </div>
         </div>
@@ -361,7 +371,75 @@ async function renderFeed() {
     }).join('');
 
     el.innerHTML = storiesHTML + postsHTML;
-  } catch(ex) { console.error(ex); el.innerHTML = `<div style="text-align:center; padding:20px;">Error loading feed. Please check DB.</div>`; }
+  } catch(ex) { console.error(ex); el.innerHTML = `<div style="text-align:center; padding:20px;">Error loading feed.</div>`; }
+}
+
+// UPLOAD PANEL (Fixed)
+function renderUpload() {
+  $('panel-upload').innerHTML = `
+    <div style="padding: 20px;">
+      <h2 style="margin-bottom: 20px; font-size: 24px;">Create Post</h2>
+      
+      <input type="file" id="postFile" accept="image/*,video/*" style="display:none;" onchange="previewPost(event)">
+      
+      <div class="upload-card" onclick="$('postFile').click()">
+        <div class="upload-icon">📸</div>
+        <div style="font-weight: 600;">Tap to select Image / Video</div>
+        <div style="font-size: 12px; color: var(--text-muted);">Share your moments with the world</div>
+      </div>
+
+      <img id="postPreview" class="preview-img">
+      
+      <textarea id="postCaption" rows="3" placeholder="Write a caption..."></textarea>
+      
+      <button class="btn-primary" id="postBtn" onclick="createPost()">Share Post</button>
+    </div>
+  `;
+}
+
+let postFileObj = null;
+function previewPost(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  postFileObj = file;
+  const url = URL.createObjectURL(file);
+  const img = $('postPreview');
+  img.src = url;
+  img.style.display = 'block';
+}
+
+async function createPost() {
+  const caption = $('postCaption').value.trim();
+  if(!postFileObj) { toast('Please select a photo/video'); return; }
+  
+  const btn = $('postBtn'); btn.textContent = 'Uploading...'; btn.disabled = true;
+  try {
+    const isVideo = postFileObj.type.startsWith('video');
+    const bucket = isVideo ? 'videos' : 'posts';
+    const path = `${currentUser.id}/${Date.now()}.${postFileObj.name.split('.').pop()}`;
+    
+    const {error: uploadErr} = await sb.storage.from(bucket).upload(path, postFileObj);
+    if(uploadErr) throw uploadErr;
+    
+    const {data: {publicUrl}} = sb.storage.from(bucket).getPublicUrl(path);
+    
+    const {error: dbErr} = await sb.from('posts').insert([{
+      user_id: currentUser.id, 
+      username: currentUser.username, 
+      caption: caption || '', 
+      image_url: isVideo ? null : publicUrl, 
+      video_url: isVideo ? publicUrl : null
+    }]);
+    if(dbErr) throw dbErr;
+    
+    toast('Posted successfully! 🎉');
+    postFileObj = null;
+    switchPanel('feed');
+  } catch(ex) { 
+    toast('Error: ' + ex.message); 
+  } finally { 
+    btn.textContent = 'Share Post'; btn.disabled = false; 
+  }
 }
 
 // STORY VIEWER LOGIC
@@ -381,49 +459,27 @@ function loadStory(index) {
   
   const story = currentStories[index];
   $('storyMedia').src = story.media_url;
-  $('storyUser').textContent = story.username;
-  $('storyAvatar').src = DEFAULT_PFP; // Ideally fetch profile pic
+  $('storyHeader').innerHTML = `<div class="avatar" style="width:32px; height:32px;"><img src="${DEFAULT_PFP}"></div> ${escapeHTML(story.username)}`;
   
-  // Progress Bar
   let progressHTML = '';
   for(let i=0; i<currentStories.length; i++) {
     progressHTML += `<div class="progress-segment"><div class="progress-fill" id="prog-${i}" style="width: ${i < index ? '100%' : '0%'};"></div></div>`;
   }
   $('storyProgress').innerHTML = progressHTML;
   
-  // Animate current progress
   const fill = $(`prog-${index}`);
   let width = 0;
   clearInterval(storyTimer);
   storyTimer = setInterval(() => {
-    width += 2; // 50 * 2 = 1000ms (Wait, 100% / 50 = 2. 50 * 100ms = 5000ms)
-    if(width >= 100) {
-      clearInterval(storyTimer);
-      nextStory();
-    } else {
-      fill.style.width = width + '%';
-    }
-  }, 100); // Updates every 100ms, so takes ~5 seconds
+    width += 2; 
+    if(width >= 100) { clearInterval(storyTimer); nextStory(); } 
+    else { fill.style.width = width + '%'; }
+  }, 100); 
 }
 
-function nextStory() {
-  clearInterval(storyTimer);
-  currentStoryIndex++;
-  loadStory(currentStoryIndex);
-}
-
-function prevStory() {
-  clearInterval(storyTimer);
-  if(currentStoryIndex > 0) {
-    currentStoryIndex--;
-    loadStory(currentStoryIndex);
-  }
-}
-
-function closeStoryViewer() {
-  $('storyViewer').style.display = 'none';
-  clearInterval(storyTimer);
-}
+function nextStory() { clearInterval(storyTimer); currentStoryIndex++; loadStory(currentStoryIndex); }
+function prevStory() { clearInterval(storyTimer); if(currentStoryIndex > 0) { currentStoryIndex--; loadStory(currentStoryIndex); } }
+function closeStoryViewer() { $('storyViewer').style.display = 'none'; clearInterval(storyTimer); }
 
 async function uploadStory() {
   const file = $('storyFile').files[0];
@@ -444,81 +500,7 @@ async function uploadStory() {
   finally { btn.textContent = 'Upload to Story'; btn.disabled = false; }
 }
 
-// ... Rest of the code (Likes, Comments, Reels, Chat, Profile) ...
-
-async function toggleLike(postId, btn) {
-  const isLiked = btn.classList.contains('liked');
-  try {
-    if(isLiked) {
-      await sb.from('likes').delete().eq('post_id', postId).eq('user_id', currentUser.id);
-      btn.classList.remove('liked'); 
-    } else {
-      await sb.from('likes').insert([{post_id: postId, user_id: currentUser.id}]);
-      btn.classList.add('liked'); 
-    }
-    const countEl = $(`likes-count-${postId}`);
-    let count = parseInt(countEl.textContent) || 0;
-    countEl.textContent = isLiked ? `${count - 1} likes` : `${count + 1} likes`;
-  } catch(ex) { toast('Error liking post'); }
-}
-
-function toggleComments(postId) {
-  const el = $(`comment-list-${postId}`);
-  el.classList.toggle('hidden');
-}
-
-async function addComment(postId, inputEl) {
-  const text = inputEl.value.trim();
-  if(!text) return;
-  try {
-    await sb.from('comments').insert([{post_id: postId, user_id: currentUser.id, username: currentUser.username, text}]);
-    inputEl.value = ''; renderFeed();
-  } catch(ex) { alert('Error adding comment'); }
-}
-
-function timeAgo(dateStr){
-  const diff = Math.floor((new Date() - new Date(dateStr))/1000);
-  if(diff < 60) return 'just now';
-  if(diff < 3600) return Math.floor(diff/60)+'m ago';
-  if(diff < 86400) return Math.floor(diff/3600)+'h ago';
-  return Math.floor(diff/86400)+'d ago';
-}
-
-// REELS
-async function renderReels() {
-  const el = $('panel-reels');
-  el.innerHTML = `<div class="spinner"></div>`;
-  try {
-    const {data:posts} = await sb.from('posts').select('*').not('video_url', 'is', null).order('created_at', {ascending:false});
-    if(!posts || posts.length === 0) { el.innerHTML = `<div style="text-align:center; padding:40px;">No Reels.</div>`; return; }
-
-    el.innerHTML = `<div style="height:calc(100vh - 65px); overflow-y:scroll; scroll-snap-type:y mandatory; background:#000;">
-      ${posts.map((p, index) => `
-        <div style="height:100%; width:100%; scroll-snap-align:start; position:relative; display:flex; justify-content:center; align-items:center;">
-          <video src="${p.video_url}" loop playsinline preload="${index === 0 ? 'auto' : 'none'}" style="width:100%; height:100%; object-fit:cover;"></video>
-          <div onclick="this.previousElementSibling.paused ? this.previousElementSibling.play() : this.previousElementSibling.pause()" style="position:absolute; inset:0;"></div>
-          <div style="position:absolute; bottom:20px; left:20px; color:#fff; text-shadow:0 1px 3px rgba(0,0,0,0.8);">
-             <div style="font-weight:600; font-size:15px;">${escapeHTML(p.username)}</div>
-             <div style="font-size:14px; margin-top:4px;">${escapeHTML(p.caption||'')}</div>
-          </div>
-        </div>
-      `).join('')}
-    </div>`;
-    
-    const firstVid = el.querySelector('video');
-    if(firstVid) { firstVid.muted = true; firstVid.play().catch(()=>{}); }
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const video = entry.target.querySelector('video');
-        if(entry.isIntersecting) video.play().catch(()=>{}); else video.pause();
-      });
-    }, { threshold: 0.6 });
-    el.querySelectorAll('div[style*="scroll-snap-align"]').forEach(card => observer.observe(card));
-  } catch(ex) { console.error(ex); }
-}
-
-// CHAT (FIXED FOR 400 ERROR)
+// CHAT
 async function renderChatList() {
   const el = $('panel-chat'); el.innerHTML = `<div class="spinner"></div>`;
   try {
@@ -547,21 +529,21 @@ async function renderChatList() {
       }
 
       return `
-      <div class="chat-list-item" onclick="openChatRoom(${r.id}, ${r.is_group})" style="display:flex; align-items:center; gap:12px; padding:15px 20px; border-bottom:1px solid var(--border); cursor:pointer;">
+      <div style="display:flex; align-items:center; gap:15px; padding:15px 20px; border-bottom:1px solid var(--border); cursor:pointer; transition:0.2s;" onclick="openChatRoom(${r.id}, ${r.is_group})">
         <div style="position:relative;">
-          <div class="avatar" style="width:50px; height:50px;">${r.is_group ? '👥' : `<img src="${DEFAULT_PFP}">`}</div>
-          ${isOnline ? '<div style="position:absolute; bottom:0; right:0; width:12px; height:12px; background:var(--success); border-radius:50%; border:2px solid var(--bg-dark);"></div>' : ''}
+          <div class="avatar" style="width:55px; height:55px;">${r.is_group ? '👥' : `<img src="${DEFAULT_PFP}">`}</div>
+          ${isOnline ? '<div style="position:absolute; bottom:0; right:0; width:14px; height:14px; background:var(--success); border-radius:50%; border:2px solid var(--bg-color); box-shadow:0 0 8px var(--success);"></div>' : ''}
         </div>
         <div style="flex:1; min-width:0;">
-          <div style="font-weight:600; font-size:15px;">${escapeHTML(displayName)}</div>
-          <div style="font-size:13px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHTML(preview)}</div>
+          <div style="font-weight:600; font-size:16px;">${escapeHTML(displayName)}</div>
+          <div style="font-size:14px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${escapeHTML(preview)}</div>
         </div>
-        <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:18px;" onclick="event.stopPropagation(); deleteChat(${r.id})">🗑️</button>
+        <button style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:20px;" onclick="event.stopPropagation(); deleteChat(${r.id})">🗑️</button>
       </div>`;
     }).join('');
 
-    el.innerHTML = `<div style="padding:20px; font-weight:600; font-size:20px;">Messages</div><div>${roomsHTML}</div>`;
-  } catch(ex) { el.innerHTML = `<div style="text-align:center; padding:20px;">Error.</div>`; }
+    el.innerHTML = `<div style="padding:20px; font-weight:700; font-size:24px;">Messages</div><div>${roomsHTML}</div>`;
+  } catch(ex) { el.innerHTML = `<div style="text-align:center; padding:20px;">Error loading chats.</div>`; }
 }
 
 async function deleteChat(roomId) {
@@ -580,17 +562,17 @@ async function openChatRoom(roomId, isGroup) {
 
   el.innerHTML = `
     <div class="chat-header">
-      <button style="background:none; border:none; color:var(--text-main); font-size:24px; cursor:pointer;" onclick="renderChatList()">←</button>
+      <button style="background:none; border:none; color:var(--text); font-size:26px; cursor:pointer;" onclick="renderChatList()">←</button>
       <div class="avatar">${isGroup ? '👥' : `<img src="${DEFAULT_PFP}">`}</div>
-      <div style="font-weight:600; font-size:16px;">${escapeHTML(roomName)}</div>
+      <div style="font-weight:600; font-size:17px;">${escapeHTML(roomName)}</div>
     </div>
     <div class="chat-messages" id="chatMessagesBox"></div>
     
     <div class="chat-input-area">
       <div class="chat-tools">
-        <span style="cursor:pointer;" onclick="$('chatImageUpload').click()">📷</span>
+        <span style="cursor:pointer;" onclick="$('chatImageUpload').click()"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></span>
         <input type="file" id="chatImageUpload" hidden accept="image/*" onchange="uploadChatImage(event)">
-        <span style="cursor:pointer;" onclick="toggleRecording()" id="micBtn">🎤</span>
+        <span style="cursor:pointer;" onclick="toggleRecording()" id="micBtn"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></span>
       </div>
       <div class="chat-input-row">
         <input id="chatInput" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChat()">
@@ -628,21 +610,20 @@ async function uploadChatImage(e) {
 async function uploadChatMedia(file, type) {
   try {
     const path = `${currentUser.id}/${Date.now()}.${file.name.split('.').pop()}`;
-    // Upload to 'chat_media' bucket
     const {error: uploadError} = await sb.storage.from('chat_media').upload(path, file);
     if(uploadError) throw uploadError;
     
     const {data: {publicUrl}} = sb.storage.from('chat_media').getPublicUrl(path);
     
-    const msgData = { room_id: activeRoomId, user_id: currentUser.id, username: currentUser.username };
+    // Fix for "null value in column text": Send text as empty string instead of null
+    const msgData = { room_id: activeRoomId, user_id: currentUser.id, username: currentUser.username, text: '' };
     if(type === 'image') msgData.image_url = publicUrl;
     if(type === 'audio') msgData.audio_url = publicUrl;
     
-    // Check if columns exist before inserting. If error, tell user.
     const {error: dbError} = await sb.from('chat_messages').insert([msgData]);
     if(dbError) {
       if(dbError.message.includes('column') && dbError.message.includes('does not exist')) {
-        alert('Database Error: You forgot to run the SQL query to add image_url and audio_url columns to chat_messages!');
+        alert('Database Error: You forgot to run the SQL query to add image_url and audio_url columns!');
       } else {
         throw dbError;
       }
@@ -663,7 +644,7 @@ async function loadMessages() {
         <div class="msg-bubble">
           ${m.text ? `<div>${escapeHTML(m.text)}</div>` : ''}
           ${m.image_url ? `<img src="${m.image_url}" class="msg-img">` : ''}
-          ${m.audio_url ? `<audio controls src="${m.audio_url}" style="max-width:200px; height:35px;"></audio>` : ''}
+          ${m.audio_url ? `<audio controls src="${m.audio_url}" style="max-width:200px; height:35px; filter: invert(1);"></audio>` : ''}
         </div>
         <div class="msg-time">${formatTime(m.created_at)}</div>
       </div>
@@ -692,7 +673,7 @@ function subscribeToMessages() {
           <div class="msg-bubble">
             ${m.text ? `<div>${escapeHTML(m.text)}</div>` : ''}
             ${m.image_url ? `<img src="${m.image_url}" class="msg-img">` : ''}
-            ${m.audio_url ? `<audio controls src="${m.audio_url}" style="max-width:200px; height:35px;"></audio>` : ''}
+            ${m.audio_url ? `<audio controls src="${m.audio_url}" style="max-width:200px; height:35px; filter: invert(1);"></audio>` : ''}
           </div>
           <div class="msg-time">${formatTime(m.created_at)}</div>
         </div>
@@ -716,18 +697,18 @@ async function renderProfile(userId) {
   const {data:posts} = await sb.from('posts').select('*').eq('user_id', userId).order('created_at', {ascending:false});
   
   el.innerHTML = `
-    <div style="padding:25px 20px; display:flex; align-items:center; gap:20px;">
-      <div class="avatar" style="width:80px; height:80px; border:2px solid var(--primary); padding:3px;"><img src="${prof.avatar_url || DEFAULT_PFP}" style="border-radius:50%;"></div>
+    <div class="profile-header">
+      <div class="profile-avatar"><img src="${prof.avatar_url || DEFAULT_PFP}"></div>
       <div style="flex:1;">
-        <h2 style="font-size:22px; font-weight:600; margin-bottom:10px;">${escapeHTML(prof.username)}</h2>
-        <button style="background:var(--bg-card); border:1px solid var(--border); padding:8px 20px; border-radius:10px; font-weight:600; cursor:pointer; color:var(--text-main);" onclick="$('editProfileOverlay').style.display='flex'">Edit Profile</button>
+        <h2 style="font-size:24px; font-weight:700; margin-bottom:15px;">${escapeHTML(prof.username)}</h2>
+        <button style="background:var(--surface); border:1px solid var(--border); padding:10px 24px; border-radius:12px; font-weight:600; cursor:pointer; color:var(--text);" onclick="$('editProfileOverlay').style.display='flex'">Edit Profile</button>
       </div>
     </div>
-    <div style="padding:0 20px 20px; font-size:14px; color:var(--text-muted);">
-      <b style="color:var(--text-main);">${escapeHTML(prof.username)}</b><br>${escapeHTML(prof.bio || '')}
+    <div style="padding:0 20px 20px; font-size:15px; color:var(--text-muted); line-height:1.5;">
+      <b style="color:var(--text);">${escapeHTML(prof.username)}</b><br>${escapeHTML(prof.bio || '')}
     </div>
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:2px;">
-      ${(posts||[]).map(p => p.image_url ? `<img src="${p.image_url}" style="width:100%; aspect-ratio:1; object-fit:cover;">` : `<video src="${p.video_url}" style="width:100%; aspect-ratio:1; object-fit:cover;"></video>`).join('')}
+    <div class="grid-posts">
+      ${(posts||[]).map(p => p.image_url ? `<img src="${p.image_url}">` : `<video src="${p.video_url}"></video>`).join('')}
     </div>
   `;
   $('editUsername').value = prof.username; $('editBio').value = prof.bio || '';
@@ -750,7 +731,7 @@ async function uploadAvatar(e) {
 async function renderSearch() {
   $('panel-search').innerHTML = `
     <div style="padding:20px;">
-      <input type="text" id="searchInput" placeholder="Search users..." oninput="doSearch()" style="width:100%; padding:15px; border:1px solid var(--border); border-radius:12px; background:var(--bg-card); color:var(--text-main); outline:none;">
+      <input type="text" id="searchInput" placeholder="Search users..." oninput="doSearch()" style="width:100%; padding:16px; border:1px solid var(--border); border-radius:15px; background:var(--surface); color:var(--text); outline:none; font-size:15px;">
       <div id="searchResults" style="margin-top:20px;"></div>
     </div>
   `;
@@ -793,6 +774,44 @@ function subscribePresence() {
   presenceChannel.subscribe(async (status) => {
     if(status === 'SUBSCRIBED') await presenceChannel.track({ username: currentUser.username });
   });
+}
+
+function timeAgo(dateStr){
+  const diff = Math.floor((new Date() - new Date(dateStr))/1000);
+  if(diff < 60) return 'just now';
+  if(diff < 3600) return Math.floor(diff/60)+'m ago';
+  if(diff < 86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+
+async function toggleLike(postId, btn) {
+  const isLiked = btn.classList.contains('liked');
+  try {
+    if(isLiked) {
+      await sb.from('likes').delete().eq('post_id', postId).eq('user_id', currentUser.id);
+      btn.classList.remove('liked'); 
+    } else {
+      await sb.from('likes').insert([{post_id: postId, user_id: currentUser.id}]);
+      btn.classList.add('liked'); 
+    }
+    const countEl = $(`likes-count-${postId}`);
+    let count = parseInt(countEl.textContent) || 0;
+    countEl.textContent = isLiked ? `${count - 1} likes` : `${count + 1} likes`;
+  } catch(ex) { toast('Error liking post'); }
+}
+
+function toggleComments(postId) {
+  const el = $(`comment-list-${postId}`);
+  el.classList.toggle('hidden');
+}
+
+async function addComment(postId, inputEl) {
+  const text = inputEl.value.trim();
+  if(!text) return;
+  try {
+    await sb.from('comments').insert([{post_id: postId, user_id: currentUser.id, username: currentUser.username, text}]);
+    inputEl.value = ''; renderFeed();
+  } catch(ex) { alert('Error adding comment'); }
 }
 
 init();

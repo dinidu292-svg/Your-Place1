@@ -26,16 +26,31 @@
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family: var(--font); }
   body { background: var(--bg-color); color: var(--text); min-height: 100vh; display: flex; justify-content: center; overflow-x: hidden; background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, transparent 50%); }
   
-  .app-wrapper { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding-bottom: 80px; background: transparent; }
-  @media(min-width: 768px) { .app-wrapper { max-width: 600px; border-left: 1px solid var(--border); border-right: 1px solid var(--border); box-shadow: 0 0 50px rgba(0,0,0,0.5); } }
+  /* APP LAYOUT (RESPONSIVE) */
+  .app-wrapper { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding-bottom: 80px; background: transparent; transition: 0.3s; }
+  
+  /* DESKTOP FIX: Make it look like a beautiful floating app */
+  @media(min-width: 768px) { 
+    .app-wrapper { 
+      max-width: 650px; 
+      margin: 20px auto; 
+      min-height: calc(100vh - 40px); 
+      border-radius: 24px; 
+      border: 1px solid var(--border); 
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8); 
+      background: rgba(15, 15, 20, 0.6);
+      backdrop-filter: blur(10px);
+    } 
+    .bottom-nav { max-width: 600px; width: calc(100% - 40px); }
+    .chat-input-area { max-width: 600px; }
+  }
 
   /* HEADER */
-  .header { position: sticky; top: 0; background: rgba(9, 9, 11, 0.7); backdrop-filter: blur(20px); height: 65px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); z-index: 100; }
+  .header { position: sticky; top: 0; background: rgba(9, 9, 11, 0.7); backdrop-filter: blur(20px); height: 65px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); z-index: 100; border-radius: 24px 24px 0 0; }
   .logo { font-size: 24px; font-weight: 800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; cursor: pointer; letter-spacing: -0.5px; }
   
   /* BOTTOM NAV */
-  .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 450px; height: 65px; background: rgba(24, 24, 27, 0.7); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-  @media(min-width: 768px) { .bottom-nav { max-width: 570px; } }
+  .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); height: 65px; background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 24px; display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   .nav-item { cursor: pointer; color: var(--text-muted); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; justify-content: center; align-items: center; width: 50px; height: 50px; border-radius: 16px; }
   .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .nav-item.active { color: var(--text); background: linear-gradient(135deg, var(--primary), var(--accent)); box-shadow: 0 4px 15px var(--primary-glow); transform: translateY(-5px); }
@@ -77,6 +92,10 @@
   .post-caption strong { font-weight: 600; margin-right: 6px; cursor: pointer; }
   .post-caption a { color: var(--primary); text-decoration: none; font-weight: 600; }
 
+  /* DELETE BUTTON */
+  .delete-btn { margin-left: auto; background: rgba(239, 68, 68, 0.1); border: none; color: var(--danger); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+  .delete-btn:hover { background: rgba(239, 68, 68, 0.2); }
+
   /* UPLOAD PANEL */
   .upload-card { margin: 20px; background: var(--surface); border: 1px dashed var(--primary); border-radius: 20px; padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; cursor: pointer; transition: 0.3s; }
   .upload-card:hover { background: var(--surface-hover); border-color: var(--accent); }
@@ -102,8 +121,7 @@
   .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 5px; text-align: right; }
   .msg-img { max-width: 220px; border-radius: 12px; margin-bottom: 6px; display: block; }
   
-  .chat-input-area { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); max-width: 450px; background: var(--surface); backdrop-filter: blur(20px); border: 1px solid var(--border); padding: 10px 15px; display: flex; flex-direction: column; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 99; }
-  @media(min-width: 768px) { .chat-input-area { max-width: 570px; } }
+  .chat-input-area { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); background: var(--surface); backdrop-filter: blur(20px); border: 1px solid var(--border); padding: 10px 15px; display: flex; flex-direction: column; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 99; }
   .chat-tools { display: flex; gap: 20px; padding: 5px 10px 10px; color: var(--text-muted); }
   .chat-tools svg { width: 24px; height: 24px; cursor: pointer; fill: none; stroke: currentColor; stroke-width: 2; transition: 0.2s; }
   .chat-tools svg:hover { color: var(--primary); }
@@ -116,7 +134,6 @@
   .profile-avatar { width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
   .profile-avatar img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-color); object-fit: cover; }
   
-  /* GRID POSTS FIX */
   .grid-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 0 3px; }
   .grid-posts .grid-item { width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 8px; cursor: pointer; background: var(--surface); position: relative; }
   .grid-posts img, .grid-posts video { width: 100%; height: 100%; object-fit: cover; display: block; transition: 0.2s; }
@@ -134,13 +151,6 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .hidden { display: none !important; }
   
-  /* VIEW PROFILE MODAL */
-  #viewProfileOverlay .modal-box { max-width: 450px; padding: 0; overflow: hidden; }
-  .vp-cover { height: 120px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
-  .vp-content { padding: 0 20px 20px; text-align: center; margin-top: -50px; }
-  .vp-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--surface); margin: 0 auto 10px; background: var(--bg-color); }
-  .vp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-  
   /* VIEW POST MODAL */
   #viewPostOverlay .modal-box { max-width: 500px; padding: 0; overflow: hidden; background: var(--bg-color); }
   .post-viewer-header { display: flex; align-items: center; gap: 10px; padding: 15px; border-bottom: 1px solid var(--border); }
@@ -148,11 +158,14 @@
   .post-viewer-actions { padding: 15px; }
   
   /* STORY VIEWER */
-  .story-viewer { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+  .story-viewer { position: fixed; inset: 0; background: #000; z-index: 99999; display: none; flex-direction: column; }
   .story-progress { display: flex; gap: 4px; padding: 15px; }
   .progress-segment { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden; }
   .progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
   .story-media { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+  /* ABOUT CREATOR CARD */
+  .creator-card { margin: 20px; padding: 20px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1)); border: 1px solid var(--primary-glow); border-radius: 16px; text-align: center; }
 </style>
 </head>
 <body>
@@ -289,6 +302,17 @@ function switchPanel(name){
   if(name==='upload') renderUpload();
 }
 
+// DELETE POST
+async function deletePost(postId) {
+  if(!confirm('Are you sure you want to delete this post?')) return;
+  try {
+    await sb.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id);
+    toast('Post deleted successfully 🗑️');
+    $('viewPostOverlay').style.display = 'none';
+    renderFeed();
+  } catch(ex) { toast('Error deleting post'); }
+}
+
 // VIEW SINGLE POST
 async function viewPost(postId) {
   $('viewPostOverlay').style.display = 'flex';
@@ -298,6 +322,7 @@ async function viewPost(postId) {
     const {data:p} = await sb.from('posts').select('*').eq('id', postId).single();
     const {data:prof} = await sb.from('profiles').select('*').eq('id', p.user_id).maybeSingle();
     const isVideo = p.video_url && p.video_url.length > 0;
+    const isOwn = p.user_id === currentUser.id;
     
     const {data:likes} = await sb.from('likes').select('*').eq('post_id', postId);
     const {data:comments} = await sb.from('comments').select('*').eq('post_id', postId).order('created_at');
@@ -307,6 +332,7 @@ async function viewPost(postId) {
       <div class="post-viewer-header">
         <div class="avatar" onclick="viewUserProfile('${p.user_id}')"><img src="${prof?.avatar_url || DEFAULT_PFP}"></div>
         <div style="font-weight:600; font-size:15px; cursor:pointer;" onclick="viewUserProfile('${p.user_id}')">${escapeHTML(prof?.username || p.username)}</div>
+        ${isOwn ? `<button class="delete-btn" onclick="deletePost(${p.id})" style="margin-left:auto;">🗑️ Delete</button>` : ''}
       </div>
       
       ${isVideo 
@@ -352,7 +378,7 @@ async function addCommentInModal(postId) {
   try {
     await sb.from('comments').insert([{post_id: postId, user_id: currentUser.id, username: currentUser.username, text}]);
     inputEl.value = '';
-    viewPost(postId); // Refresh modal
+    viewPost(postId);
   } catch(ex) { toast('Error adding comment'); }
 }
 
@@ -397,60 +423,7 @@ async function handleAuth(e) {
   finally { btn.disabled = false; btn.textContent = authMode === 'login' ? 'Log In' : 'Sign Up'; }
 }
 
-// VIEW USER PROFILE
-async function viewUserProfile(userId) {
-  if(userId === currentUser.id) { switchPanel('profile'); return; }
-  
-  currentViewingUserId = userId;
-  $('viewProfileOverlay').style.display = 'flex';
-  
-  $('vpUsername').textContent = 'Loading...';
-  $('vpBio').textContent = '';
-  $('vpAvatar').src = DEFAULT_PFP;
-  
-  const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
-  if(prof) {
-    $('vpUsername').textContent = prof.username;
-    $('vpBio').textContent = prof.bio || 'No bio yet.';
-    if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
-  }
-}
-
-async function messageUser() {
-  if(!currentViewingUserId) return;
-  $('viewProfileOverlay').style.display = 'none';
-  
-  try {
-    const {data:myRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
-    const myRoomIds = (myRooms||[]).map(m => m.room_id);
-    
-    let existingRoomId = null;
-    if(myRoomIds.length > 0) {
-      const {data:theirRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentViewingUserId).in('room_id', myRoomIds);
-      for(const r of (theirRooms||[])) {
-        const {data:room} = await sb.from('chat_rooms').select('*').eq('id', r.room_id).single();
-        if(room && !room.is_group) { existingRoomId = room.id; break; }
-      }
-    }
-    
-    if(!existingRoomId) {
-      const {data:newRoom, error} = await sb.from('chat_rooms').insert([{is_group: false, created_by: currentUser.id}]).select().single();
-      if(error) throw error;
-      existingRoomId = newRoom.id;
-      
-      const {data:theirProf} = await sb.from('profiles').select('username').eq('id', currentViewingUserId).single();
-      await sb.from('room_members').insert([
-        {room_id: existingRoomId, user_id: currentUser.id, username: currentUser.username},
-        {room_id: existingRoomId, user_id: currentViewingUserId, username: theirProf?.username || 'User'}
-      ]);
-    }
-    
-    switchPanel('chat');
-    openChatRoom(existingRoomId, false);
-  } catch(ex) { toast('Error opening chat'); console.error(ex); }
-}
-
-// FEED & STORIES
+// FEED
 async function renderFeed() {
   const el = $('panel-feed');
   el.innerHTML = `<div class="spinner"></div>`;
@@ -499,15 +472,17 @@ async function renderFeed() {
       const postLikes = likesRes.filter(l => l.post_id === p.id);
       const postComments = commentsRes.filter(c => c.post_id === p.id);
       const hasLiked = postLikes.some(l => l.user_id === currentUser?.id);
+      const isOwn = p.user_id === currentUser.id;
 
       return `
       <div class="post">
-        <div class="post-header" onclick="viewUserProfile('${p.user_id}')">
-          <div class="avatar"><img src="${prof.avatar_url || DEFAULT_PFP}"></div>
-          <div>
+        <div class="post-header">
+          <div class="avatar" onclick="viewUserProfile('${p.user_id}')"><img src="${prof.avatar_url || DEFAULT_PFP}"></div>
+          <div onclick="viewUserProfile('${p.user_id}')" style="flex:1;">
             <div class="post-user">${escapeHTML(prof.username)}</div>
             <div class="post-time">${timeAgo(p.created_at)}</div>
           </div>
+          ${isOwn ? `<button class="delete-btn" onclick="deletePost(${p.id})">🗑️</button>` : ''}
         </div>
         
         <div onclick="viewPost(${p.id})" style="cursor:pointer;">
@@ -536,7 +511,6 @@ async function renderFeed() {
   } catch(ex) { console.error(ex); el.innerHTML = `<div style="text-align:center; padding:20px;">Error loading feed.</div>`; }
 }
 
-// SHARE
 function sharePost(postId) {
   const url = window.location.origin + '?post=' + postId;
   if (navigator.share) {
@@ -557,19 +531,16 @@ function fallbackCopy(text) {
   }
 }
 
-// LIKE
 async function toggleLike(postId, btn) {
   const isLiked = btn.classList.contains('liked');
   btn.classList.toggle('liked');
   
-  // Update feed count
   const countEl = $(`likes-count-${postId}`);
   if(countEl) {
     let count = parseInt(countEl.textContent) || 0;
     countEl.textContent = isLiked ? `${count - 1} likes` : `${count + 1} likes`;
   }
   
-  // Update modal count
   const modalCountEl = $(`modal-likes-count-${postId}`);
   if(modalCountEl) {
     let count = parseInt(modalCountEl.textContent) || 0;
@@ -638,6 +609,7 @@ async function renderProfile(userId) {
   if(!prof) prof = { username: currentUser.username, avatar_url: null, bio: '' };
   
   const {data:posts} = await sb.from('posts').select('*').eq('user_id', userId).order('created_at', {ascending:false});
+  const isMe = userId === currentUser.id;
   
   el.innerHTML = `
     <div class="profile-header">
@@ -646,7 +618,7 @@ async function renderProfile(userId) {
       </div>
       <div style="flex:1;">
         <h2 style="font-size:24px; font-weight:700; margin-bottom:15px;">${escapeHTML(prof.username)}</h2>
-        <button style="background:var(--surface); border:1px solid var(--border); padding:10px 24px; border-radius:12px; font-weight:600; cursor:pointer; color:var(--text);" onclick="$('editProfileOverlay').style.display='flex'">Edit Profile</button>
+        ${isMe ? `<button style="background:var(--surface); border:1px solid var(--border); padding:10px 24px; border-radius:12px; font-weight:600; cursor:pointer; color:var(--text);" onclick="$('editProfileOverlay').style.display='flex'">Edit Profile</button>` : ''}
       </div>
     </div>
     <div style="padding:0 20px 20px; font-size:15px; color:var(--text-muted); line-height:1.5;">
@@ -662,6 +634,18 @@ async function renderProfile(userId) {
         </div>
       `).join('')}
     </div>
+
+    <!-- ABOUT CREATOR (ලස්සන විස්තරය) -->
+    ${isMe ? `
+    <div class="creator-card">
+      <div style="font-size: 28px; margin-bottom: 10px;">🚀</div>
+      <h3 style="font-size: 18px; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">About The Creator</h3>
+      <p style="font-size: 14px; color: var(--text-muted); line-height: 1.6;">
+        <strong>Dinidu Wijesinghe</strong><br>
+        "Hi there! I'm Dinidu, the creator behind Your Place 2026. I built this platform with a simple vision: to create a safe, fun, and fast space for friends to connect, share moments, and chat without distractions. Thank you for being a part of this journey. Let's build a great community together!"
+      </p>
+    </div>
+    ` : ''}
   `;
   $('editUsername').value = prof.username; $('editBio').value = prof.bio || '';
 }
@@ -678,6 +662,55 @@ async function uploadAvatar(e) {
   const {data: {publicUrl}} = sb.storage.from('avatars').getPublicUrl(path);
   await sb.from('profiles').update({avatar_url: publicUrl}).eq('id', currentUser.id);
   renderProfile(currentUser.id);
+}
+
+// STORY VIEWER
+async function openStoryViewer(userId) {
+  const {data:stories} = await sb.from('stories').select('*').eq('user_id', userId).order('created_at', {ascending:true});
+  if(!stories || stories.length === 0) return;
+  currentStories = stories; currentStoryIndex = 0;
+  $('storyViewer').style.display = 'flex';
+  loadStory(currentStoryIndex);
+}
+
+function loadStory(index) {
+  if(index >= currentStories.length) { closeStoryViewer(); return; }
+  const story = currentStories[index];
+  $('storyMedia').src = story.media_url;
+  $('storyHeader').innerHTML = `<div class="avatar" style="width:32px; height:32px;"><img src="${DEFAULT_PFP}"></div> ${escapeHTML(story.username)}`;
+  
+  let progressHTML = '';
+  for(let i=0; i<currentStories.length; i++) {
+    progressHTML += `<div class="progress-segment"><div class="progress-fill" id="prog-${i}" style="width:${i < index ? '100%' : '0%'};"></div></div>`;
+  }
+  $('storyProgress').innerHTML = progressHTML;
+  
+  const fill = $(`prog-${index}`);
+  let width = 0;
+  clearInterval(storyTimer);
+  storyTimer = setInterval(() => {
+    width += 2; 
+    if(width >= 100) { clearInterval(storyTimer); nextStory(); } 
+    else { fill.style.width = width + '%'; }
+  }, 100); 
+}
+function nextStory() { clearInterval(storyTimer); currentStoryIndex++; loadStory(currentStoryIndex); }
+function prevStory() { clearInterval(storyTimer); if(currentStoryIndex > 0) { currentStoryIndex--; loadStory(currentStoryIndex); } }
+function closeStoryViewer() { $('storyViewer').style.display = 'none'; clearInterval(storyTimer); }
+
+async function uploadStory() {
+  const file = $('storyFile').files[0];
+  if(!file) { toast('Select a photo'); return; }
+  const btn = $('uploadStoryBtn'); btn.textContent = 'Uploading...'; btn.disabled = true;
+  try {
+    const path = `${currentUser.id}/story_${Date.now()}.jpg`;
+    const {error} = await sb.storage.from('stories').upload(path, file);
+    if(error) throw error;
+    const {data: {publicUrl}} = sb.storage.from('stories').getPublicUrl(path);
+    await sb.from('stories').insert([{user_id: currentUser.id, username: currentUser.username, media_url: publicUrl}]);
+    toast('Story posted! 🎉'); $('addStoryOverlay').style.display = 'none'; renderFeed();
+  } catch(ex) { toast('Error: ' + ex.message); }
+  finally { btn.textContent = 'Upload to Story'; btn.disabled = false; }
 }
 
 // CHAT
@@ -819,7 +852,6 @@ async function uploadChatMedia(file, type) {
   } catch(ex) { toast('Upload failed: ' + ex.message); }
 }
 
-// MESSAGE RENDERER
 function renderMessageContent(m) {
   let content = '';
   if (m.text) {
@@ -890,7 +922,6 @@ function formatTime(dateStr) {
   return new Date(dateStr).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 }
 
-// SEARCH
 async function renderSearch() {
   $('panel-search').innerHTML = `
     <div style="padding:20px;">
@@ -914,7 +945,52 @@ async function doSearch() {
   `).join('');
 }
 
-// INIT & PRESENCE
+// VIEW USER PROFILE MODAL
+async function viewUserProfile(userId) {
+  if(userId === currentUser.id) { switchPanel('profile'); return; }
+  currentViewingUserId = userId;
+  $('viewProfileOverlay').style.display = 'flex';
+  $('vpUsername').textContent = 'Loading...';
+  $('vpBio').textContent = '';
+  $('vpAvatar').src = DEFAULT_PFP;
+  
+  const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
+  if(prof) {
+    $('vpUsername').textContent = prof.username;
+    $('vpBio').textContent = prof.bio || 'No bio yet.';
+    if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
+  }
+}
+
+async function messageUser() {
+  if(!currentViewingUserId) return;
+  $('viewProfileOverlay').style.display = 'none';
+  try {
+    const {data:myRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
+    const myRoomIds = (myRooms||[]).map(m => m.room_id);
+    let existingRoomId = null;
+    if(myRoomIds.length > 0) {
+      const {data:theirRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentViewingUserId).in('room_id', myRoomIds);
+      for(const r of (theirRooms||[])) {
+        const {data:room} = await sb.from('chat_rooms').select('*').eq('id', r.room_id).single();
+        if(room && !room.is_group) { existingRoomId = room.id; break; }
+      }
+    }
+    if(!existingRoomId) {
+      const {data:newRoom, error} = await sb.from('chat_rooms').insert([{is_group: false, created_by: currentUser.id}]).select().single();
+      if(error) throw error;
+      existingRoomId = newRoom.id;
+      const {data:theirProf} = await sb.from('profiles').select('username').eq('id', currentViewingUserId).single();
+      await sb.from('room_members').insert([
+        {room_id: existingRoomId, user_id: currentUser.id, username: currentUser.username},
+        {room_id: existingRoomId, user_id: currentViewingUserId, username: theirProf?.username || 'User'}
+      ]);
+    }
+    switchPanel('chat');
+    openChatRoom(existingRoomId, false);
+  } catch(ex) { toast('Error opening chat'); }
+}
+
 async function initApp() {
   renderFeed();
   subscribePresence();
@@ -935,19 +1011,14 @@ async function init() {
 function subscribePresence() {
   if(presenceChannel) return;
   presenceChannel = sb.channel('online-users', { config: { presence: { key: currentUser.id } } });
-  
   presenceChannel.on('presence', { event: 'sync' }, () => {
     onlineUsersMap.clear();
     const state = presenceChannel.presenceState();
     for(const id in state) {
       if(state[id].length > 0) onlineUsersMap.set(id, state[id][0].username);
     }
-    
-    if($('panel-chat').classList.contains('active') && !activeRoomId) {
-       renderChatList();
-    }
+    if($('panel-chat').classList.contains('active') && !activeRoomId) { renderChatList(); }
   });
-  
   presenceChannel.subscribe(async (status) => {
     if(status === 'SUBSCRIBED') await presenceChannel.track({ username: currentUser.username });
   });

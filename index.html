@@ -58,13 +58,12 @@
 
   /* POSTS */
   .post { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
-  .post-header { display: flex; align-items: center; padding: 15px 20px; gap: 12px; }
+  .post-header { display: flex; align-items: center; padding: 15px 20px; gap: 12px; cursor: pointer; }
   .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); padding: 2px; border: 1px solid var(--border); overflow: hidden; flex-shrink: 0; }
   .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
   .post-user { font-weight: 600; font-size: 15px; }
   .post-time { font-size: 12px; color: var(--text-muted); }
   
-  /* VIDEO FIX */
   .post-media { width: 100%; max-height: 80vh; object-fit: contain; display: block; background: #000; }
   .post-image { width: 100%; max-height: 600px; object-fit: cover; display: block; }
   
@@ -76,7 +75,7 @@
   
   .post-likes { padding: 0 20px; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
   .post-caption { padding: 0 20px; font-size: 14px; line-height: 1.5; }
-  .post-caption strong { font-weight: 600; margin-right: 6px; }
+  .post-caption strong { font-weight: 600; margin-right: 6px; cursor: pointer; }
   .post-caption a { color: var(--primary); text-decoration: none; font-weight: 600; }
 
   /* UPLOAD PANEL */
@@ -91,7 +90,10 @@
 
   /* CHAT ROOM */
   .chat-header { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 65px; background: rgba(9, 9, 11, 0.8); backdrop-filter: blur(15px); z-index: 90; }
-  .chat-messages { padding: 20px; display: flex; flex-direction: column; gap: 16px; min-height: calc(100vh - 220px); }
+  
+  /* FIX: Added padding-bottom: 120px so input box doesn't cover messages */
+  .chat-messages { padding: 20px; padding-bottom: 120px; display: flex; flex-direction: column; gap: 16px; min-height: calc(100vh - 200px); }
+  
   .msg { display: flex; gap: 10px; max-width: 80%; }
   .msg.self { align-self: flex-end; flex-direction: row-reverse; }
   .msg-bubble { padding: 14px 18px; border-radius: 22px; font-size: 15px; background: var(--surface); color: var(--text); position: relative; border: 1px solid var(--border); }
@@ -117,8 +119,10 @@
   .grid-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 0 3px; }
   .grid-posts img, .grid-posts video { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 8px; cursor: pointer; transition: 0.2s; }
   
+  /* MODALS */
   .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 10000; display: none; justify-content: center; align-items: center; padding: 20px; }
-  .modal-box { background: var(--surface); border: 1px solid var(--border); width: 100%; max-width: 380px; border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); width: 100%; max-width: 380px; border-radius: 24px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); animation: popIn 0.3s; position: relative; }
+  @keyframes popIn { from{transform:scale(0.95); opacity:0;} to{transform:scale(1); opacity:1;} }
   .input-group { margin-bottom: 15px; }
   .input-group input { width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 15px; background: var(--bg-color); color: var(--text); outline: none; font-size: 15px; transition: 0.2s; }
   .input-group input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
@@ -126,6 +130,20 @@
   .spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 50px auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .hidden { display: none !important; }
+  
+  /* VIEW PROFILE MODAL */
+  #viewProfileOverlay .modal-box { max-width: 450px; padding: 0; overflow: hidden; }
+  .vp-cover { height: 120px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+  .vp-content { padding: 0 20px 20px; text-align: center; margin-top: -50px; }
+  .vp-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--surface); margin: 0 auto 10px; background: var(--bg-color); }
+  .vp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  
+  /* STORY VIEWER */
+  .story-viewer { position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column; }
+  .story-progress { display: flex; gap: 4px; padding: 15px; }
+  .progress-segment { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #fff; width: 0%; transition: width 0.1s linear; }
+  .story-media { max-width: 100%; max-height: 100%; object-fit: contain; }
 </style>
 </head>
 <body>
@@ -151,7 +169,7 @@
   </div>
 </div>
 
-<!-- MODALS (Auth, Edit, Story) -->
+<!-- AUTH MODAL -->
 <div class="modal-overlay" id="authOverlay">
   <div class="modal-box">
     <h2 style="text-align:center; margin-bottom:25px; font-weight:800; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size:28px;" id="authTitle">Create Account</h2>
@@ -168,6 +186,7 @@
   </div>
 </div>
 
+<!-- EDIT PROFILE MODAL -->
 <div class="modal-overlay" id="editProfileOverlay">
   <div class="modal-box">
     <h2 style="margin-bottom:20px;">Edit Profile</h2>
@@ -179,6 +198,21 @@
   </div>
 </div>
 
+<!-- VIEW OTHER PROFILE MODAL -->
+<div class="modal-overlay" id="viewProfileOverlay">
+  <div class="modal-box">
+    <button style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); border:none; color:white; width:30px; height:30px; border-radius:50%; cursor:pointer; z-index:10;" onclick="$('viewProfileOverlay').style.display='none'">×</button>
+    <div class="vp-cover"></div>
+    <div class="vp-content">
+      <div class="vp-avatar"><img id="vpAvatar" src=""></div>
+      <h2 id="vpUsername" style="font-size:22px; font-weight:700; margin-bottom:5px;"></h2>
+      <div id="vpBio" style="font-size:14px; color:var(--text-muted); margin-bottom:20px;"></div>
+      <button class="btn-primary" onclick="messageUser()">Message</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD STORY MODAL -->
 <div class="modal-overlay" id="addStoryOverlay">
   <div class="modal-box">
     <h2 style="margin-bottom:20px;">Add Story</h2>
@@ -189,13 +223,13 @@
 </div>
 
 <!-- STORY VIEWER -->
-<div id="storyViewer" style="position: fixed; inset: 0; background: #000; z-index: 9999; display: none; flex-direction: column;">
-  <div id="storyProgress" style="display: flex; gap: 4px; padding: 15px;"></div>
+<div class="story-viewer" id="storyViewer">
+  <div class="story-progress" id="storyProgress"></div>
   <div id="storyHeader" style="padding: 0 15px; color:white; font-weight:600; display:flex; align-items:center; gap:10px;"></div>
   <div style="flex:1; display:flex; justify-content:center; align-items:center; position:relative;" id="storyContent">
     <div style="position:absolute; left:0; top:0; bottom:0; width:50%; z-index:10;" onclick="prevStory()"></div>
     <div style="position:absolute; right:0; top:0; bottom:0; width:50%; z-index:10;" onclick="nextStory()"></div>
-    <img id="storyMedia" style="max-width:100%; max-height:100%; object-fit:contain;" src="">
+    <img id="storyMedia" class="story-media" src="">
   </div>
 </div>
 
@@ -211,13 +245,13 @@ let onlineUsersMap = new Map(), presenceChannel = null;
 let activeRoomId = null, activeRoomMembers = [], chatChannel = null;
 let mediaRecorder, audioChunks = [], isRecording = false;
 let currentStories = [], currentStoryIndex = 0, storyTimer = null;
+let currentViewingUserId = null;
 
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%2318181b'/><circle cx='50' cy='35' r='20' fill='%238b5cf6'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%238b5cf6'/></svg>";
 
 function $(id){ return document.getElementById(id); }
 function escapeHTML(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function linkify(text) {
-  // Escape first, then replace URLs with <a> tags
   let escaped = escapeHTML(text);
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return escaped.replace(urlRegex, (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
@@ -279,6 +313,61 @@ async function handleAuth(e) {
   finally { btn.disabled = false; btn.textContent = authMode === 'login' ? 'Log In' : 'Sign Up'; }
 }
 
+// VIEW USER PROFILE
+async function viewUserProfile(userId) {
+  if(userId === currentUser.id) { switchPanel('profile'); return; }
+  
+  currentViewingUserId = userId;
+  $('viewProfileOverlay').style.display = 'flex';
+  
+  // Loading state
+  $('vpUsername').textContent = 'Loading...';
+  $('vpBio').textContent = '';
+  $('vpAvatar').src = DEFAULT_PFP;
+  
+  const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
+  if(prof) {
+    $('vpUsername').textContent = prof.username;
+    $('vpBio').textContent = prof.bio || 'No bio yet.';
+    if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
+  }
+}
+
+async function messageUser() {
+  if(!currentViewingUserId) return;
+  $('viewProfileOverlay').style.display = 'none';
+  
+  // Check if DM room exists, if not create one
+  try {
+    const {data:myRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
+    const myRoomIds = (myRooms||[]).map(m => m.room_id);
+    
+    let existingRoomId = null;
+    if(myRoomIds.length > 0) {
+      const {data:theirRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentViewingUserId).in('room_id', myRoomIds);
+      for(const r of (theirRooms||[])) {
+        const {data:room} = await sb.from('chat_rooms').select('*').eq('id', r.room_id).single();
+        if(room && !room.is_group) { existingRoomId = room.id; break; }
+      }
+    }
+    
+    if(!existingRoomId) {
+      const {data:newRoom, error} = await sb.from('chat_rooms').insert([{is_group: false, created_by: currentUser.id}]).select().single();
+      if(error) throw error;
+      existingRoomId = newRoom.id;
+      
+      const {data:theirProf} = await sb.from('profiles').select('username').eq('id', currentViewingUserId).single();
+      await sb.from('room_members').insert([
+        {room_id: existingRoomId, user_id: currentUser.id, username: currentUser.username},
+        {room_id: existingRoomId, user_id: currentViewingUserId, username: theirProf?.username || 'User'}
+      ]);
+    }
+    
+    switchPanel('chat');
+    openChatRoom(existingRoomId, false);
+  } catch(ex) { toast('Error opening chat'); console.error(ex); }
+}
+
 // FEED & STORIES
 async function renderFeed() {
   const el = $('panel-feed');
@@ -331,7 +420,7 @@ async function renderFeed() {
 
       return `
       <div class="post">
-        <div class="post-header">
+        <div class="post-header" onclick="viewUserProfile('${p.user_id}')">
           <div class="avatar"><img src="${prof.avatar_url || DEFAULT_PFP}"></div>
           <div>
             <div class="post-user">${escapeHTML(prof.username)}</div>
@@ -347,17 +436,17 @@ async function renderFeed() {
           <div class="action-btn" onclick="toggleComments(${p.id})">
             <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
           </div>
-          <div class="action-btn" onclick="alert('Link Copied!')">
+          <div class="action-btn" onclick="sharePost(${p.id})">
             <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
           </div>
         </div>
         
         <div class="post-likes" id="likes-count-${p.id}">${postLikes.length} likes</div>
-        <div class="post-caption"><strong>${escapeHTML(prof.username)}</strong> ${linkify(p.caption||'')}</div>
+        <div class="post-caption"><strong onclick="viewUserProfile('${p.user_id}')">${escapeHTML(prof.username)}</strong> ${linkify(p.caption||'')}</div>
         
         <div style="padding: 10px 20px 0;" id="comments-${p.id}">
            <div id="comment-list-${p.id}" class="hidden">
-             ${postComments.map(c => `<div style="font-size:13px; margin-bottom:8px; color:var(--text-muted);"><strong style="color:var(--text);">${escapeHTML(c.username)}</strong> ${linkify(c.text)}</div>`).join('')}
+             ${postComments.map(c => `<div style="font-size:13px; margin-bottom:8px; color:var(--text-muted);"><strong style="color:var(--text); cursor:pointer;" onclick="viewUserProfile('${c.user_id}')">${escapeHTML(c.username)}</strong> ${linkify(c.text)}</div>`).join('')}
            </div>
            <div style="display:flex; gap:10px; margin-top:10px;">
              <input type="text" id="cinput-${p.id}" placeholder="Add a comment..." style="flex:1; background:transparent; border:none; outline:none; color:var(--text); font-size:14px;" onkeydown="if(event.key==='Enter')addComment(${p.id})">
@@ -369,6 +458,17 @@ async function renderFeed() {
 
     el.innerHTML = storiesHTML + postsHTML;
   } catch(ex) { console.error(ex); el.innerHTML = `<div style="text-align:center; padding:20px;">Error loading feed.</div>`; }
+}
+
+// SHARE POST
+function sharePost(postId) {
+  const url = window.location.origin + '?post=' + postId;
+  if (navigator.share) {
+    navigator.share({ title: 'Check out this post!', url: url }).catch(console.error);
+  } else {
+    navigator.clipboard.writeText(url);
+    toast('Link copied to clipboard! 🔗');
+  }
 }
 
 // LIKE (Optimistic UI)
@@ -491,7 +591,7 @@ function loadStory(index) {
   
   let progressHTML = '';
   for(let i=0; i<currentStories.length; i++) {
-    progressHTML += `<div class="progress-segment" style="flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:3px; overflow:hidden; margin-bottom:10px;"><div id="prog-${i}" style="height:100%; background:#fff; width:${i < index ? '100%' : '0%'}; transition:width 0.1s linear;"></div></div>`;
+    progressHTML += `<div class="progress-segment"><div class="progress-fill" id="prog-${i}" style="width:${i < index ? '100%' : '0%'};"></div></div>`;
   }
   $('storyProgress').innerHTML = progressHTML;
   
@@ -542,6 +642,7 @@ async function renderChatList() {
 
     let roomsHTML = rooms.map(r => {
       const otherMember = !r.is_group ? allMembers.filter(m => m.room_id === r.id).find(m => m.user_id !== currentUser.id) : null;
+      // FIX: Check online status correctly using otherMember.user_id
       const isOnline = otherMember && onlineUsersMap.has(otherMember.user_id);
       const lastMsg = allMessages.find(m => m.room_id === r.id);
       let displayName = r.name || 'Chat'; if(!r.is_group && otherMember) displayName = otherMember.username;
@@ -585,11 +686,19 @@ async function openChatRoom(roomId, isGroup) {
   activeRoomMembers = members || [];
   let roomName = room.name || 'Chat'; if(!isGroup) { const other = activeRoomMembers.find(m => m.user_id !== currentUser.id); if(other) roomName = other.username; }
 
+  // Check online status for header
+  const otherUser = !isGroup ? activeRoomMembers.find(m => m.user_id !== currentUser.id) : null;
+  const isOnline = otherUser && onlineUsersMap.has(otherUser.user_id);
+  const statusHTML = !isGroup ? `<div style="font-size:12px; color:${isOnline ? 'var(--success)' : 'var(--text-muted)'};">${isOnline ? '● Online' : 'Offline'}</div>` : '';
+
   el.innerHTML = `
     <div class="chat-header">
       <button style="background:none; border:none; color:var(--text); font-size:26px; cursor:pointer;" onclick="renderChatList()">←</button>
-      <div class="avatar">${isGroup ? '👥' : `<img src="${DEFAULT_PFP}">`}</div>
-      <div style="font-weight:600; font-size:17px;">${escapeHTML(roomName)}</div>
+      <div class="avatar" onclick="viewUserProfile('${otherUser?.user_id}')">${isGroup ? '👥' : `<img src="${DEFAULT_PFP}">`}</div>
+      <div>
+        <div style="font-weight:600; font-size:17px;">${escapeHTML(roomName)}</div>
+        ${statusHTML}
+      </div>
     </div>
     <div class="chat-messages" id="chatMessagesBox"></div>
     
@@ -674,7 +783,9 @@ async function loadMessages() {
       </div>
     </div>
   `).join('');
-  box.scrollTop = box.scrollHeight;
+  
+  // FIX: Scroll to bottom AFTER rendering
+  setTimeout(() => { box.scrollTop = box.scrollHeight; }, 100);
 }
 
 async function sendChat() {
@@ -682,6 +793,10 @@ async function sendChat() {
   if(!text || !activeRoomId) return;
   input.value = '';
   await sb.from('chat_messages').insert([{room_id: activeRoomId, user_id: currentUser.id, username: currentUser.username, text}]);
+  
+  // Scroll immediately after sending
+  const box = $('chatMessagesBox');
+  setTimeout(() => { box.scrollTop = box.scrollHeight; }, 200);
 }
 
 function subscribeToMessages() {
@@ -702,7 +817,9 @@ function subscribeToMessages() {
           <div class="msg-time">${formatTime(m.created_at)}</div>
         </div>
       `;
-      box.appendChild(div); box.scrollTop = box.scrollHeight;
+      box.appendChild(div); 
+      // Auto scroll on new message
+      box.scrollTop = box.scrollHeight;
     }
   }).subscribe();
 }
@@ -712,7 +829,7 @@ function formatTime(dateStr) {
   return new Date(dateStr).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 }
 
-// PROFILE & OTHERS
+// PROFILE
 async function renderProfile(userId) {
   const el = $('panel-profile'); el.innerHTML = `<div class="spinner"></div>`;
   const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
@@ -752,6 +869,7 @@ async function uploadAvatar(e) {
   renderProfile(currentUser.id);
 }
 
+// SEARCH
 async function renderSearch() {
   $('panel-search').innerHTML = `
     <div style="padding:20px;">
@@ -768,13 +886,14 @@ async function doSearch() {
   if(q) query = query.ilike('username', `%${q}%`);
   const {data:users} = await query;
   resEl.innerHTML = (users||[]).map(u => `
-    <div style="display:flex; align-items:center; gap:15px; padding:15px; border-bottom:1px solid var(--border);">
+    <div style="display:flex; align-items:center; gap:15px; padding:15px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="viewUserProfile('${u.id}')">
       <div class="avatar"><img src="${u.avatar_url || DEFAULT_PFP}"></div>
       <div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)}</div>
     </div>
   `).join('');
 }
 
+// INIT & PRESENCE
 async function initApp() {
   renderFeed();
   subscribePresence();
@@ -795,17 +914,25 @@ async function init() {
 function subscribePresence() {
   if(presenceChannel) return;
   presenceChannel = sb.channel('online-users', { config: { presence: { key: currentUser.id } } });
+  
+  // FIX: Re-render chat list when presence syncs so dots appear
   presenceChannel.on('presence', { event: 'sync' }, () => {
     onlineUsersMap.clear();
     const state = presenceChannel.presenceState();
-    for(const id in state) if(state[id].length > 0) onlineUsersMap.set(id, state[id][0].username);
-    // If chat list is open, refresh it to show online status
+    for(const id in state) {
+      if(state[id].length > 0) onlineUsersMap.set(id, state[id][0].username);
+    }
+    
+    // If we are currently looking at chat list, update it
     if($('panel-chat').classList.contains('active') && !activeRoomId) {
        renderChatList();
     }
   });
+  
   presenceChannel.subscribe(async (status) => {
-    if(status === 'SUBSCRIBED') await presenceChannel.track({ username: currentUser.username });
+    if(status === 'SUBSCRIBED') {
+      await presenceChannel.track({ username: currentUser.username });
+    }
   });
 }
 

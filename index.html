@@ -10,7 +10,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    /* SOOTHING DARK THEME */
     --bg-color: #0f172a;
     --surface: #1e293b;
     --surface-hover: #334155;
@@ -62,7 +61,7 @@
   /* POSTS */
   .post { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
   .post-header { display: flex; align-items: center; padding: 15px 20px; gap: 12px; cursor: pointer; }
-  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); padding: 2px; overflow: hidden; flex-shrink: 0; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); padding: 2px; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
   .avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
   .post-user { font-weight: 600; font-size: 15px; }
   .post-time { font-size: 12px; color: var(--text-muted); }
@@ -79,7 +78,6 @@
   .post-caption { padding: 0 20px; font-size: 14px; line-height: 1.5; }
   .post-caption strong { font-weight: 600; margin-right: 6px; cursor: pointer; }
 
-  /* DELETE BUTTON */
   .delete-btn { margin-left: auto; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
 
   /* CHAT & GROUP CHAT */
@@ -94,7 +92,7 @@
   .msg:not(.self) .msg-bubble { border-bottom-left-radius: 4px; }
   .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 5px; text-align: right; }
   .msg-img { max-width: 220px; border-radius: 12px; margin-bottom: 6px; display: block; }
-  .msg-sender { font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+  .msg-sender { font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 4px; cursor: pointer; }
   
   .chat-input-area { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); background: var(--surface); border: 1px solid var(--border); padding: 10px 15px; display: flex; flex-direction: column; border-radius: 24px; z-index: 99; }
   .chat-tools { display: flex; gap: 20px; padding: 5px 10px 10px; color: var(--text-muted); }
@@ -126,6 +124,13 @@
   .post-viewer-header { display: flex; align-items: center; gap: 10px; padding: 15px; border-bottom: 1px solid var(--border); }
   .post-viewer-media { width: 100%; max-height: 60vh; object-fit: contain; background: #000; display: block; }
   .post-viewer-actions { padding: 15px; }
+
+  /* VIEW USER PROFILE MODAL */
+  #viewProfileOverlay .modal-box { max-width: 450px; padding: 0; overflow: hidden; background: var(--bg-color); }
+  .vp-cover { height: 120px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+  .vp-content { padding: 0 20px 20px; text-align: center; margin-top: -50px; }
+  .vp-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--bg-color); margin: 0 auto 10px; background: var(--surface); }
+  .vp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
 
   /* GROUP / PRIVATE CHAT USER LIST */
   .group-user-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
@@ -170,8 +175,12 @@
   <div class="modal-box">
     <h2 style="margin-bottom:20px;">Create Group</h2>
     <div class="input-group"><input id="groupNameInput" type="text" placeholder="Group Name..."></div>
+    <div class="input-group">
+      <label style="color:var(--text-muted); font-size:12px; margin-bottom:5px; display:block;">Group Photo (Optional)</label>
+      <input type="file" id="groupPicInput" accept="image/*" style="padding:10px; border:1px dashed var(--border); width:100%; color:var(--text); border-radius:12px;">
+    </div>
     <div id="groupUserList" style="max-height:200px; overflow-y:auto; margin-bottom:20px; border:1px solid var(--border); border-radius:10px;"></div>
-    <button class="btn-primary" onclick="submitGroupChat()">Create Group</button>
+    <button class="btn-primary" onclick="submitGroupChat()" id="createGroupBtn">Create Group</button>
     <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('groupChatOverlay').style.display='none'">Cancel</button>
   </div>
 </div>
@@ -188,6 +197,19 @@
   <div class="modal-box">
     <button style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); border:none; color:white; width:30px; height:30px; border-radius:50%; cursor:pointer; z-index:10;" onclick="$('viewPostOverlay').style.display='none'">×</button>
     <div id="viewPostContent"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="viewProfileOverlay">
+  <div class="modal-box">
+    <button style="position:absolute; top:15px; right:15px; background:rgba(0,0,0,0.5); border:none; color:white; width:30px; height:30px; border-radius:50%; cursor:pointer; z-index:10;" onclick="$('viewProfileOverlay').style.display='none'">×</button>
+    <div class="vp-cover"></div>
+    <div class="vp-content">
+      <div class="vp-avatar"><img id="vpAvatar" src=""></div>
+      <h2 id="vpUsername" style="font-size:22px; font-weight:700; margin-bottom:5px;"></h2>
+      <div id="vpBio" style="font-size:14px; color:var(--text-muted); margin-bottom:20px;"></div>
+      <button class="btn-primary" onclick="messageUser()">Message</button>
+    </div>
   </div>
 </div>
 
@@ -275,7 +297,53 @@ function switchPanel(name){
   if(name==='upload') renderUpload();
 }
 
-// ================= NEW PRIVATE CHAT =================
+// ================= VIEW USER PROFILE (LINKING) =================
+async function viewUserProfile(userId) {
+  if(userId === currentUser.id) { switchPanel('profile'); return; }
+  currentViewingUserId = userId;
+  $('viewProfileOverlay').style.display = 'flex';
+  $('vpUsername').textContent = 'Loading...';
+  $('vpBio').textContent = '';
+  $('vpAvatar').src = DEFAULT_PFP;
+  
+  const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
+  if(prof) {
+    $('vpUsername').textContent = prof.username;
+    $('vpBio').textContent = prof.bio || 'No bio yet.';
+    if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
+  }
+}
+
+async function messageUser() {
+  if(!currentViewingUserId) return;
+  $('viewProfileOverlay').style.display = 'none';
+  try {
+    const {data:myRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
+    const myRoomIds = (myRooms||[]).map(m => m.room_id);
+    let existingRoomId = null;
+    if(myRoomIds.length > 0) {
+      const {data:theirRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentViewingUserId).in('room_id', myRoomIds);
+      for(const r of (theirRooms||[])) {
+        const {data:room} = await sb.from('chat_rooms').select('*').eq('id', r.room_id).single();
+        if(room && !room.is_group) { existingRoomId = room.id; break; }
+      }
+    }
+    if(!existingRoomId) {
+      const {data:newRoom, error} = await sb.from('chat_rooms').insert([{is_group: false, created_by: currentUser.id}]).select().single();
+      if(error) throw error;
+      existingRoomId = newRoom.id;
+      const {data:theirProf} = await sb.from('profiles').select('username').eq('id', currentViewingUserId).single();
+      await sb.from('room_members').insert([
+        {room_id: existingRoomId, user_id: currentUser.id, username: currentUser.username},
+        {room_id: existingRoomId, user_id: currentViewingUserId, username: theirProf?.username || 'User'}
+      ]);
+    }
+    switchPanel('chat');
+    openChatRoom(existingRoomId, false);
+  } catch(ex) { toast('Error opening chat'); }
+}
+
+// ================= PRIVATE CHAT =================
 async function openPrivateChatModal() {
   $('privateChatOverlay').style.display = 'flex';
   $('privateChatUserList').innerHTML = `<div class="spinner"></div>`;
@@ -326,7 +394,7 @@ async function startPrivateChat(userId) {
   } catch(ex) { toast('Error opening chat'); }
 }
 
-// ================= CREATE GROUP CHAT =================
+// ================= GROUP CHAT WITH PHOTO =================
 async function openGroupModal() {
   $('groupChatOverlay').style.display = 'flex';
   $('groupUserList').innerHTML = `<div class="spinner"></div>`;
@@ -348,13 +416,25 @@ async function openGroupModal() {
 
 async function submitGroupChat() {
   const name = $('groupNameInput').value.trim() || 'New Group';
+  const picFile = $('groupPicInput').files[0];
   const checkboxes = document.querySelectorAll('.group-checkbox:checked');
   if(checkboxes.length === 0) { toast('Select at least one friend'); return; }
   
+  const btn = $('createGroupBtn'); btn.textContent = 'Creating...'; btn.disabled = true;
   const selectedUserIds = Array.from(checkboxes).map(cb => cb.value);
   
   try {
-    const {data:room, error} = await sb.from('chat_rooms').insert([{name: name, is_group: true, created_by: currentUser.id}]).select().single();
+    let groupPicUrl = null;
+    if(picFile) {
+      const path = `groups/${Date.now()}.${picFile.name.split('.').pop()}`;
+      const { error: uploadErr } = await sb.storage.from('chat_media').upload(path, picFile);
+      if(!uploadErr) {
+        const { data: { publicUrl } } = sb.storage.from('chat_media').getPublicUrl(path);
+        groupPicUrl = publicUrl;
+      }
+    }
+
+    const {data:room, error} = await sb.from('chat_rooms').insert([{name: name, is_group: true, avatar_url: groupPicUrl, created_by: currentUser.id}]).select().single();
     if(error) throw error;
     
     const members = [{room_id: room.id, user_id: currentUser.id, username: currentUser.username}];
@@ -366,9 +446,11 @@ async function submitGroupChat() {
     
     toast('Group created! 🚀');
     $('groupChatOverlay').style.display = 'none';
+    $('groupNameInput').value = ''; $('groupPicInput').value = '';
     renderChatList();
     openChatRoom(room.id, true);
-  } catch(ex) { toast('Error creating group'); }
+  } catch(ex) { toast('Error creating group'); } 
+  finally { btn.textContent = 'Create Group'; btn.disabled = false; }
 }
 
 // ================= CHAT LIST =================
@@ -413,17 +495,26 @@ async function renderChatList() {
          else if(lastMsg.audio_url) preview = '🎤 Voice';
       }
 
+      // Display Avatar correctly
+      let avatarHtml = `<div class="avatar" style="width:55px; height:55px;">`;
+      if(r.is_group) {
+         avatarHtml += r.avatar_url ? `<img src="${r.avatar_url}">` : `👥`;
+      } else {
+         avatarHtml += `<img src="${DEFAULT_PFP}">`;
+      }
+      avatarHtml += `</div>`;
+
       return `
-      <div style="display:flex; align-items:center; gap:15px; padding:15px 20px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="openChatRoom(${r.id}, ${r.is_group})">
-        <div style="position:relative;">
-          <div class="avatar" style="width:55px; height:55px;">${r.is_group ? '👥' : `<img src="${DEFAULT_PFP}">`}</div>
+      <div style="display:flex; align-items:center; gap:15px; padding:15px 20px; border-bottom:1px solid var(--border); cursor:pointer;">
+        <div style="position:relative;" onclick="event.stopPropagation(); ${!r.is_group && otherMember ? `viewUserProfile('${otherMember.user_id}')` : ''}">
+          ${avatarHtml}
           ${isOnline ? '<div style="position:absolute; bottom:0; right:0; width:14px; height:14px; background:var(--success); border-radius:50%; border:2px solid var(--bg-color);"></div>' : ''}
         </div>
-        <div style="flex:1; min-width:0;">
+        <div style="flex:1; min-width:0;" onclick="openChatRoom(${r.id}, ${r.is_group})">
           <div style="font-weight:600; font-size:16px;">${escapeHTML(displayName)}</div>
           <div style="font-size:14px; color:var(--text-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px;">${linkify(preview)}</div>
         </div>
-        <button style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:20px;" onclick="event.stopPropagation(); deleteChat(${r.id})" title="Delete/Block Chat">🗑️</button>
+        <button style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:20px;" onclick="deleteChat(${r.id})" title="Delete/Block Chat">🗑️</button>
       </div>`;
     }).join('');
 
@@ -454,11 +545,17 @@ async function openChatRoom(roomId, isGroup) {
   const isOnline = otherUser && onlineUsersMap.has(otherUser.user_id);
   const statusHTML = !isGroup ? `<div style="font-size:12px; color:${isOnline ? 'var(--success)' : 'var(--text-muted)'};">${isOnline ? '● Online' : 'Offline'}</div>` : `<div style="font-size:12px; color:var(--primary);">Group Chat</div>`;
 
+  // Header Avatar
+  let headerAvatar = `<div class="avatar" style="width:40px; height:40px;" onclick="${!isGroup && otherUser ? `viewUserProfile('${otherUser.user_id}')` : ''}">`;
+  if(isGroup) headerAvatar += room.avatar_url ? `<img src="${room.avatar_url}">` : `👥`;
+  else headerAvatar += `<img src="${DEFAULT_PFP}">`;
+  headerAvatar += `</div>`;
+
   el.innerHTML = `
     <div class="chat-room">
       <div class="chat-header">
         <button style="background:transparent; border:none; color:var(--text); font-size:26px; cursor:pointer;" onclick="renderChatList()">←</button>
-        <div class="avatar">${isGroup ? '👥' : `<img src="${DEFAULT_PFP}">`}</div>
+        ${headerAvatar}
         <div style="flex:1;">
           <div style="font-weight:600; font-size:17px;">${escapeHTML(roomName)}</div>
           ${statusHTML}
@@ -549,7 +646,7 @@ async function loadMessages() {
     return `
     <div class="msg ${isSelf ? 'self' : ''}">
       <div>
-        ${!isSelf ? `<div class="msg-sender">${escapeHTML(m.username)}</div>` : ''}
+        ${!isSelf ? `<div class="msg-sender" onclick="viewUserProfile('${m.user_id}')">${escapeHTML(m.username)}</div>` : ''}
         <div class="msg-bubble">${renderMessageContent(m)}</div>
         <div class="msg-time">${formatTime(m.created_at)}</div>
       </div>
@@ -580,7 +677,7 @@ function subscribeToMessages() {
       div.className = `msg ${isSelf ? 'self' : ''}`;
       div.innerHTML = `
         <div>
-          ${!isSelf ? `<div class="msg-sender">${escapeHTML(m.username)}</div>` : ''}
+          ${!isSelf ? `<div class="msg-sender" onclick="viewUserProfile('${m.user_id}')">${escapeHTML(m.username)}</div>` : ''}
           <div class="msg-bubble">${renderMessageContent(m)}</div>
           <div class="msg-time">${formatTime(m.created_at)}</div>
         </div>
@@ -904,13 +1001,6 @@ async function doSearch() {
   let query = sb.from('profiles').select('*').limit(20); if(q) query = query.ilike('username', `%${q}%`);
   const {data:users} = await query;
   resEl.innerHTML = (users||[]).map(u => `<div style="display:flex; align-items:center; gap:15px; padding:15px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="viewUserProfile('${u.id}')"><div class="avatar"><img src="${u.avatar_url || DEFAULT_PFP}"></div><div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)}</div></div>`).join('');
-}
-async function viewUserProfile(userId) {
-  if(userId === currentUser.id) { switchPanel('profile'); return; }
-  currentViewingUserId = userId; $('viewProfileOverlay').style.display = 'flex';
-  $('vpUsername').textContent = 'Loading...'; $('vpBio').textContent = ''; $('vpAvatar').src = DEFAULT_PFP;
-  const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
-  if(prof) { $('vpUsername').textContent = prof.username; $('vpBio').textContent = prof.bio || 'No bio yet.'; if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url; }
 }
 
 // INIT

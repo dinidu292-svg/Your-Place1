@@ -179,19 +179,6 @@
   </div>
 </div>
 
-<!-- NEW CHAT MODAL -->
-<div class="modal-overlay" id="newChatOverlay">
-  <div class="modal-box">
-    <button class="close-x" onclick="$('newChatOverlay').style.display='none'">×</button>
-    <h2 style="font-size:20px; margin-bottom:20px;">New Message</h2>
-    <div class="input-group">
-      <label>Search User</label>
-      <input id="userSearchInput" type="text" placeholder="Type username..." oninput="searchUsersToChat()">
-    </div>
-    <div id="chatUserResults" style="max-height:200px; overflow-y:auto;"></div>
-  </div>
-</div>
-
 <!-- CREATE GROUP MODAL -->
 <div class="modal-overlay" id="groupModal">
   <div class="modal-box">
@@ -252,20 +239,30 @@ const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/
 function $(id){ return document.getElementById(id); }
 function escapeHTML(s){ return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.style.transform='translate(-50%,0)'; setTimeout(()=>t.style.transform='translate(-50%,100px)',2500); }
+function timeAgo(dateStr){
+  const diff = Math.floor((new Date() - new Date(dateStr))/1000);
+  if(diff < 60) return 'just now';
+  if(diff < 3600) return Math.floor(diff/60)+'m ago';
+  if(diff < 86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
 
-// FAST NAVIGATION
+// NAVIGATION
 function switchPanel(name){
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.panel === name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  $(`panel-${name}`).classList.add('active');
+  const panel = $(`panel-${name}`);
+  if(panel) panel.classList.add('active');
   
   if(name==='feed') renderFeed();
   if(name==='reels') renderReels();
+  if(name==='search') renderSearch();
   if(name==='chat') renderChatList();
   if(name==='profile' && currentUser) renderProfile(currentUser.id);
+  if(name==='upload') renderUpload();
 }
 
-// AUTH GATE
+// AUTHENTICATION
 function showAuthGate() {
   $('authOverlay').style.display = 'flex';
   document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'none');
@@ -326,7 +323,189 @@ function updateHeader() {
   $('headerRight').innerHTML = currentUser ? `<button class="btn" onclick="sb.auth.signOut().then(()=>location.reload())" style="padding:6px 12px; font-size:12px;">Logout</button>` : '';
 }
 
-// PROFILE
+// ======================= FEED =======================
+async function renderFeed() {
+  const el = $('feedContent');
+  el.innerHTML = `<div class="spinner"></div>`;
+  try {
+    const {data:posts} = await sb.from('posts').select('*').order('created_at', {ascending:false}).limit(20);
+    if(!posts || posts.length === 0) {
+      el.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No posts yet. Be the first!</div>`;
+      return;
+    }
+    const userIds = [...new Set(posts.map(p=>p.user_id))];
+    const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url').in('id',userIds);
+    const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
+
+    el.innerHTML = posts.map(p => {
+      const prof = profileMap[p.user_id] || {username: p.username, avatar_url: null};
+      const isVideo = p.video_url && p.video_url.length > 0;
+      return `
+      <div class="card">
+        <div style="display:flex; align-items:center; gap:12px; padding:16px;">
+          <div class="avatar" onclick="viewUserProfile('${p.user_id}')"><img src="${prof.avatar_url || DEFAULT_PFP}"></div>
+          <div style="flex:1;" onclick="viewUserProfile('${p.user_id}')">
+            <div style="font-weight:700; font-size:15px;">${escapeHTML(prof.username)}</div>
+            <div style="font-size:12px; color:var(--text-muted);">${timeAgo(p.created_at)}</div>
+          </div>
+        </div>
+        ${isVideo ? `<video src="${p.video_url}" controls style="width:100%; max-height:500px; object-fit:cover; background:#000;"></video>` : `<img src="${p.image_url}" style="width:100%; max-height:500px; object-fit:cover;">`}
+        <div style="padding:16px; font-size:14px;"><strong>${escapeHTML(prof.username)}</strong> ${escapeHTML(p.caption||'')}</div>
+      </div>`;
+    }).join('');
+  } catch(ex) { el.innerHTML = `<p>Error loading feed.</p>`; }
+}
+
+// ======================= REELS =======================
+async function renderReels() {
+  const el = $('reelsContent');
+  el.innerHTML = `<div class="spinner" style="margin-top:50vh;"></div>`;
+  try {
+    const {data:posts} = await sb.from('posts').select('*').not('video_url', 'is', null).order('created_at', {ascending:false});
+    if(!posts || posts.length === 0) {
+      el.innerHTML = `<div style="height:50vh; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--text-muted);"><h2>No Reels</h2><button class="btn primary" style="margin-top:20px;" onclick="switchPanel('upload')">Upload</button></div>`;
+      return;
+    }
+
+    // TikTok Style Scroll
+    el.innerHTML = `<div style="height:calc(100vh - 70px); overflow-y:scroll; scroll-snap-type:y mandatory; background:#000;">
+      ${posts.map((p, index) => `
+        <div style="height:100%; width:100%; scroll-snap-align:start; position:relative; display:flex; justify-content:center; align-items:center;">
+          <video src="${p.video_url}" loop playsinline preload="${index === 0 ? 'auto' : 'none'}" style="width:100%; height:100%; object-fit:cover; max-width:600px;"></video>
+          <div onclick="this.previousElementSibling.paused ? this.previousElementSibling.play() : this.previousElementSibling.pause()" style="position:absolute; inset:0; z-index:1;"></div>
+          <div style="position:absolute; bottom:20px; left:20px; color:#fff; z-index:2; text-shadow:0 1px 3px rgba(0,0,0,0.8);">
+             <div style="font-weight:800; font-size:16px;">${escapeHTML(p.username)}</div>
+             <div style="font-size:14px; margin-top:4px;">${escapeHTML(p.caption||'')}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+    
+    // Auto play first video
+    const firstVid = el.querySelector('video');
+    if(firstVid) { firstVid.muted = true; firstVid.play().catch(()=>{}); }
+
+    // Autoplay on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target.querySelector('video');
+        if(entry.isIntersecting) {
+          video.play().catch(()=>{});
+        } else {
+          video.pause();
+        }
+      });
+    }, { threshold: 0.6 });
+
+    el.querySelectorAll('div[style*="scroll-snap-align"]').forEach(card => observer.observe(card));
+
+  } catch(ex) { console.error(ex); }
+}
+
+// ======================= UPLOAD =======================
+function renderUpload() {
+  const el = $('uploadContent');
+  if(!currentUser) { el.innerHTML = `<p style="text-align:center;">Please login to upload.</p>`; return; }
+  
+  el.innerHTML = `
+    <div class="card" style="padding:20px;">
+      <h2 style="font-size:20px; margin-bottom:16px;">Create Post</h2>
+      <div class="input-group">
+        <label>Image / Video</label>
+        <input type="file" id="postFile" accept="image/*,video/*" style="width:100%; padding:10px; border:1px dashed var(--border); border-radius:8px;">
+      </div>
+      <div class="input-group">
+        <label>Caption</label>
+        <textarea id="postCaption" rows="3" placeholder="What's on your mind?" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); font-family:inherit;"></textarea>
+      </div>
+      <button class="btn primary" onclick="createPost()" style="width:100%;">Post</button>
+    </div>
+  `;
+}
+
+async function createPost() {
+  const fileInput = $('postFile');
+  const caption = $('postCaption').value.trim();
+  const file = fileInput.files[0];
+  if(!file) { toast('Please select a file'); return; }
+  
+  const btn = event.target;
+  btn.textContent = 'Uploading...';
+  btn.disabled = true;
+
+  try {
+    const isVideo = file.type.startsWith('video');
+    const bucket = isVideo ? 'videos' : 'posts';
+    const ext = file.name.split('.').pop();
+    const path = `${currentUser.id}/${Date.now()}.${ext}`;
+    
+    const {error: upErr} = await sb.storage.from(bucket).upload(path, file);
+    if(upErr) throw upErr;
+    
+    const {data: {publicUrl}} = sb.storage.from(bucket).getPublicUrl(path);
+    
+    const postData = {
+      user_id: currentUser.id,
+      username: currentUser.username,
+      caption: caption,
+      image_url: isVideo ? null : publicUrl,
+      video_url: isVideo ? publicUrl : null
+    };
+    
+    const {error: insErr} = await sb.from('posts').insert([postData]);
+    if(insErr) throw insErr;
+    
+    toast('Posted successfully! 🎉');
+    switchPanel('feed');
+  } catch(ex) {
+    toast('Upload failed: ' + ex.message);
+  } finally {
+    btn.textContent = 'Post';
+    btn.disabled = false;
+  }
+}
+
+// ======================= SEARCH =======================
+async function renderSearch() {
+  const el = $('searchContent');
+  el.innerHTML = `
+    <div class="input-group">
+      <input type="text" id="searchInput" placeholder="Search users..." oninput="doSearch()" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); font-size:15px;">
+    </div>
+    <div id="searchResults"></div>
+  `;
+  doSearch();
+}
+
+async function doSearch() {
+  const q = $('searchInput').value.toLowerCase();
+  const resEl = $('searchResults');
+  resEl.innerHTML = `<div class="spinner"></div>`;
+  
+  try {
+    let query = sb.from('profiles').select('*').limit(20);
+    if(q) query = query.ilike('username', `%${q}%`);
+    
+    const {data:users} = await query;
+    if(!users || users.length === 0) {
+      resEl.innerHTML = `<p style="text-align:center; color:var(--text-muted);">No users found.</p>`;
+      return;
+    }
+    
+    resEl.innerHTML = `<div class="card">
+      ${users.map(u => `
+        <div class="chat-list-item" onclick="viewUserProfile('${u.id}')">
+          <div class="avatar"><img src="${u.avatar_url || DEFAULT_PFP}"></div>
+          <div class="chat-info">
+            <div class="chat-name">${escapeHTML(u.username)}</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+  } catch(ex) { resEl.innerHTML = `<p>Error searching.</p>`; }
+}
+
+// ======================= PROFILE =======================
 async function renderProfile(userId) {
   const el = $('profileContent');
   el.innerHTML = `<div class="spinner"></div>`;
@@ -374,6 +553,57 @@ async function renderProfile(userId) {
   } catch(ex) { el.innerHTML = `<p>Error loading profile.</p>`; }
 }
 
+async function viewUserProfile(userId) {
+  if(userId === currentUser.id) { switchPanel('profile'); return; }
+  
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  $(`panel-other-profile`).classList.add('active');
+  
+  const el = $('otherProfileContent');
+  el.innerHTML = `<div class="spinner"></div>`;
+  
+  try {
+    const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
+    if(!prof) throw new Error('User not found');
+    
+    const {data:posts} = await sb.from('posts').select('*').eq('user_id', userId).order('created_at', {ascending:false});
+    const {data:followers} = await sb.from('follows').select('id').eq('following_id', userId);
+    const {data:following} = await sb.from('follows').select('id').eq('follower_id', userId);
+    
+    el.innerHTML = `
+      <button class="btn" onclick="switchPanel('feed')" style="margin-bottom:16px;">← Back</button>
+      <div class="profile-header">
+        <div style="flex:1; text-align:center;">
+          <div class="avatar lg" style="margin:0 auto;">
+            <img src="${prof.avatar_url || DEFAULT_PFP}">
+          </div>
+        </div>
+        <div style="flex:2;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <h2 style="font-size:20px; font-weight:800;">${escapeHTML(prof.username)}</h2>
+            <button class="btn primary" style="padding:6px 16px; font-size:12px;">Follow</button>
+          </div>
+          <div class="profile-stats">
+            <div class="stat-item"><div class="stat-num">${(posts||[]).length}</div><div class="stat-label">Posts</div></div>
+            <div class="stat-item"><div class="stat-num">${(followers||[]).length}</div><div class="stat-label">Followers</div></div>
+            <div class="stat-item"><div class="stat-num">${(following||[]).length}</div><div class="stat-label">Following</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="profile-bio">
+        <strong>${escapeHTML(prof.username)}</strong><br>${escapeHTML(prof.bio || 'No bio yet.')}
+      </div>
+      <div class="grid-posts">
+        ${(posts||[]).map(p => p.image_url 
+          ? `<img src="${p.image_url}" loading="lazy">` 
+          : `<video src="${p.video_url}"></video>`
+        ).join('')}
+      </div>
+    `;
+  } catch(ex) { el.innerHTML = `<p>Error loading profile.</p>`; }
+}
+
 async function saveProfile() {
   const newName = $('editUsername').value.trim();
   const newBio = $('editBio').value.trim();
@@ -406,13 +636,12 @@ async function uploadAvatar(e) {
   e.target.disabled = false;
 }
 
-// SUPER FAST CHAT LIST
+// ======================= CHAT =======================
 async function renderChatList() {
   const el = $('chatContent');
   el.innerHTML = `<div class="spinner"></div>`;
   
   try {
-    // 1. Get all rooms user is in
     const {data:memberships} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
     const roomIds = (memberships||[]).map(m => m.room_id);
     
@@ -421,7 +650,7 @@ async function renderChatList() {
       return;
     }
 
-    // 2. Fetch rooms, members, and ALL last messages in parallel (Massive speed boost)
+    // FAST LOAD: Get rooms, members, and messages at once
     const [roomsRes, membersRes, messagesRes] = await Promise.all([
       sb.from('chat_rooms').select('*').in('id', roomIds).order('created_at', {ascending:false}),
       sb.from('room_members').select('*').in('room_id', roomIds),
@@ -432,7 +661,6 @@ async function renderChatList() {
     const allMembers = membersRes.data || [];
     const allMessages = messagesRes.data || [];
 
-    // 3. Process data in memory (Very Fast)
     let roomsHTML = rooms.map(r => {
       const isGroup = r.is_group;
       const roomMembers = allMembers.filter(m => m.room_id === r.id);
@@ -465,7 +693,6 @@ async function renderChatList() {
         <h2 style="font-size:22px; font-weight:800;">Messages</h2>
         <div style="display:flex; gap:8px;">
           <button class="btn" onclick="$('groupModal').style.display='flex'" style="padding:8px 12px; font-size:12px;">+ Group</button>
-          <button class="btn primary" onclick="$('newChatOverlay').style.display='flex'" style="padding:8px 12px; font-size:12px;">+ Chat</button>
         </div>
       </div>
       <div class="card">
@@ -475,9 +702,8 @@ async function renderChatList() {
   } catch(ex) { el.innerHTML = `<p>Error loading chats.</p>`; }
 }
 
-// DELETE CHAT (Block)
 async function deleteChat(roomId) {
-  if(!confirm('Delete this chat? (Blocks user for DM)')) return;
+  if(!confirm('Delete this chat?')) return;
   try {
     await sb.from('room_members').delete().eq('room_id', roomId).eq('user_id', currentUser.id);
     toast('Chat deleted');
@@ -485,7 +711,6 @@ async function deleteChat(roomId) {
   } catch(ex) { toast('Failed'); }
 }
 
-// OPEN CHAT
 async function openChatRoom(roomId, isGroup) {
   activeRoomId = roomId;
   activeRoomIsGroup = isGroup;
@@ -579,7 +804,6 @@ function subscribeToMessages() {
   }).subscribe();
 }
 
-// CREATE GROUP
 async function submitGroupChat() {
   const name = $('groupNameInput').value.trim() || 'New Group';
   const picFile = $('groupPicInput').files[0];
@@ -603,7 +827,7 @@ async function submitGroupChat() {
   renderChatList();
 }
 
-// PRESENCE (Online Status) - Optimized to not re-render whole list
+// PRESENCE
 function subscribePresence() {
   if(presenceChannel) return;
   presenceChannel = sb.channel('online-users', { config: { presence: { key: currentUser.id } } });
@@ -615,16 +839,8 @@ function subscribePresence() {
       if(state[id].length > 0) onlineUsersMap.set(id, state[id][0].username);
     }
     
-    // If in a chat room, just update the text
     if(activeRoomId) {
       updateChatStatusText();
-    } 
-    // If on chat list, find the specific dots and toggle them without full reload
-    else if($('panel-chat').classList.contains('active')) {
-      document.querySelectorAll('.chat-list-item').forEach((el, index) => {
-        // Logic to update dots without full reload goes here if needed
-        // For now, we avoid re-rendering to keep it fast.
-      });
     }
   });
   

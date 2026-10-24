@@ -1137,11 +1137,10 @@ async function renderFeed() {
       if(p.user_id === currentUser.id) return true; // My own posts
       
       const prof = profileMap[p.user_id];
-      if(!prof) return false; // Hide if profile missing to be safe
+      if(!prof) return false; 
       
       if(prof.is_private === true) {
-        // Private: only show if I follow them
-        return myFollowingIds.includes(p.user_id);
+        return myFollowingIds.includes(p.user_id); // Private: only if following
       }
       return true; // Public
     });
@@ -1163,8 +1162,9 @@ async function renderFeed() {
         uniqueStoryUsers.add(s.user_id);
         const prof = profileMap[s.user_id] || { username: s.username, avatar_url: null };
         
+        // ✅ Private stories only for me or my following
         if (s.user_id !== currentUser.id) {
-          if (!prof || prof.is_private === true) return; // Hide private or missing stories
+           if (!prof || prof.is_private === true) return; 
         }
         
         storiesHTML += `<div class="story-item" onclick="openStoryViewer('${s.user_id}')"><div class="story-ring"><img src="${prof.avatar_url || DEFAULT_PFP}" class="story-img"></div><div class="story-name">${escapeHTML(prof.username)}</div></div>`;
@@ -1662,11 +1662,12 @@ async function doSearch() {
       const {data:profiles} = await sb.from('profiles').select('id,is_private').in('id',userIds);
       const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
 
+      // ✅ STRICT: Filter out any private profiles from Explore completely
       const visiblePosts = posts.filter(p => {
         if(p.user_id === currentUser.id) return true;
         const prof = profileMap[p.user_id];
-        if(!prof) return false; // Hide if missing
-        if(prof.is_private === true) return false; // Private: NEVER show in Explore
+        if(!prof) return false; 
+        if(prof.is_private === true) return false; 
         return true;
       });
 
@@ -1695,16 +1696,17 @@ async function doSearch() {
 
   resEl.innerHTML = `<div class="spinner"></div>`;
   try {
-    const {data:users} = await sb.from('profiles').select('*').ilike('username', `%${q}%`).limit(20);
+    // ✅ STRICT: Only show public users in Search
+    const {data:users} = await sb.from('profiles').select('*').ilike('username', `%${q}%`).eq('is_private', false).limit(20);
     if(!users || users.length === 0) {
-      resEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No users found</div>`;
+      resEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No public users found</div>`;
       return;
     }
     resEl.innerHTML = users.map(u => `
       <div style="display:flex; align-items:center; gap:15px; padding:14px 20px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="viewUserProfile('${u.id}')">
         <div class="avatar" style="width:50px; height:50px; flex-shrink:0;"><img src="${u.avatar_url || DEFAULT_PFP}"></div>
         <div style="flex:1; min-width:0;">
-          <div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)} ${u.is_private === true ? '🔒' : ''}</div>
+          <div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)}</div>
           ${u.bio ? `<div style="font-size:13px; color:var(--text-muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(u.bio).slice(0,60)}</div>` : ''}
         </div>
       </div>

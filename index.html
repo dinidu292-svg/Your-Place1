@@ -184,9 +184,10 @@
   .follow-btn.following { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
   .follow-btn.requested { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); }
   
-  .req-btn { padding: 6px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; }
+  .req-btn { padding: 6px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; white-space: nowrap; }
   .req-btn.accept { background: var(--primary); color: #fff; }
   .req-btn.decline { background: var(--surface-hover); color: var(--text); margin-left: 5px; }
+  .req-btn.following { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
 
   .creator-card { margin: 20px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; text-align: center; }
 
@@ -490,6 +491,7 @@ async function toggleFollow(targetId, isTargetPrivate) {
     return null;
   }
 }
+
 async function handleFollowFromModal() {
   if(!currentViewingUserId) return;
   const btn = $('vpFollowBtn');
@@ -502,7 +504,7 @@ async function handleFollowFromModal() {
   if(newState === null) { btn.disabled = false; return; }
   
   if(newState === 'following') {
-    btn.textContent = 'Following';
+    btn.textContent = 'Unfollow';
     btn.classList.remove('requested');
     btn.classList.add('following');
   } else if (newState === 'requested') {
@@ -521,6 +523,40 @@ async function handleFollowFromModal() {
   
   if(newState === 'following') {
     viewUserProfile(currentViewingUserId);
+  }
+}
+
+// Search list එකෙන් Follow/Unfollow කරන function එක
+async function toggleFollowFromSearch(userId, btn) {
+  event.stopPropagation(); // Profile modal එක open වෙන එක නවත්තන්න
+  btn.disabled = true;
+  
+  const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', userId).single();
+  const isTargetPrivate = targetProf?.is_private === true;
+  
+  const newState = await toggleFollow(userId, isTargetPrivate);
+  if(newState === null) { btn.disabled = false; return; }
+  
+  if(newState === 'unfollowed') {
+    btn.textContent = 'Follow';
+    btn.className = 'req-btn accept';
+    btn.style.background = '';
+    btn.style.color = '';
+  } else if(newState === 'requested') {
+    btn.textContent = 'Requested';
+    btn.className = 'req-btn';
+    btn.style.background = 'var(--surface-hover)';
+    btn.style.color = 'var(--text)';
+  } else if(newState === 'following') {
+    btn.textContent = 'Unfollow';
+    btn.className = 'req-btn decline';
+    btn.style.background = '';
+    btn.style.color = '';
+  }
+  btn.disabled = false;
+  
+  if(currentViewingUserId === userId) {
+    viewUserProfile(userId);
   }
 }
 
@@ -749,7 +785,6 @@ async function viewUserProfile(userId) {
   $('vpFollowersCount').textContent = stats.followers;
   $('vpFollowingCount').textContent = stats.following;
   
-  // ✅ Private නම් සහ Follow නොකර නම් Posts පෙන්නන්නේ නෑ
   const isPrivate = prof?.is_private === true;
   const canView = !isPrivate || followState;
 
@@ -775,7 +810,7 @@ async function viewUserProfile(userId) {
   followBtn.disabled = false;
   
   if (followState) {
-    followBtn.textContent = 'Following';
+    followBtn.textContent = 'Unfollow'; // Follow කරලා නම් Unfollow කියලා පෙන්නනවා
     followBtn.classList.add('following');
   } else if (pendingState) {
     followBtn.textContent = 'Requested';
@@ -1162,7 +1197,6 @@ async function renderFeed() {
         uniqueStoryUsers.add(s.user_id);
         const prof = profileMap[s.user_id] || { username: s.username, avatar_url: null };
         
-        // ✅ Private stories only for me or my following
         if (s.user_id !== currentUser.id) {
            if (!prof || prof.is_private === true) return; 
         }
@@ -1662,7 +1696,6 @@ async function doSearch() {
       const {data:profiles} = await sb.from('profiles').select('id,is_private').in('id',userIds);
       const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
 
-      // ✅ STRICT: Filter out any private profiles from Explore completely
       const visiblePosts = posts.filter(p => {
         if(p.user_id === currentUser.id) return true;
         const prof = profileMap[p.user_id];
@@ -1696,21 +1729,41 @@ async function doSearch() {
 
   resEl.innerHTML = `<div class="spinner"></div>`;
   try {
-    // ✅ STRICT: Only show public users in Search
+    // User Search (Only Public)
     const {data:users} = await sb.from('profiles').select('*').ilike('username', `%${q}%`).eq('is_private', false).limit(20);
     if(!users || users.length === 0) {
       resEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No public users found</div>`;
       return;
     }
-    resEl.innerHTML = users.map(u => `
+
+    // අපි දැන් බලමු අපි කවුරුව හරි Follow කරලා තියෙනවද කියලා
+    const {data:myFollows} = await sb.from('follows').select('following_id, status').eq('follower_id', currentUser.id);
+    const myFollowMap = {};
+    (myFollows||[]).forEach(f => myFollowMap[f.following_id] = f.status);
+
+    resEl.innerHTML = users.map(u => {
+      let btnHtml = '';
+      if(u.id !== currentUser.id) {
+        const status = myFollowMap[u.id];
+        if(status === 'accepted') {
+          btnHtml = `<button class="req-btn decline" style="margin-left:auto;" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Unfollow</button>`;
+        } else if(status === 'pending') {
+          btnHtml = `<button class="req-btn" style="margin-left:auto; background:var(--surface-hover); color:var(--text);" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Requested</button>`;
+        } else {
+          btnHtml = `<button class="req-btn accept" style="margin-left:auto;" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Follow</button>`;
+        }
+      }
+      return `
       <div style="display:flex; align-items:center; gap:15px; padding:14px 20px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="viewUserProfile('${u.id}')">
         <div class="avatar" style="width:50px; height:50px; flex-shrink:0;"><img src="${u.avatar_url || DEFAULT_PFP}"></div>
         <div style="flex:1; min-width:0;">
           <div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)}</div>
           ${u.bio ? `<div style="font-size:13px; color:var(--text-muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(u.bio).slice(0,60)}</div>` : ''}
         </div>
+        ${btnHtml}
       </div>
-    `).join('');
+      `;
+    }).join('');
   } catch(ex) {
     resEl.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Search error</div>`;
   }

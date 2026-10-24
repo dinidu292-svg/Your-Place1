@@ -33,24 +33,20 @@
     .chat-input-area { max-width: 600px; }
   }
 
-  /* HEADER */
   .header { position: sticky; top: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); height: 65px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--border); z-index: 100; }
   .logo { font-size: 24px; font-weight: 800; color: var(--text); cursor: pointer; letter-spacing: -0.5px; }
   .logo span { color: var(--primary); }
   
-  /* BOTTOM NAV */
   .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); height: 65px; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 20px; display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
   .nav-item { cursor: pointer; color: var(--text-muted); transition: all 0.2s; display: flex; justify-content: center; align-items: center; width: 50px; height: 50px; border-radius: 16px; }
   .nav-item svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .nav-item.active { color: var(--text); background: var(--surface-hover); }
   .nav-item.active svg { stroke: var(--primary); }
 
-  /* PANELS */
   .panel { display: none; animation: fadeIn 0.3s; }
   .panel.active { display: block; }
   @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:none;} }
 
-  /* STORIES */
   .stories-container { padding: 15px 20px; display: flex; gap: 15px; overflow-x: auto; scrollbar-width: none; }
   .stories-container::-webkit-scrollbar { display: none; }
   .story-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
@@ -58,7 +54,6 @@
   .story-img { width: 100%; height: 100%; border-radius: 50%; border: 3px solid var(--bg-color); object-fit: cover; }
   .story-name { font-size: 12px; color: var(--text); max-width: 70px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  /* POSTS */
   .post { margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
   .post-header { display: flex; align-items: center; padding: 15px 20px; gap: 12px; cursor: pointer; }
   .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--surface); border: 1px solid var(--border); padding: 2px; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
@@ -80,7 +75,6 @@
 
   .delete-btn { margin-left: auto; background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); color: var(--danger); padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
 
-  /* INLINE COMMENTS */
   .inline-comments { padding: 10px 20px 0; border-top: 1px solid var(--border); margin-top: 10px; display: none; }
   .inline-comment-item { font-size: 13px; margin-bottom: 8px; color: var(--text-muted); }
   .inline-comment-item strong { color: var(--text); margin-right: 4px; cursor: pointer; }
@@ -88,11 +82,9 @@
   .inline-comment-input input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 14px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
   .inline-comment-input button { background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; }
 
-  /* CHAT & GROUP CHAT */
   .chat-header { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 65px; background: var(--bg-color); z-index: 90; }
   .chat-room { display: flex; flex-direction: column; height: calc(100vh - 80px); height: calc(100dvh - 80px); position: relative; }
   .chat-messages { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 150px; display: flex; flex-direction: column; gap: 16px; }
-  
   .msg { display: flex; gap: 10px; max-width: 80%; }
   .msg.self { align-self: flex-end; flex-direction: row-reverse; }
   .msg-bubble { padding: 14px 18px; border-radius: 22px; font-size: 15px; background: var(--surface); color: var(--text); border: 1px solid var(--border); word-wrap: break-word; }
@@ -101,7 +93,6 @@
   .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 5px; text-align: right; }
   .msg-img { max-width: 220px; border-radius: 12px; margin-bottom: 6px; display: block; }
   .msg-sender { font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 4px; cursor: pointer; }
-  
   .chat-input-area { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); background: var(--surface); border: 1px solid var(--border); padding: 10px 15px; display: flex; flex-direction: column; border-radius: 24px; z-index: 99; }
   .chat-tools { display: flex; gap: 20px; padding: 5px 10px 10px; color: var(--text-muted); }
   .chat-tools svg { width: 24px; height: 24px; cursor: pointer; fill: none; stroke: currentColor; stroke-width: 2; }
@@ -110,192 +101,86 @@
   .chat-send-btn { background: var(--primary); color: #fff; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
   /* PROFILE */
-  .profile-header { padding: 30px 20px; display: flex; align-items: center; gap: 20px; }
-  .profile-avatar { width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--surface); border: 2px solid var(--primary); }
+  .profile-header { padding: 25px 20px 15px; display: flex; align-items: center; gap: 20px; }
+  .profile-avatar { width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--surface); border: 2px solid var(--primary); flex-shrink: 0; }
   .profile-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  .profile-stats { display: flex; gap: 22px; margin-top: 12px; }
+  .stat-box { text-align: center; cursor: pointer; }
+  .stat-num { font-weight: 700; font-size: 18px; }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .grid-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 0 3px; }
-  .grid-posts .grid-item { width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 4px; cursor: pointer; background: var(--surface); }
+  .grid-posts .grid-item { width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 4px; cursor: pointer; background: var(--surface); position: relative; }
   .grid-posts img, .grid-posts video { width: 100%; height: 100%; object-fit: cover; }
+  .grid-item-play-icon { position: absolute; top: 5px; right: 5px; color: #fff; font-size: 14px; text-shadow: 0 0 6px rgba(0,0,0,0.9); pointer-events: none; }
   
-  /* ============ MODALS (MOBILE-FIXED) ============ */
-  .modal-overlay { 
-    position: fixed; 
-    inset: 0; 
-    background: rgba(0,0,0,0.8); 
-    backdrop-filter: blur(5px); 
-    z-index: 10000; 
-    display: none; 
-    justify-content: center; 
-    align-items: flex-start; 
-    padding: 20px; 
-    padding-top: 40px;
-    padding-bottom: 40px;
-    overflow-y: auto; 
-    -webkit-overflow-scrolling: touch;
-  }
-  .modal-box { 
-    background: var(--surface); 
-    border: 1px solid var(--border); 
-    width: 100%; 
-    max-width: 380px; 
-    border-radius: 20px; 
-    padding: 25px; 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5); 
-    position: relative; 
-    margin: auto;
-    max-height: none;
-  }
+  /* MODALS */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; justify-content: center; align-items: flex-start; padding: 20px; padding-top: 40px; padding-bottom: 40px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .modal-box { background: var(--surface); border: 1px solid var(--border); width: 100%; max-width: 380px; border-radius: 20px; padding: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); position: relative; margin: auto; }
   .input-group { margin-bottom: 15px; position: relative; }
-  .input-group input { 
-    width: 100%; 
-    padding: 15px; 
-    padding-right: 48px;
-    border: 1px solid var(--border); 
-    border-radius: 12px; 
-    background: var(--bg-color); 
-    color: var(--text); 
-    outline: none; 
-    font-size: 16px;
-    -webkit-appearance: none;
-  }
+  .input-group input { width: 100%; padding: 15px; padding-right: 48px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-color); color: var(--text); outline: none; font-size: 16px; -webkit-appearance: none; }
   .input-group input:focus { border-color: var(--primary); }
   .input-group.no-toggle input { padding-right: 15px; }
-  .btn-primary { 
-    width: 100%; 
-    padding: 15px; 
-    border-radius: 12px; 
-    background: var(--primary); 
-    color: #fff; 
-    font-weight: 700; 
-    font-size: 16px; 
-    cursor: pointer; 
-    border: none; 
-    touch-action: manipulation;
-  }
+  .btn-primary { width: 100%; padding: 15px; border-radius: 12px; background: var(--primary); color: #fff; font-weight: 700; font-size: 16px; cursor: pointer; border: none; touch-action: manipulation; }
   .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
   
   .spinner { width: 30px; height: 30px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 50px auto; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* DESKTOP — modal center (mobile keyboard friendly flex-start තියෙන්න ඕන) */
   @media(min-width: 768px) {
-    .modal-overlay {
-      align-items: center !important;
-      padding-top: 20px;
-      padding-bottom: 20px;
-    }
+    .modal-overlay { align-items: center !important; padding-top: 20px; padding-bottom: 20px; }
   }
 
-  /* PASSWORD TOGGLE */
-  .pw-toggle {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    font-size: 20px;
-    cursor: pointer;
-    padding: 4px 8px;
-    z-index: 2;
-  }
+  .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; padding: 4px 8px; z-index: 2; }
 
-  /* AUTH ERROR BOX */
-  #authError {
-    color: var(--danger);
-    background: rgba(239,68,68,0.1);
-    border: 1px solid rgba(239,68,68,0.4);
-    border-radius: 10px;
-    font-size: 14px;
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    display: none;
-    text-align: left;
-    line-height: 1.5;
-    word-wrap: break-word;
-  }
+  #authError { color: var(--danger); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.4); border-radius: 10px; font-size: 14px; padding: 12px 15px; margin-bottom: 15px; display: none; text-align: left; line-height: 1.5; word-wrap: break-word; }
 
   .auth-hint { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 15px; line-height: 1.5; }
 
-  /* VIEW POST MODAL */
   #viewPostOverlay .modal-box { max-width: 500px; padding: 0; overflow: hidden; background: var(--bg-color); }
   .post-viewer-header { display: flex; align-items: center; gap: 10px; padding: 15px; border-bottom: 1px solid var(--border); padding-top: 55px; }
   .post-viewer-media { width: 100%; max-height: 60vh; object-fit: contain; background: #000; display: block; }
   .post-viewer-actions { padding: 15px; }
 
-  /* VIEW USER PROFILE MODAL */
   #viewProfileOverlay .modal-box { max-width: 450px; padding: 0; overflow: hidden; background: var(--bg-color); }
   .vp-cover { height: 120px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
   .vp-content { padding: 0 20px 20px; text-align: center; margin-top: -50px; }
   .vp-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--bg-color); margin: 0 auto 10px; background: var(--surface); }
   .vp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  .vp-stats { display: flex; gap: 30px; justify-content: center; margin-bottom: 20px; }
+  .vp-stat-num { font-weight: 700; font-size: 18px; }
+  .vp-stat-label { font-size: 12px; color: var(--text-muted); }
 
-  /* GROUP / PRIVATE CHAT USER LIST */
   .group-user-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
   .group-user-item:hover { background: var(--surface-hover); }
   .group-user-item img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
 
-  /* STORY VIEWER */
   .story-viewer { position: fixed; inset: 0; background: #000; z-index: 99999; display: none; flex-direction: column; }
   .story-progress { display: flex; gap: 4px; padding: 15px; }
   .progress-segment { flex: 1; height: 3px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden; }
   .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.1s linear; }
   .story-media { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-  .story-back-btn {
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.25);
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    backdrop-filter: blur(6px);
-    white-space: nowrap;
-  }
+  .story-back-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; backdrop-filter: blur(6px); white-space: nowrap; }
   .story-back-btn:active { transform: scale(0.95); }
 
-  /* INLINE REEL PLAYER */
   .post-media-wrap { position: relative; background: #000; overflow: hidden; }
   .reel-video { cursor: pointer; }
-  .reel-play-overlay {
-    position: absolute; inset: 0; display: flex; justify-content: center; align-items: center;
-    background: rgba(0,0,0,0.25); cursor: pointer; z-index: 2;
-  }
+  .reel-play-overlay { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.25); cursor: pointer; z-index: 2; }
   .reel-play-overlay.hidden { display: none; }
-  .reel-play-overlay .play-circle {
-    width: 72px; height: 72px; border-radius: 50%; background: rgba(0,0,0,0.55);
-    border: 2px solid rgba(255,255,255,0.85); display: flex; justify-content: center; align-items: center;
-    color: #fff; font-size: 26px; padding-left: 5px; box-shadow: 0 0 25px rgba(0,0,0,0.6);
-  }
-  .reel-back-btn {
-    position: absolute; top: 12px; left: 12px; z-index: 5; display: none;
-    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff;
-    padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700;
-    cursor: pointer; align-items: center; gap: 6px; backdrop-filter: blur(6px);
-  }
+  .reel-play-overlay .play-circle { width: 72px; height: 72px; border-radius: 50%; background: rgba(0,0,0,0.55); border: 2px solid rgba(255,255,255,0.85); display: flex; justify-content: center; align-items: center; color: #fff; font-size: 26px; padding-left: 5px; box-shadow: 0 0 25px rgba(0,0,0,0.6); }
+  .reel-back-btn { position: absolute; top: 12px; left: 12px; z-index: 5; display: none; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; align-items: center; gap: 6px; backdrop-filter: blur(6px); }
   .reel-back-btn.show { display: inline-flex; }
 
-  .modal-back-btn {
-    position: absolute; top: 15px; left: 15px; z-index: 10;
-    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff;
-    padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700;
-    cursor: pointer; backdrop-filter: blur(6px);
-  }
+  .modal-back-btn { position: absolute; top: 15px; left: 15px; z-index: 10; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; backdrop-filter: blur(6px); }
 
-  .logout-btn {
-    background: rgba(239,68,68,0.1);
-    border: 1px solid var(--danger);
-    color: var(--danger);
-    padding: 10px 24px;
-    border-radius: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 15px;
-  }
+  .logout-btn { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 10px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 15px; }
   .logout-btn:active { transform: scale(0.97); }
+
+  .upload-quick-btn { background: var(--primary); border: none; color: #fff; padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 15px; display: inline-flex; align-items: center; gap: 6px; }
+  .upload-quick-btn:active { transform: scale(0.97); }
+
+  .follow-btn { background: var(--primary); border: none; color: #fff; padding: 10px 26px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px; }
+  .follow-btn.following { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
 
   .creator-card { margin: 20px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; text-align: center; }
 </style>
@@ -359,23 +244,26 @@
     <div class="vp-content">
       <div class="vp-avatar"><img id="vpAvatar" src=""></div>
       <h2 id="vpUsername" style="font-size:22px; font-weight:700; margin-bottom:5px;"></h2>
-      <div id="vpBio" style="font-size:14px; color:var(--text-muted); margin-bottom:20px;"></div>
-      <button class="btn-primary" onclick="messageUser()">Message</button>
+      <div id="vpBio" style="font-size:14px; color:var(--text-muted); margin-bottom:15px;"></div>
+      <div class="vp-stats" id="vpStats">
+        <div><div class="vp-stat-num" id="vpPostsCount">0</div><div class="vp-stat-label">Posts</div></div>
+        <div><div class="vp-stat-num" id="vpFollowersCount">0</div><div class="vp-stat-label">Followers</div></div>
+        <div><div class="vp-stat-num" id="vpFollowingCount">0</div><div class="vp-stat-label">Following</div></div>
+      </div>
+      <div id="vpActions" style="display:flex; gap:10px; justify-content:center;">
+        <button class="follow-btn" id="vpFollowBtn" onclick="handleFollowFromModal()">Follow</button>
+        <button class="btn-primary" style="width:auto; padding:10px 26px;" onclick="messageUser()">Message</button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- AUTH MODAL -->
 <div class="modal-overlay" id="authOverlay">
   <div class="modal-box">
     <h2 style="text-align:center; margin-bottom:25px; font-weight:800; color:var(--text); font-size:28px;" id="authTitle">Welcome Back</h2>
     <form id="authForm" onsubmit="handleAuth(event)" novalidate>
-      <div class="input-group no-toggle">
-        <input id="authEmail" type="email" placeholder="Email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" required>
-      </div>
-      <div class="input-group no-toggle" id="usernameGroup">
-        <input id="authUsername" type="text" placeholder="Username" autocomplete="username" autocapitalize="none" spellcheck="false" required>
-      </div>
+      <div class="input-group no-toggle"><input id="authEmail" type="email" placeholder="Email" autocomplete="email" inputmode="email" autocapitalize="none" spellcheck="false" required></div>
+      <div class="input-group no-toggle" id="usernameGroup"><input id="authUsername" type="text" placeholder="Username" autocomplete="username" autocapitalize="none" spellcheck="false" required></div>
       <div class="input-group">
         <input id="authPassword" type="password" placeholder="Password" autocomplete="current-password" required onfocus="scrollAuthButtonIntoView()">
         <button type="button" class="pw-toggle" onclick="togglePasswordVisibility()" id="pwToggleBtn" tabindex="-1">👁️</button>
@@ -386,9 +274,7 @@
     <div style="text-align:center; margin-top:15px;">
       <a href="#" onclick="handleForgotPassword(event)" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Forgot password?</a>
     </div>
-    <div class="auth-hint" id="authToggleBox">
-      Don't have an account? <a href="#" onclick="toggleAuthMode(event)" style="color:var(--primary); font-weight:600; text-decoration:none;">Sign Up</a>
-    </div>
+    <div class="auth-hint" id="authToggleBox">Don't have an account? <a href="#" onclick="toggleAuthMode(event)" style="color:var(--primary); font-weight:600; text-decoration:none;">Sign Up</a></div>
     <div style="text-align:center; margin-top:8px;">
       <a href="#" onclick="forceResetSession(event)" style="color:var(--text-muted); font-size:12px; text-decoration:none;">Session issue? Click to reset</a>
     </div>
@@ -399,9 +285,9 @@
   <div class="modal-box">
     <h2 style="margin-bottom:20px;">Edit Profile</h2>
     <div class="input-group no-toggle"><input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatar(event)" style="padding:10px; border:1px dashed var(--border);"></div>
-    <div class="input-group no-toggle"><input id="editUsername" type="text" placeholder="Username"></div>
+    <div class="input-group no-toggle"><input id="editUsername" type="text" placeholder="Username" autocapitalize="none" spellcheck="false"></div>
     <div class="input-group no-toggle"><input id="editBio" type="text" placeholder="Bio"></div>
-    <button class="btn-primary" onclick="saveProfile()">Save</button>
+    <button class="btn-primary" onclick="saveProfile()" id="saveProfileBtn">Save Profile</button>
     <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('editProfileOverlay').style.display='none'">Cancel</button>
   </div>
 </div>
@@ -442,6 +328,7 @@ let mediaRecorder, audioChunks = [], isRecording = false;
 let currentStories = [], currentStoryIndex = 0, storyTimer = null;
 let currentViewingUserId = null;
 let authInProgress = false;
+let profileSaveInProgress = false;
 
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231e293b'/><circle cx='50' cy='35' r='20' fill='%23818cf8'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%23818cf8'/></svg>";
 
@@ -454,78 +341,53 @@ function linkify(text) {
 }
 function toast(msg){ const t=$('toast'); t.textContent=msg; t.style.transform='translate(-50%,0)'; t.style.opacity='1'; setTimeout(()=>{ t.style.transform='translate(-50%,-100px)'; t.style.opacity='0'; }, 3000); }
 
-// ===== MOBILE AUTH HELPERS =====
 function scrollAuthButtonIntoView() {
   setTimeout(() => {
     const btn = $('authSubmitBtn');
     if(btn) btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, 350);
 }
-
 function togglePasswordVisibility() {
   const input = $('authPassword');
   const btn = $('pwToggleBtn');
-  if(input.type === 'password') {
-    input.type = 'text';
-    btn.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    btn.textContent = '👁️';
-  }
+  if(input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+  else { input.type = 'password'; btn.textContent = '👁️'; }
 }
-
 function showAuthError(msg) {
-  const err = $('authError');
-  err.textContent = msg;
-  err.style.display = 'block';
+  const err = $('authError'); err.textContent = msg; err.style.display = 'block';
   setTimeout(() => err.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
 }
-
-function hideAuthError() {
-  $('authError').style.display = 'none';
-}
+function hideAuthError() { $('authError').style.display = 'none'; }
 
 async function handleForgotPassword(e) {
   if(e) e.preventDefault();
   const email = $('authEmail').value.trim();
   if(!email) { showAuthError('Enter your email first, then click "Forgot password?"'); return; }
   try {
-    const {error} = await sb.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin
-    });
+    const {error} = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin });
     if(error) throw error;
     toast('📧 Reset link sent! Check your email inbox.');
-  } catch(ex) {
-    showAuthError('Error: ' + ex.message);
-  }
+  } catch(ex) { showAuthError('Error: ' + ex.message); }
 }
 
-// ✅ SESSION RESET — stale session එකක් හිර වුනොත්
 async function forceResetSession(e) {
   if(e) e.preventDefault();
   if(!confirm('Clear all session data and reload?')) return;
   try {
     await sb.auth.signOut().catch(()=>{});
-    // Supabase auth tokens ඉවත් කරනවා
-    Object.keys(localStorage).forEach(k => {
-      if(k.startsWith('sb-')) localStorage.removeItem(k);
-    });
+    Object.keys(localStorage).forEach(k => { if(k.startsWith('sb-')) localStorage.removeItem(k); });
     sessionStorage.clear();
     toast('Session reset — reloading...');
     setTimeout(() => location.reload(), 500);
-  } catch(ex) {
-    alert('Error: ' + ex.message);
-    location.reload();
-  }
+  } catch(ex) { alert('Error: ' + ex.message); location.reload(); }
 }
 
-// NAVIGATION
+// ================= NAVIGATION =================
 function switchPanel(name){
   pauseAllReels();
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.panel === name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   $(`panel-${name}`).classList.add('active');
-  
   if(name==='feed') renderFeed();
   if(name==='chat') renderChatList();
   if(name==='profile' && currentUser) renderProfile(currentUser.id);
@@ -533,60 +395,83 @@ function switchPanel(name){
   if(name==='upload') renderUpload();
 }
 
+// ================= FOLLOW HELPERS =================
+async function getFollowStats(userId) {
+  try {
+    const [f1, f2] = await Promise.all([
+      sb.from('follows').select('*', {count: 'exact', head: true}).eq('following_id', userId),
+      sb.from('follows').select('*', {count: 'exact', head: true}).eq('follower_id', userId)
+    ]);
+    return { followers: f1.count || 0, following: f2.count || 0 };
+  } catch(e) {
+    return { followers: 0, following: 0 };
+  }
+}
+async function isFollowing(myId, targetId) {
+  try {
+    const {data} = await sb.from('follows').select('id').eq('follower_id', myId).eq('following_id', targetId).maybeSingle();
+    return !!data;
+  } catch(e) { return false; }
+}
+async function toggleFollow(targetId) {
+  try {
+    const following = await isFollowing(currentUser.id, targetId);
+    if(following) {
+      await sb.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', targetId);
+      return false;
+    } else {
+      const {error} = await sb.from('follows').insert([{follower_id: currentUser.id, following_id: targetId}]);
+      if(error) throw error;
+      return true;
+    }
+  } catch(e) {
+    toast('Follow feature needs "follows" table setup: ' + e.message);
+    return null;
+  }
+}
+async function handleFollowFromModal() {
+  if(!currentViewingUserId) return;
+  const btn = $('vpFollowBtn');
+  btn.disabled = true;
+  const newState = await toggleFollow(currentViewingUserId);
+  if(newState === null) { btn.disabled = false; return; }
+  btn.textContent = newState ? 'Following' : 'Follow';
+  btn.classList.toggle('following', newState);
+  const stats = await getFollowStats(currentViewingUserId);
+  $('vpFollowersCount').textContent = stats.followers;
+  $('vpFollowingCount').textContent = stats.following;
+  btn.disabled = false;
+}
+
 // ================= LOGOUT =================
 async function logout() {
   if(!confirm('Are you sure you want to log out?')) return;
   try {
-    pauseAllReels();
-    closeStoryViewer();
-    closeViewPost();
-    closeViewProfile();
-
+    pauseAllReels(); closeStoryViewer(); closeViewPost(); closeViewProfile();
     if(presenceChannel) {
       try { await presenceChannel.untrack(); } catch(e){}
       try { await sb.removeChannel(presenceChannel); } catch(e){}
       presenceChannel = null;
     }
-    if(chatChannel) {
-      try { await sb.removeChannel(chatChannel); } catch(e){}
-      chatChannel = null;
-    }
-
+    if(chatChannel) { try { await sb.removeChannel(chatChannel); } catch(e){} chatChannel = null; }
     await sb.auth.signOut();
-
     currentUser = null;
-    onlineUsersMap.clear();
-    activeRoomId = null;
-    activeRoomMembers = [];
-    currentViewingUserId = null;
-    currentStories = [];
-    currentStoryIndex = 0;
-
-    ['feed','upload','search','chat','profile'].forEach(p => {
-      const el = $('panel-' + p);
-      if(el) el.innerHTML = '';
-    });
-
+    onlineUsersMap.clear(); activeRoomId = null; activeRoomMembers = [];
+    currentViewingUserId = null; currentStories = []; currentStoryIndex = 0;
+    ['feed','upload','search','chat','profile'].forEach(p => { const el = $('panel-' + p); if(el) el.innerHTML = ''; });
     document.querySelectorAll('.modal-overlay').forEach(o => o.style.display = 'none');
     $('storyViewer').style.display = 'none';
-
     document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.panel === 'feed'));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     $('panel-feed').classList.add('active');
-
     $('authForm').reset();
     $('authPassword').type = 'password';
     $('pwToggleBtn').textContent = '👁️';
     hideAuthError();
-
     setAuthMode('login');
     showAuthGate();
-
     toast('Logged out 👋');
-  } catch(ex) {
-    console.error(ex);
-    toast('Error logging out: ' + ex.message);
-  }
+  } catch(ex) { console.error(ex); toast('Error logging out: ' + ex.message); }
 }
 
 // ================= INLINE COMMENTS =================
@@ -595,18 +480,13 @@ function toggleInlineComments(postId) {
   if(el) {
     if(el.style.display === 'none' || el.style.display === '') {
       el.style.display = 'block';
-      const input = $(`inline-cinput-${postId}`);
-      if(input) input.focus();
-    } else {
-      el.style.display = 'none';
-    }
+      const input = $(`inline-cinput-${postId}`); if(input) input.focus();
+    } else el.style.display = 'none';
   }
 }
-
 async function addInlineComment(postId) {
   const inputEl = $(`inline-cinput-${postId}`);
-  const text = inputEl.value.trim();
-  if(!text) return;
+  const text = inputEl.value.trim(); if(!text) return;
   try {
     const {error} = await sb.from('comments').insert([{post_id: postId, user_id: currentUser.id, username: currentUser.username, text}]);
     if(error) throw error;
@@ -616,17 +496,11 @@ async function addInlineComment(postId) {
       const newComment = document.createElement('div');
       newComment.className = 'inline-comment-item';
       newComment.innerHTML = `<strong onclick="viewUserProfile('${currentUser.id}')">${escapeHTML(currentUser.username)}</strong> ${linkify(text)}`;
-      listEl.appendChild(newComment);
-      listEl.scrollTop = listEl.scrollHeight;
+      listEl.appendChild(newComment); listEl.scrollTop = listEl.scrollHeight;
     }
     const countSpan = $(`comment-count-${postId}`);
-    if(countSpan) {
-      let count = parseInt(countSpan.textContent) || 0;
-      countSpan.textContent = count + 1;
-    }
-  } catch(ex) {
-    toast('Error adding comment');
-  }
+    if(countSpan) { let count = parseInt(countSpan.textContent) || 0; countSpan.textContent = count + 1; }
+  } catch(ex) { toast('Error adding comment'); }
 }
 
 // ================= VIEW USER PROFILE =================
@@ -637,18 +511,32 @@ async function viewUserProfile(userId) {
   $('vpUsername').textContent = 'Loading...';
   $('vpBio').textContent = '';
   $('vpAvatar').src = DEFAULT_PFP;
-  
+  $('vpFollowersCount').textContent = '...';
+  $('vpFollowingCount').textContent = '...';
+  $('vpPostsCount').textContent = '...';
+  const followBtn = $('vpFollowBtn');
+  followBtn.style.display = 'none'; followBtn.disabled = true;
+
   const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
   if(prof) {
     $('vpUsername').textContent = prof.username;
     $('vpBio').textContent = prof.bio || 'No bio yet.';
     if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
   }
+  const [stats, postsRes, followState] = await Promise.all([
+    getFollowStats(userId),
+    sb.from('posts').select('*', {count:'exact', head:true}).eq('user_id', userId),
+    isFollowing(currentUser.id, userId)
+  ]);
+  $('vpFollowersCount').textContent = stats.followers;
+  $('vpFollowingCount').textContent = stats.following;
+  $('vpPostsCount').textContent = postsRes.count || 0;
+  followBtn.style.display = 'inline-flex';
+  followBtn.disabled = false;
+  followBtn.textContent = followState ? 'Following' : 'Follow';
+  followBtn.classList.toggle('following', followState);
 }
-
-function closeViewProfile() {
-  $('viewProfileOverlay').style.display = 'none';
-}
+function closeViewProfile() { $('viewProfileOverlay').style.display = 'none'; }
 
 async function messageUser() {
   if(!currentViewingUserId) return;
@@ -679,7 +567,7 @@ async function messageUser() {
   } catch(ex) { toast('Error opening chat'); }
 }
 
-// ================= PRIVATE CHAT =================
+// ================= PRIVATE / GROUP CHAT =================
 async function openPrivateChatModal() {
   $('privateChatOverlay').style.display = 'flex';
   $('privateChatUserList').innerHTML = `<div class="spinner"></div>`;
@@ -695,7 +583,6 @@ async function openPrivateChatModal() {
     </div>
   `).join('');
 }
-
 async function startPrivateChat(userId) {
   $('privateChatOverlay').style.display = 'none';
   try {
@@ -719,12 +606,9 @@ async function startPrivateChat(userId) {
         {room_id: existingRoomId, user_id: userId, username: theirProf?.username || 'User'}
       ]);
     }
-    switchPanel('chat');
-    openChatRoom(existingRoomId, false);
+    switchPanel('chat'); openChatRoom(existingRoomId, false);
   } catch(ex) { toast('Error opening chat'); }
 }
-
-// ================= GROUP CHAT =================
 async function openGroupModal() {
   $('groupChatOverlay').style.display = 'flex';
   $('groupUserList').innerHTML = `<div class="spinner"></div>`;
@@ -741,25 +625,19 @@ async function openGroupModal() {
     </label>
   `).join('');
 }
-
 async function submitGroupChat() {
   const name = $('groupNameInput').value.trim() || 'New Group';
   const picFile = $('groupPicInput').files[0];
   const checkboxes = document.querySelectorAll('.group-checkbox:checked');
   if(checkboxes.length === 0) { toast('Select at least one friend'); return; }
-  
   const btn = $('createGroupBtn'); btn.textContent = 'Creating...'; btn.disabled = true;
   const selectedUserIds = Array.from(checkboxes).map(cb => cb.value);
-  
   try {
     let groupPicUrl = null;
     if(picFile) {
       const path = `groups/${Date.now()}.${picFile.name.split('.').pop()}`;
       const { error: uploadErr } = await sb.storage.from('chat_media').upload(path, picFile);
-      if(!uploadErr) {
-        const { data: { publicUrl } } = sb.storage.from('chat_media').getPublicUrl(path);
-        groupPicUrl = publicUrl;
-      }
+      if(!uploadErr) { const { data: { publicUrl } } = sb.storage.from('chat_media').getPublicUrl(path); groupPicUrl = publicUrl; }
     }
     const {data:room, error} = await sb.from('chat_rooms').insert([{name: name, is_group: true, avatar_url: groupPicUrl, created_by: currentUser.id}]).select().single();
     if(error) throw error;
@@ -774,7 +652,7 @@ async function submitGroupChat() {
     $('groupNameInput').value = ''; $('groupPicInput').value = '';
     renderChatList();
     openChatRoom(room.id, true);
-  } catch(ex) { toast('Error creating group'); } 
+  } catch(ex) { toast('Error creating group'); }
   finally { btn.textContent = 'Create Group'; btn.disabled = false; }
 }
 
@@ -784,7 +662,6 @@ async function renderChatList() {
   try {
     const {data:memberships} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
     const roomIds = (memberships||[]).map(m => m.room_id);
-    
     let roomsHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding:0 20px;">
         <h2 style="font-weight:700; font-size:24px;">Messages</h2>
@@ -794,19 +671,13 @@ async function renderChatList() {
         </div>
       </div>
     `;
-
-    if(roomIds.length === 0) { 
-      el.innerHTML = roomsHTML + `<div style="text-align:center; padding:40px; color:var(--text-muted);">No messages yet.</div>`; 
-      return; 
-    }
-
+    if(roomIds.length === 0) { el.innerHTML = roomsHTML + `<div style="text-align:center; padding:40px; color:var(--text-muted);">No messages yet.</div>`; return; }
     const [roomsRes, membersRes, messagesRes] = await Promise.all([
       sb.from('chat_rooms').select('*').in('id', roomIds).order('created_at', {ascending:false}),
       sb.from('room_members').select('*').in('room_id', roomIds),
       sb.from('chat_messages').select('*').in('room_id', roomIds).order('created_at', {ascending:false})
     ]);
     const rooms = roomsRes.data || [], allMembers = membersRes.data || [], allMessages = messagesRes.data || [];
-
     roomsHTML += rooms.map(r => {
       const otherMember = !r.is_group ? allMembers.filter(m => m.room_id === r.id).find(m => m.user_id !== currentUser.id) : null;
       const isOnline = otherMember && onlineUsersMap.has(otherMember.user_id);
@@ -819,11 +690,8 @@ async function renderChatList() {
          else if(lastMsg.audio_url) preview = '🎤 Voice';
       }
       let avatarHtml = `<div class="avatar" style="width:55px; height:55px;">`;
-      if(r.is_group) {
-         avatarHtml += r.avatar_url ? `<img src="${r.avatar_url}">` : `👥`;
-      } else {
-         avatarHtml += `<img src="${DEFAULT_PFP}">`;
-      }
+      if(r.is_group) { avatarHtml += r.avatar_url ? `<img src="${r.avatar_url}">` : `👥`; }
+      else { avatarHtml += `<img src="${DEFAULT_PFP}">`; }
       avatarHtml += `</div>`;
       return `
       <div style="display:flex; align-items:center; gap:15px; padding:15px 20px; border-bottom:1px solid var(--border); cursor:pointer;">
@@ -841,24 +709,20 @@ async function renderChatList() {
     el.innerHTML = roomsHTML;
   } catch(ex) { el.innerHTML = `<div style="text-align:center; padding:20px;">Error loading chats.</div>`; }
 }
-
 async function deleteChat(roomId) {
   if(!confirm('Delete this chat? (For DMs, this removes the chat from your list)')) return;
   try {
     await sb.from('room_members').delete().eq('room_id', roomId).eq('user_id', currentUser.id);
-    toast('Chat Deleted 🗑️');
-    activeRoomId = null;
-    renderChatList();
+    toast('Chat Deleted 🗑️'); activeRoomId = null; renderChatList();
   } catch(ex) { toast('Error deleting chat'); }
 }
-
 async function openChatRoom(roomId, isGroup) {
   activeRoomId = roomId;
   const el = $('panel-chat'); el.innerHTML = `<div class="spinner"></div>`;
   const {data:room} = await sb.from('chat_rooms').select('*').eq('id', roomId).single();
   const {data:members} = await sb.from('room_members').select('*').eq('room_id', roomId);
   activeRoomMembers = members || [];
-  let roomName = room.name || 'Chat'; 
+  let roomName = room.name || 'Chat';
   if(!isGroup) { const other = activeRoomMembers.find(m => m.user_id !== currentUser.id); if(other) roomName = other.username; }
   const otherUser = !isGroup ? activeRoomMembers.find(m => m.user_id !== currentUser.id) : null;
   const isOnline = otherUser && onlineUsersMap.has(otherUser.user_id);
@@ -897,9 +761,8 @@ async function openChatRoom(roomId, isGroup) {
 
 // ================= MESSAGE LOGIC =================
 function toggleRecording() {
-  if(isRecording) {
-    mediaRecorder.stop(); isRecording = false; $('micBtn').style.color = 'var(--text-muted)';
-  } else {
+  if(isRecording) { mediaRecorder.stop(); isRecording = false; $('micBtn').style.color = 'var(--text-muted)'; }
+  else {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       mediaRecorder = new MediaRecorder(stream); audioChunks = [];
       mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
@@ -913,12 +776,7 @@ function toggleRecording() {
     }).catch(() => alert('Microphone denied.'));
   }
 }
-
-async function uploadChatImage(e) {
-  const file = e.target.files[0];
-  if(file) await uploadChatMedia(file, 'image');
-}
-
+async function uploadChatImage(e) { const file = e.target.files[0]; if(file) await uploadChatMedia(file, 'image'); }
 async function uploadChatMedia(file, type) {
   try {
     const path = `${currentUser.id}/${Date.now()}.${file.name.split('.').pop()}`;
@@ -932,39 +790,26 @@ async function uploadChatMedia(file, type) {
     if(dbError) throw dbError;
   } catch(ex) { toast('Upload failed: ' + ex.message); }
 }
-
 function renderMessageContent(m) {
   let content = '';
   if (m.text) {
-    if (m.text.match(/\.(jpeg|jpg|gif|png|webp)$/i)) {
-      content += `<img src="${m.text}" class="msg-img" style="max-width:100%; border-radius:10px;" alt="Image" />`;
-    } else {
-      content += `<div>${linkify(m.text)}</div>`;
-    }
+    if (m.text.match(/\.(jpeg|jpg|gif|png|webp)$/i)) content += `<img src="${m.text}" class="msg-img" style="max-width:100%; border-radius:10px;" alt="Image" />`;
+    else content += `<div>${linkify(m.text)}</div>`;
   }
   if (m.image_url) content += `<img src="${m.image_url}" class="msg-img" alt="Image" />`;
   if (m.audio_url) content += `<audio controls src="${m.audio_url}" style="max-width:200px; height:35px; filter: invert(1);"></audio>`;
   return content;
 }
-
 async function loadMessages() {
   const {data:msgs} = await sb.from('chat_messages').select('*').eq('room_id', activeRoomId).order('created_at');
   const box = $('chatMessagesBox');
   if(!msgs || msgs.length === 0) { box.innerHTML = `<p style="text-align:center; font-size:13px; margin-top:20px; color:var(--text-muted);">Say hi! 👋</p>`; return; }
   box.innerHTML = msgs.map(m => {
     const isSelf = m.user_id === currentUser.id;
-    return `
-    <div class="msg ${isSelf ? 'self' : ''}">
-      <div>
-        ${!isSelf ? `<div class="msg-sender" onclick="viewUserProfile('${m.user_id}')">${escapeHTML(m.username)}</div>` : ''}
-        <div class="msg-bubble">${renderMessageContent(m)}</div>
-        <div class="msg-time">${formatTime(m.created_at)}</div>
-      </div>
-    </div>
-  `}).join('');
+    return `<div class="msg ${isSelf ? 'self' : ''}"><div>${!isSelf ? `<div class="msg-sender" onclick="viewUserProfile('${m.user_id}')">${escapeHTML(m.username)}</div>` : ''}<div class="msg-bubble">${renderMessageContent(m)}</div><div class="msg-time">${formatTime(m.created_at)}</div></div></div>`;
+  }).join('');
   requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
 }
-
 async function sendChat() {
   const input = $('chatInput'); const text = input.value.trim();
   if(!text || !activeRoomId) return;
@@ -973,7 +818,6 @@ async function sendChat() {
   const box = $('chatMessagesBox');
   requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
 }
-
 function subscribeToMessages() {
   if(chatChannel) sb.removeChannel(chatChannel);
   chatChannel = sb.channel('chat-'+activeRoomId).on('postgres_changes', {event:'INSERT', schema:'public', table:'chat_messages', filter:`room_id=eq.${activeRoomId}`}, (payload) => {
@@ -983,25 +827,15 @@ function subscribeToMessages() {
       const isSelf = m.user_id === currentUser.id;
       const div = document.createElement('div');
       div.className = `msg ${isSelf ? 'self' : ''}`;
-      div.innerHTML = `
-        <div>
-          ${!isSelf ? `<div class="msg-sender" onclick="viewUserProfile('${m.user_id}')">${escapeHTML(m.username)}</div>` : ''}
-          <div class="msg-bubble">${renderMessageContent(m)}</div>
-          <div class="msg-time">${formatTime(m.created_at)}</div>
-        </div>
-      `;
-      box.appendChild(div); 
+      div.innerHTML = `<div>${!isSelf ? `<div class="msg-sender" onclick="viewUserProfile('${m.user_id}')">${escapeHTML(m.username)}</div>` : ''}<div class="msg-bubble">${renderMessageContent(m)}</div><div class="msg-time">${formatTime(m.created_at)}</div></div>`;
+      box.appendChild(div);
       requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
     }
   }).subscribe();
 }
+function formatTime(dateStr) { if(!dateStr) return ''; return new Date(dateStr).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
-function formatTime(dateStr) {
-  if(!dateStr) return '';
-  return new Date(dateStr).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-}
-
-// ================= FEED & POSTS =================
+// ================= FEED =================
 async function renderFeed() {
   const el = $('panel-feed');
   el.innerHTML = `<div class="spinner"></div>`;
@@ -1023,17 +857,12 @@ async function renderFeed() {
         </div>
         <div class="story-name">Add Story</div>
       </div>`;
-
     const uniqueStoryUsers = new Set();
     (stories||[]).forEach(s => {
       if(!uniqueStoryUsers.has(s.user_id)) {
         uniqueStoryUsers.add(s.user_id);
         const prof = profileMap[s.user_id] || { username: s.username, avatar_url: null };
-        storiesHTML += `
-          <div class="story-item" onclick="openStoryViewer('${s.user_id}')">
-            <div class="story-ring"><img src="${prof.avatar_url || DEFAULT_PFP}" class="story-img"></div>
-            <div class="story-name">${escapeHTML(prof.username)}</div>
-          </div>`;
+        storiesHTML += `<div class="story-item" onclick="openStoryViewer('${s.user_id}')"><div class="story-ring"><img src="${prof.avatar_url || DEFAULT_PFP}" class="story-img"></div><div class="story-name">${escapeHTML(prof.username)}</div></div>`;
       }
     });
     storiesHTML += `</div>`;
@@ -1045,7 +874,6 @@ async function renderFeed() {
       const postComments = commentsRes.filter(c => c.post_id === p.id);
       const hasLiked = postLikes.some(l => l.user_id === currentUser?.id);
       const isOwn = p.user_id === currentUser.id;
-
       return `
       <div class="post">
         <div class="post-header">
@@ -1058,28 +886,15 @@ async function renderFeed() {
         </div>
         ${isVideo ? `
         <div class="post-media-wrap" id="reel-wrap-${p.id}">
-          <video id="reel-video-${p.id}" src="${p.video_url}" playsinline preload="metadata" muted
-                 class="post-media reel-video" onended="stopReel(${p.id})"></video>
-          <div class="reel-play-overlay" id="reel-overlay-${p.id}" onclick="playReel(${p.id})">
-            <div class="play-circle">▶</div>
-          </div>
-          <button class="reel-back-btn" id="reel-back-${p.id}"
-                  onclick="event.stopPropagation(); stopReel(${p.id})">← Back</button>
+          <video id="reel-video-${p.id}" src="${p.video_url}" playsinline preload="metadata" muted class="post-media reel-video" onended="stopReel(${p.id})"></video>
+          <div class="reel-play-overlay" id="reel-overlay-${p.id}" onclick="playReel(${p.id})"><div class="play-circle">▶</div></div>
+          <button class="reel-back-btn" id="reel-back-${p.id}" onclick="event.stopPropagation(); stopReel(${p.id})">← Back</button>
         </div>` : `
-        <div onclick="viewPost(${p.id})" style="cursor:pointer;">
-          <img src="${p.image_url}" class="post-image" onerror="this.src='${DEFAULT_PFP}'">
-        </div>`}
+        <div onclick="viewPost(${p.id})" style="cursor:pointer;"><img src="${p.image_url}" class="post-image" onerror="this.src='${DEFAULT_PFP}'"></div>`}
         <div class="post-actions">
-          <div class="action-btn ${hasLiked ? 'liked' : ''}" onclick="toggleLike(${p.id}, this)">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-          </div>
-          <div class="action-btn" onclick="toggleInlineComments(${p.id})">
-            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-            <span id="comment-count-${p.id}" style="font-size:14px; font-weight:600; margin-left:2px;">${postComments.length}</span>
-          </div>
-          <div class="action-btn" onclick="sharePost(${p.id})">
-            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-          </div>
+          <div class="action-btn ${hasLiked ? 'liked' : ''}" onclick="toggleLike(${p.id}, this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
+          <div class="action-btn" onclick="toggleInlineComments(${p.id})"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg><span id="comment-count-${p.id}" style="font-size:14px; font-weight:600; margin-left:2px;">${postComments.length}</span></div>
+          <div class="action-btn" onclick="sharePost(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></div>
         </div>
         <div class="post-likes" id="likes-count-${p.id}">${postLikes.length} likes</div>
         <div class="post-caption"><strong onclick="viewUserProfile('${p.user_id}')">${escapeHTML(prof.username)}</strong> ${linkify(p.caption||'')}</div>
@@ -1100,9 +915,8 @@ async function renderFeed() {
 
 function sharePost(postId) {
   const url = window.location.origin + '?post=' + postId;
-  if (navigator.share) {
-    navigator.share({ title: 'Your Place', text: 'Check out this post!', url: url }).then(() => toast('Shared!')).catch(() => fallbackCopy(url));
-  } else { fallbackCopy(url); }
+  if (navigator.share) { navigator.share({ title: 'Your Place', text: 'Check out this post!', url: url }).then(() => toast('Shared!')).catch(() => fallbackCopy(url)); }
+  else fallbackCopy(url);
 }
 function fallbackCopy(text) {
   if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => toast('Link copied! 🔗'));
@@ -1113,7 +927,6 @@ function fallbackCopy(text) {
     ta.remove();
   }
 }
-
 async function toggleLike(postId, btn) {
   const isLiked = btn.classList.contains('liked');
   btn.classList.toggle('liked');
@@ -1127,36 +940,25 @@ async function toggleLike(postId, btn) {
 
 // ================= INLINE REEL PLAYER =================
 let activeReelId = null;
-
 function playReel(postId) {
   if (activeReelId && activeReelId !== postId) stopReel(activeReelId);
-  const video   = $(`reel-video-${postId}`);
-  const overlay = $(`reel-overlay-${postId}`);
-  const backBtn = $(`reel-back-${postId}`);
+  const video = $(`reel-video-${postId}`), overlay = $(`reel-overlay-${postId}`), backBtn = $(`reel-back-${postId}`);
   if (!video) return;
-  activeReelId = postId;
-  video.muted = false;
-  video.controls = true;
+  activeReelId = postId; video.muted = false; video.controls = true;
   if(overlay) overlay.classList.add('hidden');
   if(backBtn) backBtn.classList.add('show');
   const p = video.play();
   if (p && p.catch) p.catch(() => { video.muted = true; video.play().catch(()=>{}); });
 }
-
 function stopReel(postId) {
-  const video   = $(`reel-video-${postId}`);
-  const overlay = $(`reel-overlay-${postId}`);
-  const backBtn = $(`reel-back-${postId}`);
+  const video = $(`reel-video-${postId}`), overlay = $(`reel-overlay-${postId}`), backBtn = $(`reel-back-${postId}`);
   if (!video) return;
-  video.pause();
-  try { video.currentTime = 0; } catch(e){}
-  video.controls = false;
-  video.muted = true;
+  video.pause(); try { video.currentTime = 0; } catch(e){}
+  video.controls = false; video.muted = true;
   if(overlay) overlay.classList.remove('hidden');
   if(backBtn) backBtn.classList.remove('show');
   if (activeReelId === postId) activeReelId = null;
 }
-
 function pauseAllReels() {
   document.querySelectorAll('.reel-video').forEach(v => { if (!v.paused) v.pause(); });
   document.querySelectorAll('.reel-back-btn.show').forEach(b => b.classList.remove('show'));
@@ -1164,7 +966,6 @@ function pauseAllReels() {
   document.querySelectorAll('.reel-video').forEach(v => { v.controls = false; v.muted = true; });
   activeReelId = null;
 }
-
 function closeViewPost() {
   const v = document.querySelector('#viewPostContent video');
   if (v) v.pause();
@@ -1182,7 +983,6 @@ async function viewPost(postId) {
     const {data:likes} = await sb.from('likes').select('*').eq('post_id', postId);
     const {data:comments} = await sb.from('comments').select('*').eq('post_id', postId).order('created_at');
     const hasLiked = likes?.some(l => l.user_id === currentUser?.id);
-
     $('viewPostContent').innerHTML = `
       <div class="post-viewer-header">
         <div class="avatar" onclick="viewUserProfile('${p.user_id}')"><img src="${prof?.avatar_url || DEFAULT_PFP}"></div>
@@ -1192,13 +992,8 @@ async function viewPost(postId) {
       ${isVideo ? `<video src="${p.video_url}" controls playsinline class="post-viewer-media"></video>` : `<img src="${p.image_url}" class="post-viewer-media" onerror="this.src='${DEFAULT_PFP}'">`}
       <div class="post-viewer-actions">
         <div class="post-actions" style="padding: 0 0 10px 0;">
-          <div class="action-btn ${hasLiked ? 'liked' : ''}" onclick="toggleLike(${p.id}, this)">
-            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-          </div>
-          <div class="action-btn" onclick="toggleCommentsInModal(${p.id})">
-            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-            <span style="font-size:14px; font-weight:600; margin-left:2px;">${comments?.length || 0}</span>
-          </div>
+          <div class="action-btn ${hasLiked ? 'liked' : ''}" onclick="toggleLike(${p.id}, this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
+          <div class="action-btn" onclick="toggleCommentsInModal(${p.id})"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg><span style="font-size:14px; font-weight:600; margin-left:2px;">${comments?.length || 0}</span></div>
         </div>
         <div class="post-likes" style="padding:0;">${likes?.length || 0} likes</div>
         <div class="post-caption" style="padding:5px 0;"><strong>${escapeHTML(prof?.username || p.username)}</strong> ${linkify(p.caption||'')}</div>
@@ -1215,7 +1010,6 @@ async function viewPost(postId) {
     `;
   } catch(ex) { $('viewPostContent').innerHTML = `<div style="padding:20px; text-align:center;">Error loading post.</div>`; }
 }
-
 function toggleCommentsInModal(postId) { const el = $(`modal-comments-${postId}`); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
 async function addCommentInModal(postId) {
   const inputEl = $(`modal-cinput-${postId}`); const text = inputEl.value.trim(); if(!text) return;
@@ -1227,56 +1021,44 @@ async function addCommentInModal(postId) {
 async function deletePost(postId) {
   if(!confirm('Delete this post?')) return;
   await sb.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id);
-  closeViewPost();
-  renderFeed();
+  closeViewPost(); renderFeed();
 }
 
 // ================= AUTH =================
-function showAuthGate() { 
-  $('authOverlay').style.display = 'flex'; 
-  document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'none'); 
+function showAuthGate() {
+  $('authOverlay').style.display = 'flex';
+  document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'none');
 }
-
 function setAuthMode(mode) {
   authMode = mode;
   const isLogin = mode === 'login';
   $('usernameGroup').style.display = isLogin ? 'none' : 'block';
   $('authTitle').textContent = isLogin ? 'Welcome Back' : 'Create Account';
   $('authSubmitBtn').textContent = isLogin ? 'Log In' : 'Sign Up';
-  $('authToggleBox').innerHTML = isLogin 
-    ? `Don't have an account? <a href="#" onclick="toggleAuthMode(event)" style="color:var(--primary); font-weight:600; text-decoration:none;">Sign Up</a>` 
+  $('authToggleBox').innerHTML = isLogin
+    ? `Don't have an account? <a href="#" onclick="toggleAuthMode(event)" style="color:var(--primary); font-weight:600; text-decoration:none;">Sign Up</a>`
     : `Have an account? <a href="#" onclick="toggleAuthMode(event)" style="color:var(--primary); font-weight:600; text-decoration:none;">Log In</a>`;
   hideAuthError();
 }
-
-function toggleAuthMode(e) {
-  if(e) e.preventDefault();
-  setAuthMode(authMode === 'login' ? 'signup' : 'login');
-}
+function toggleAuthMode(e) { if(e) e.preventDefault(); setAuthMode(authMode === 'login' ? 'signup' : 'login'); }
 
 async function handleAuth(e) {
   if(e) e.preventDefault();
   if(authInProgress) return;
   hideAuthError();
-  
   const email = $('authEmail').value.trim();
   const password = $('authPassword').value;
   const username = $('authUsername').value.trim();
-  
   if(!email) { showAuthError('Please enter your email.'); return; }
   if(!email.includes('@')) { showAuthError('Please enter a valid email address.'); return; }
   if(!password) { showAuthError('Please enter your password.'); return; }
   if(authMode === 'signup' && !username) { showAuthError('Please choose a username.'); return; }
   if(authMode === 'signup' && password.length < 6) { showAuthError('Password must be at least 6 characters.'); return; }
-
-  if(!navigator.onLine) {
-    showAuthError('❌ No internet connection. Please check your network and try again.');
-    return;
-  }
+  if(!navigator.onLine) { showAuthError('❌ No internet connection. Please check your network and try again.'); return; }
 
   authInProgress = true;
   const btn = $('authSubmitBtn');
-  btn.disabled = true; 
+  btn.disabled = true;
   btn.textContent = authMode === 'login' ? 'Logging in...' : 'Creating...';
 
   try {
@@ -1287,10 +1069,9 @@ async function handleAuth(e) {
       console.log('✅ Login success:', data.user?.id);
       let {data:prof} = await sb.from('profiles').select('*').eq('id', data.user.id).maybeSingle();
       currentUser = { id: data.user.id, username: prof?.username || email.split('@')[0] };
-      $('authOverlay').style.display = 'none'; 
-      document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'auto'); 
-      $('authForm').reset();
-      hideAuthError();
+      $('authOverlay').style.display = 'none';
+      document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'auto');
+      $('authForm').reset(); hideAuthError();
       initApp();
       toast('Welcome back! 👋');
     } else {
@@ -1298,23 +1079,19 @@ async function handleAuth(e) {
       const {data, error} = await sb.auth.signUp({email, password, options:{data:{username}}});
       if(error) throw error;
       if(data.session) {
-        currentUser = { id: data.user.id, username }; 
+        currentUser = { id: data.user.id, username };
         await sb.from('profiles').insert([{id: data.user.id, username}]);
-        $('authOverlay').style.display = 'none'; 
-        document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'auto'); 
+        $('authOverlay').style.display = 'none';
+        document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'auto');
         $('authForm').reset();
         initApp();
         toast('Account created! 🎉');
       } else {
         showAuthError('✅ Account created! Please check your email inbox to confirm before logging in.');
-        setAuthMode('login');
-        btn.disabled = false;
-        btn.textContent = 'Log In';
-        authInProgress = false;
-        return;
+        setAuthMode('login'); btn.disabled = false; btn.textContent = 'Log In'; authInProgress = false; return;
       }
     }
-  } catch(ex) { 
+  } catch(ex) {
     console.error('❌ Auth error:', ex);
     let msg = ex.message || 'Unknown error';
     if(msg.toLowerCase().includes('invalid login')) msg = '❌ Wrong email or password. Please try again.';
@@ -1322,11 +1099,10 @@ async function handleAuth(e) {
     else if(msg.toLowerCase().includes('user already')) msg = '⚠️ This email is already registered. Try logging in.';
     else if(msg.toLowerCase().includes('rate limit')) msg = '⏱️ Too many attempts. Please wait a minute and try again.';
     showAuthError(msg);
-  } 
-  finally { 
+  } finally {
     authInProgress = false;
-    btn.disabled = false; 
-    btn.textContent = authMode === 'login' ? 'Log In' : 'Sign Up'; 
+    btn.disabled = false;
+    btn.textContent = authMode === 'login' ? 'Log In' : 'Sign Up';
   }
 }
 
@@ -1371,42 +1147,109 @@ async function renderProfile(userId) {
   if(!prof) prof = { username: currentUser.username, avatar_url: null, bio: '' };
   const {data:posts} = await sb.from('posts').select('*').eq('user_id', userId).order('created_at', {ascending:false});
   const isMe = userId === currentUser.id;
+  const stats = await getFollowStats(userId);
+
   el.innerHTML = `
     <div class="profile-header">
       <div class="profile-avatar"><img src="${prof.avatar_url || DEFAULT_PFP}" onerror="this.src='${DEFAULT_PFP}'"></div>
-      <div style="flex:1;">
-        <h2 style="font-size:24px; font-weight:700; margin-bottom:15px;">${escapeHTML(prof.username)}</h2>
+      <div style="flex:1; min-width:0;">
+        <h2 style="font-size:22px; font-weight:700; margin-bottom:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(prof.username)}</h2>
         ${isMe ? `
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button style="background:var(--surface); border:1px solid var(--border); padding:10px 24px; border-radius:12px; font-weight:600; cursor:pointer; color:var(--text);" onclick="$('editProfileOverlay').style.display='flex'">Edit Profile</button>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button style="background:var(--surface); border:1px solid var(--border); padding:9px 16px; border-radius:10px; font-weight:600; cursor:pointer; color:var(--text); font-size:14px;" onclick="openEditProfile()">Edit Profile</button>
+            <button class="upload-quick-btn" onclick="switchPanel('upload')">＋ Upload</button>
           </div>
         ` : ''}
       </div>
     </div>
-    <div style="padding:0 20px 20px; font-size:15px; color:var(--text-muted); line-height:1.5;">
+    <div class="profile-stats" style="padding: 0 20px; justify-content:center; gap:32px;">
+      <div class="stat-box"><div class="stat-num">${(posts||[]).length}</div><div class="stat-label">Posts</div></div>
+      <div class="stat-box"><div class="stat-num">${stats.followers}</div><div class="stat-label">Followers</div></div>
+      <div class="stat-box"><div class="stat-num">${stats.following}</div><div class="stat-label">Following</div></div>
+    </div>
+    <div style="padding:15px 20px 20px; font-size:15px; color:var(--text-muted); line-height:1.5;">
       <b style="color:var(--text);">${escapeHTML(prof.username)}</b><br>${linkify(prof.bio || '')}
     </div>
     <div class="grid-posts">
-      ${(posts||[]).map(p => `<div class="grid-item" onclick="viewPost(${p.id})">${p.image_url ? `<img src="${p.image_url}" onerror="this.src='${DEFAULT_PFP}'">` : `<video src="${p.video_url}"></video>`}</div>`).join('')}
+      ${(posts||[]).map(p => `<div class="grid-item" onclick="viewPost(${p.id})">${p.image_url ? `<img src="${p.image_url}" onerror="this.src='${DEFAULT_PFP}'">` : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}</div>`).join('')}
     </div>
-    ${isMe ? `<div class="creator-card"><h3 style="color:var(--primary); margin-bottom:10px;">About The Creator</h3><p style="font-size:14px; color:var(--text-muted);"><b>Dinidu Wijesinghe</b><br>"Hi there! I'm Dinidu, the creator behind Your Place 2026. I built this platform with a simple vision: to create a safe, fun, and fast space for friends to connect, share moments, and chat without distractions. Thank you for being a part of this journey. Let's build a great community together!"</p></div>` : ''}
+    ${isMe ? `
+      <div class="creator-card"><h3 style="color:var(--primary); margin-bottom:10px;">About The Creator</h3><p style="font-size:14px; color:var(--text-muted);"><b>Dinidu Wijesinghe</b><br>"Hi there! I'm Dinidu, the creator behind Your Place 2026..."</p></div>
+      <div style="padding: 0 20px 30px;"><button class="logout-btn" style="width:100%;" onclick="logout()">Logout</button></div>
+    ` : ''}
   `;
-  $('editUsername').value = prof.username; $('editBio').value = prof.bio || '';
+  $('editUsername').value = prof.username;
+  $('editBio').value = prof.bio || '';
+  $('saveProfileBtn').disabled = false;
+  $('saveProfileBtn').textContent = 'Save Profile';
 }
 
-async function saveProfile() { 
-  await sb.from('profiles').update({username: $('editUsername').value.trim(), bio: $('editBio').value.trim()}).eq('id', currentUser.id); 
-  $('editProfileOverlay').style.display = 'none'; 
-  renderProfile(currentUser.id); 
+function openEditProfile() {
+  $('editProfileOverlay').style.display = 'flex';
+  $('saveProfileBtn').disabled = false;
+  $('saveProfileBtn').textContent = 'Save Profile';
 }
-async function uploadAvatar(e) { 
-  const file = e.target.files[0]; if(!file) return; 
-  const path = `${currentUser.id}/avatar.jpg`; 
-  await sb.storage.from('avatars').upload(path, file, {upsert: true}); 
-  const {data: {publicUrl}} = sb.storage.from('avatars').getPublicUrl(path); 
-  await sb.from('profiles').update({avatar_url: publicUrl}).eq('id', currentUser.id); 
-  renderProfile(currentUser.id); 
+
+async function saveProfile() {
+  if(profileSaveInProgress) return;
+  const newUsername = $('editUsername').value.trim();
+  const newBio = $('editBio').value.trim();
+  if(!newUsername) { toast('Username cannot be empty'); return; }
+
+  profileSaveInProgress = true;
+  const btn = $('saveProfileBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+
+  try {
+    const {error} = await sb.from('profiles').update({ username: newUsername, bio: newBio }).eq('id', currentUser.id);
+    if(error) throw error;
+
+    // Update in-memory currentUser so future operations use new username
+    currentUser.username = newUsername;
+
+    // Keep existing posts.username in sync so feed shows new name
+    await sb.from('posts').update({username: newUsername}).eq('user_id', currentUser.id).catch(()=>{});
+
+    $('editProfileOverlay').style.display = 'none';
+    toast('Profile updated! ✅');
+
+    // Force fresh render
+    await renderProfile(currentUser.id);
+    // Also refresh feed if visible
+    if($('panel-feed').classList.contains('active')) renderFeed();
+  } catch(ex) {
+    toast('Error: ' + ex.message);
+  } finally {
+    profileSaveInProgress = false;
+    btn.disabled = false; btn.textContent = 'Save Profile';
+  }
+}
+
+async function uploadAvatar(e) {
+  const file = e.target.files[0]; if(!file) return;
+  const btn = $('saveProfileBtn');
+  btn.disabled = true; btn.textContent = 'Uploading photo...';
+  try {
+    // ✅ Unique filename → browser doesn't cache old image
+    const ext = file.name.split('.').pop();
+    const path = `${currentUser.id}/avatar_${Date.now()}.${ext}`;
+    const {error: upErr} = await sb.storage.from('avatars').upload(path, file, {upsert: true});
+    if(upErr) throw upErr;
+    const {data: {publicUrl}} = sb.storage.from('avatars').getPublicUrl(path);
+    // ✅ Cache bust query
+    const finalUrl = publicUrl + '?v=' + Date.now();
+    const {error: dbErr} = await sb.from('profiles').update({avatar_url: finalUrl}).eq('id', currentUser.id);
+    if(dbErr) throw dbErr;
+
+    toast('Photo updated! ✅');
+    // Refresh profile in background
+    await renderProfile(currentUser.id);
+  } catch(ex) {
+    toast('Upload error: ' + ex.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Profile';
+    e.target.value = '';
+  }
 }
 
 // ================= STORIES =================
@@ -1414,138 +1257,152 @@ async function openStoryViewer(userId) {
   const {data:stories} = await sb.from('stories').select('*').eq('user_id', userId).order('created_at', {ascending:true});
   if(!stories || stories.length === 0) return;
   currentStories = stories; currentStoryIndex = 0;
-  $('storyViewer').style.display = 'flex'; 
+  $('storyViewer').style.display = 'flex';
   loadStory(currentStoryIndex);
 }
-
 function loadStory(index) {
   if(index >= currentStories.length) { closeStoryViewer(); return; }
-  const story = currentStories[index]; 
+  const story = currentStories[index];
   $('storyMedia').src = story.media_url;
   $('storyUserInfo').innerHTML = `<div class="avatar" style="width:32px; height:32px; flex-shrink:0;"><img src="${DEFAULT_PFP}"></div> <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(story.username)}</span>`;
   let progressHTML = '';
   for(let i=0; i<currentStories.length; i++) progressHTML += `<div class="progress-segment"><div class="progress-fill" id="prog-${i}" style="width:${i < index ? '100%' : '0%'};"></div></div>`;
   $('storyProgress').innerHTML = progressHTML;
-  const fill = $(`prog-${index}`); 
-  let width = 0; 
-  clearInterval(storyTimer);
-  storyTimer = setInterval(() => { 
-    width += 2; 
-    if(width >= 100) { 
-      clearInterval(storyTimer); 
-      nextStory(); 
-    } else if(fill) { 
-      fill.style.width = width + '%'; 
-    } 
+  const fill = $(`prog-${index}`);
+  let width = 0; clearInterval(storyTimer);
+  storyTimer = setInterval(() => {
+    width += 2;
+    if(width >= 100) { clearInterval(storyTimer); nextStory(); }
+    else if(fill) fill.style.width = width + '%';
   }, 100);
 }
-
-function nextStory() { 
-  clearInterval(storyTimer); 
-  currentStoryIndex++; 
-  loadStory(currentStoryIndex); 
-}
-function prevStory() { 
-  clearInterval(storyTimer); 
-  if(currentStoryIndex > 0) { 
-    currentStoryIndex--; 
-    loadStory(currentStoryIndex); 
-  } 
-}
-function closeStoryViewer() { 
-  $('storyViewer').style.display = 'none'; 
-  clearInterval(storyTimer); 
-  $('storyMedia').src = '';
-  currentStories = [];
-  currentStoryIndex = 0;
-}
+function nextStory() { clearInterval(storyTimer); currentStoryIndex++; loadStory(currentStoryIndex); }
+function prevStory() { clearInterval(storyTimer); if(currentStoryIndex > 0) { currentStoryIndex--; loadStory(currentStoryIndex); } }
+function closeStoryViewer() { $('storyViewer').style.display = 'none'; clearInterval(storyTimer); $('storyMedia').src = ''; currentStories = []; currentStoryIndex = 0; }
 async function uploadStory() {
   const file = $('storyFile').files[0]; if(!file) { toast('Select a photo'); return; }
   const btn = $('uploadStoryBtn'); btn.textContent = 'Uploading...'; btn.disabled = true;
   try {
-    const path = `${currentUser.id}/story_${Date.now()}.jpg`; 
-    const {error} = await sb.storage.from('stories').upload(path, file); 
+    const path = `${currentUser.id}/story_${Date.now()}.jpg`;
+    const {error} = await sb.storage.from('stories').upload(path, file);
     if(error) throw error;
     const {data: {publicUrl}} = sb.storage.from('stories').getPublicUrl(path);
     await sb.from('stories').insert([{user_id: currentUser.id, username: currentUser.username, media_url: publicUrl}]);
-    toast('Story posted!'); 
-    $('addStoryOverlay').style.display = 'none'; 
+    toast('Story posted!');
+    $('addStoryOverlay').style.display = 'none';
     renderFeed();
-  } catch(ex) { toast('Error: ' + ex.message); } 
+  } catch(ex) { toast('Error: ' + ex.message); }
   finally { btn.textContent = 'Upload'; btn.disabled = false; }
 }
 
-// ================= SEARCH =================
+// ================= SEARCH (INSTAGRAM-LIKE) =================
 async function renderSearch() {
-  $('panel-search').innerHTML = `<div style="padding:20px;"><input type="text" id="searchInput" placeholder="Search users..." oninput="doSearch()" style="width:100%; padding:16px; border:1px solid var(--border); border-radius:15px; background:var(--surface); color:var(--text); outline:none; font-size:16px;"><div id="searchResults" style="margin-top:20px;"></div></div>`;
+  $('panel-search').innerHTML = `
+    <div style="padding:15px 20px 5px;">
+      <div style="position:relative;">
+        <input type="text" id="searchInput" placeholder="Search users..." oninput="doSearch()" style="width:100%; padding:14px 16px 14px 44px; border:1px solid var(--border); border-radius:12px; background:var(--surface); color:var(--text); outline:none; font-size:16px;">
+        <span style="position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:16px;">🔍</span>
+      </div>
+    </div>
+    <div id="searchResults" style="margin-top:10px;"></div>
+  `;
   doSearch();
 }
+
 async function doSearch() {
-  const q = $('searchInput').value.toLowerCase(), resEl = $('searchResults');
-  let query = sb.from('profiles').select('*').limit(20); 
-  if(q) query = query.ilike('username', `%${q}%`);
-  const {data:users} = await query;
-  resEl.innerHTML = (users||[]).map(u => `<div style="display:flex; align-items:center; gap:15px; padding:15px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="viewUserProfile('${u.id}')"><div class="avatar"><img src="${u.avatar_url || DEFAULT_PFP}"></div><div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)}</div></div>`).join('');
+  const q = $('searchInput').value.trim().toLowerCase();
+  const resEl = $('searchResults');
+
+  if(!q) {
+    // EXPLORE mode — show grid of all posts/reels
+    resEl.innerHTML = `<div style="padding:10px 20px 8px;"><h3 style="font-weight:700; font-size:16px; color:var(--text-muted);">Explore</h3></div><div class="spinner"></div>`;
+    try {
+      const {data:posts} = await sb.from('posts').select('*').order('created_at', {ascending:false}).limit(40);
+      if(!posts || posts.length === 0) {
+        resEl.innerHTML = `<div style="text-align:center; padding:60px 20px; color:var(--text-muted);">No posts yet. Be the first to upload!</div>`;
+        return;
+      }
+      resEl.innerHTML = `
+        <div style="padding:10px 20px 8px;"><h3 style="font-weight:700; font-size:16px; color:var(--text-muted);">Explore</h3></div>
+        <div class="grid-posts">
+          ${posts.map(p => `
+            <div class="grid-item" onclick="viewPost(${p.id})">
+              ${p.image_url 
+                ? `<img src="${p.image_url}" onerror="this.src='${DEFAULT_PFP}'">` 
+                : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } catch(ex) {
+      resEl.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Error loading explore.</div>`;
+    }
+    return;
+  }
+
+  // USER SEARCH mode
+  resEl.innerHTML = `<div class="spinner"></div>`;
+  try {
+    const {data:users} = await sb.from('profiles').select('*').ilike('username', `%${q}%`).limit(20);
+    if(!users || users.length === 0) {
+      resEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No users found</div>`;
+      return;
+    }
+    resEl.innerHTML = users.map(u => `
+      <div style="display:flex; align-items:center; gap:15px; padding:14px 20px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="viewUserProfile('${u.id}')">
+        <div class="avatar" style="width:50px; height:50px; flex-shrink:0;"><img src="${u.avatar_url || DEFAULT_PFP}"></div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)}</div>
+          ${u.bio ? `<div style="font-size:13px; color:var(--text-muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(u.bio).slice(0,60)}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  } catch(ex) {
+    resEl.innerHTML = `<div style="text-align:center; padding:30px; color:var(--text-muted);">Search error</div>`;
+  }
 }
 
-// ================= INIT (ROBUST — DESKTOP FIX) =================
-async function initApp() { 
-  renderFeed(); 
-  subscribePresence(); 
-}
-
+// ================= INIT =================
+async function initApp() { renderFeed(); subscribePresence(); }
 async function init() {
-  // ✅ පළමුව auth gate show කරනවා — desktop එකේ blank screen වළක්වන්න
   setAuthMode('login');
   showAuthGate();
-
   try {
     const {data, error} = await sb.auth.getSession();
     if(error) { console.error('getSession error:', error); return; }
     if(!data?.session) return;
-
-    // ✅ Session එක validate — stale/expired නම් ඉවත් කරනවා
     const {data: userData, error: userErr} = await sb.auth.getUser();
     if(userErr || !userData?.user) {
       console.warn('Stale session detected, clearing...');
       await sb.auth.signOut().catch(()=>{});
       return;
     }
-
-    // ✅ Valid session — user set කරලා feed load කරනවා
     let {data:prof} = await sb.from('profiles').select('*').eq('id', data.session.user.id).maybeSingle();
     currentUser = { id: data.session.user.id, username: prof?.username || data.session.user.email.split('@')[0] };
-    
     $('authOverlay').style.display = 'none';
-    document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'auto'); 
+    document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'auto');
     initApp();
-  } catch(ex) {
-    console.error('init error:', ex);
-  }
+  } catch(ex) { console.error('init error:', ex); }
 }
-
 function subscribePresence() {
   if(presenceChannel) return;
   presenceChannel = sb.channel('online-users', { config: { presence: { key: currentUser.id } } });
   presenceChannel.on('presence', { event: 'sync' }, () => {
-    onlineUsersMap.clear(); 
+    onlineUsersMap.clear();
     const state = presenceChannel.presenceState();
-    for(const id in state) { 
-      if(state[id].length > 0) onlineUsersMap.set(id, state[id][0].username); 
-    }
+    for(const id in state) { if(state[id].length > 0) onlineUsersMap.set(id, state[id][0].username); }
     if($('panel-chat').classList.contains('active') && !activeRoomId) { renderChatList(); }
   });
-  presenceChannel.subscribe(async (status) => { 
-    if(status === 'SUBSCRIBED') await presenceChannel.track({ username: currentUser.username }); 
+  presenceChannel.subscribe(async (status) => {
+    if(status === 'SUBSCRIBED') await presenceChannel.track({ username: currentUser.username });
   });
 }
-
-function timeAgo(dateStr){ 
-  const diff = Math.floor((new Date() - new Date(dateStr))/1000); 
-  if(diff < 60) return 'just now'; 
-  if(diff < 3600) return Math.floor(diff/60)+'m ago'; 
-  if(diff < 86400) return Math.floor(diff/3600)+'h ago'; 
-  return Math.floor(diff/86400)+'d ago'; 
+function timeAgo(dateStr){
+  const diff = Math.floor((new Date() - new Date(dateStr))/1000);
+  if(diff < 60) return 'just now';
+  if(diff < 3600) return Math.floor(diff/60)+'m ago';
+  if(diff < 86400) return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
 }
 
 init();

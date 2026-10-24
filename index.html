@@ -182,6 +182,11 @@
 
   .follow-btn { background: var(--primary); border: none; color: #fff; padding: 10px 26px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 14px; }
   .follow-btn.following { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+  .follow-btn.requested { background: var(--surface); border: 1px solid var(--border); color: var(--text-muted); }
+  
+  .req-btn { padding: 6px 12px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; }
+  .req-btn.accept { background: var(--primary); color: #fff; }
+  .req-btn.decline { background: var(--surface-hover); color: var(--text); margin-left: 5px; }
 
   .creator-card { margin: 20px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; text-align: center; }
 
@@ -269,6 +274,15 @@
         <button class="btn-primary" id="vpMessageBtn" style="width:auto; padding:10px 26px;" onclick="messageUser()">Message</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- FOLLOW REQUESTS MODAL -->
+<div class="modal-overlay" id="followRequestsOverlay">
+  <div class="modal-box">
+    <h2 style="margin-bottom:20px;">Follow Requests</h2>
+    <div id="followRequestsList" style="max-height:350px; overflow-y:auto; margin-bottom:10px;"></div>
+    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('followRequestsOverlay').style.display='none'">Close</button>
   </div>
 </div>
 
@@ -366,7 +380,7 @@ function linkify(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return escaped.replace(urlRegex, (url) => `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:var(--accent); text-decoration:underline;">${url}</a>`);
 }
-function toast(msg){ const t=$('toast'); t.textContent=msg; t.style.transform='translate(-50%,0)'; t.style.opacity='1'; setTimeout(()=>{ t.style.transform='translate(-50%,-100px)'; t.style.opacity='0'; }, 3000); }
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.style.transform='translate(-50%,0)'; t.style.opacity='1'; setTimeout(()=>{ t.style.transform='translate(-50%,-100px)'; t.style.opacity='0'; }, 3500); }
 
 function scrollAuthButtonIntoView() {
   setTimeout(() => {
@@ -426,8 +440,8 @@ function switchPanel(name){
 async function getFollowStats(userId) {
   try {
     const [f1, f2] = await Promise.all([
-      sb.from('follows').select('*', {count: 'exact', head: true}).eq('following_id', userId),
-      sb.from('follows').select('*', {count: 'exact', head: true}).eq('follower_id', userId)
+      sb.from('follows').select('*', {count: 'exact', head: true}).eq('following_id', userId).eq('status', 'accepted'),
+      sb.from('follows').select('*', {count: 'exact', head: true}).eq('follower_id', userId).eq('status', 'accepted')
     ]);
     return { followers: f1.count || 0, following: f2.count || 0 };
   } catch(e) {
@@ -436,23 +450,32 @@ async function getFollowStats(userId) {
 }
 async function isFollowing(myId, targetId) {
   try {
-    const {data} = await sb.from('follows').select('id').eq('follower_id', myId).eq('following_id', targetId).maybeSingle();
+    const {data} = await sb.from('follows').select('id').eq('follower_id', myId).eq('following_id', targetId).eq('status', 'accepted').maybeSingle();
     return !!data;
   } catch(e) { return false; }
 }
-async function toggleFollow(targetId) {
+async function isPending(myId, targetId) {
+  try {
+    const {data} = await sb.from('follows').select('id').eq('follower_id', myId).eq('following_id', targetId).eq('status', 'pending').maybeSingle();
+    return !!data;
+  } catch(e) { return false; }
+}
+async function toggleFollow(targetId, isTargetPrivate) {
   try {
     const following = await isFollowing(currentUser.id, targetId);
-    if(following) {
+    const pending = await isPending(currentUser.id, targetId);
+    
+    if(following || pending) {
       await sb.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', targetId);
-      return false;
+      return 'unfollowed';
     } else {
-      const {error} = await sb.from('follows').insert([{follower_id: currentUser.id, following_id: targetId}]);
+      const status = isTargetPrivate ? 'pending' : 'accepted';
+      const {error} = await sb.from('follows').insert([{follower_id: currentUser.id, following_id: targetId, status}]);
       if(error) throw error;
-      return true;
+      return status === 'pending' ? 'requested' : 'following';
     }
   } catch(e) {
-    toast('Follow feature needs "follows" table setup: ' + e.message);
+    toast('Follow error: ' + e.message);
     return null;
   }
 }
@@ -460,19 +483,84 @@ async function handleFollowFromModal() {
   if(!currentViewingUserId) return;
   const btn = $('vpFollowBtn');
   btn.disabled = true;
-  const newState = await toggleFollow(currentViewingUserId);
+  
+  // Get target's privacy
+  const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', currentViewingUserId).single();
+  const isTargetPrivate = targetProf?.is_private || false;
+  
+  const newState = await toggleFollow(currentViewingUserId, isTargetPrivate);
   if(newState === null) { btn.disabled = false; return; }
-  btn.textContent = newState ? 'Following' : 'Follow';
-  btn.classList.toggle('following', newState);
+  
+  if(newState === 'following') {
+    btn.textContent = 'Following';
+    btn.classList.remove('requested');
+    btn.classList.add('following');
+  } else if (newState === 'requested') {
+    btn.textContent = 'Requested';
+    btn.classList.remove('following');
+    btn.classList.add('requested');
+  } else {
+    btn.textContent = 'Follow';
+    btn.classList.remove('following', 'requested');
+  }
+  
   const stats = await getFollowStats(currentViewingUserId);
   $('vpFollowersCount').textContent = stats.followers;
   $('vpFollowingCount').textContent = stats.following;
   btn.disabled = false;
   
-  // If they just followed a private account, refresh the modal to show content
-  if(newState === true) {
+  if(newState === 'following') {
     viewUserProfile(currentViewingUserId);
   }
+}
+
+// ================= FOLLOW REQUESTS =================
+async function openFollowRequests() {
+  $('followRequestsOverlay').style.display = 'flex';
+  const listEl = $('followRequestsList');
+  listEl.innerHTML = `<div class="spinner"></div>`;
+  
+  try {
+    const {data:requests} = await sb.from('follows').select('follower_id').eq('following_id', currentUser.id).eq('status', 'pending');
+    if(!requests || requests.length === 0) {
+      listEl.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">No pending requests.</div>`;
+      return;
+    }
+    
+    const followerIds = requests.map(r => r.follower_id);
+    const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url').in('id', followerIds);
+    
+    listEl.innerHTML = profiles.map(u => `
+      <div style="display:flex; align-items:center; gap:10px; padding:12px; border-bottom:1px solid var(--border);">
+        <div class="avatar" style="width:40px; height:40px;"><img src="${u.avatar_url || DEFAULT_PFP}"></div>
+        <div style="flex:1; min-width:0;">
+          <div style="font-weight:600; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(u.username)}</div>
+        </div>
+        <div>
+          <button class="req-btn accept" onclick="acceptRequest('${u.id}')">Accept</button>
+          <button class="req-btn decline" onclick="declineRequest('${u.id}')">Decline</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(ex) {
+    listEl.innerHTML = `<div style="padding:20px; text-align:center; color:var(--danger);">Error loading requests.</div>`;
+  }
+}
+
+async function acceptRequest(followerId) {
+  try {
+    await sb.from('follows').update({status: 'accepted'}).eq('follower_id', followerId).eq('following_id', currentUser.id);
+    toast('Request accepted ✅');
+    openFollowRequests(); // refresh list
+  } catch(ex) { toast('Error: ' + ex.message); }
+}
+
+async function declineRequest(followerId) {
+  try {
+    await sb.from('follows').delete().eq('follower_id', followerId).eq('following_id', currentUser.id);
+    toast('Request declined ❌');
+    openFollowRequests(); // refresh list
+  } catch(ex) { toast('Error: ' + ex.message); }
 }
 
 // ================= LOGOUT =================
@@ -549,6 +637,7 @@ async function viewUserProfile(userId) {
   
   const followBtn = $('vpFollowBtn');
   followBtn.style.display = 'none'; followBtn.disabled = true;
+  followBtn.classList.remove('following', 'requested');
   $('vpMessageBtn').style.display = 'none';
   $('vpPrivateNotice').style.display = 'none';
 
@@ -559,17 +648,18 @@ async function viewUserProfile(userId) {
     if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
   }
   
-  const [stats, postsRes, followState] = await Promise.all([
+  const [stats, postsRes, followState, pendingState] = await Promise.all([
     getFollowStats(userId),
     sb.from('posts').select('*', {count:'exact', head:true}).eq('user_id', userId),
-    isFollowing(currentUser.id, userId)
+    isFollowing(currentUser.id, userId),
+    isPending(currentUser.id, userId)
   ]);
   
   $('vpFollowersCount').textContent = stats.followers;
   $('vpFollowingCount').textContent = stats.following;
   
   const isPrivate = prof.is_private || false;
-  const canView = !isPrivate || followState; // Can view if public OR if already following
+  const canView = !isPrivate || followState;
 
   if(canView) {
     $('vpPostsCount').textContent = postsRes.count || 0;
@@ -577,13 +667,20 @@ async function viewUserProfile(userId) {
   } else {
     $('vpPostsCount').textContent = '🔒';
     $('vpPrivateNotice').style.display = 'block';
-    // Message button is hidden by default
   }
 
   followBtn.style.display = 'inline-flex';
   followBtn.disabled = false;
-  followBtn.textContent = followState ? 'Following' : 'Follow';
-  followBtn.classList.toggle('following', followState);
+  
+  if (followState) {
+    followBtn.textContent = 'Following';
+    followBtn.classList.add('following');
+  } else if (pendingState) {
+    followBtn.textContent = 'Requested';
+    followBtn.classList.add('requested');
+  } else {
+    followBtn.textContent = 'Follow';
+  }
 }
 function closeViewProfile() { $('viewProfileOverlay').style.display = 'none'; }
 
@@ -591,7 +688,6 @@ async function messageUser() {
   if(!currentViewingUserId) return;
   $('viewProfileOverlay').style.display = 'none';
   try {
-    // Check if target is private and if we follow them
     const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', currentViewingUserId).single();
     if(targetProf?.is_private) {
       const isF = await isFollowing(currentUser.id, currentViewingUserId);
@@ -642,7 +738,6 @@ async function openPrivateChatModal() {
 async function startPrivateChat(userId) {
   $('privateChatOverlay').style.display = 'none';
   try {
-    // Check if target is private and if we follow them
     const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', userId).single();
     if(targetProf?.is_private) {
       const isF = await isFollowing(currentUser.id, userId);
@@ -910,13 +1005,12 @@ async function renderFeed() {
     const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',userIds);
     const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
     
-    // Get my following list to check private accounts
-    const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id);
+    // Get ONLY 'accepted' follows
+    const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
     const myFollowingIds = (myFollows||[]).map(f => f.following_id);
 
-    // Filter out posts from private accounts I'm not following
     const visiblePosts = posts.filter(p => {
-      if(p.user_id === currentUser.id) return true; // My own posts
+      if(p.user_id === currentUser.id) return true; 
       const prof = profileMap[p.user_id];
       if(prof && prof.is_private && !myFollowingIds.includes(p.user_id)) return false;
       return true;
@@ -938,7 +1032,6 @@ async function renderFeed() {
       if(!uniqueStoryUsers.has(s.user_id)) {
         uniqueStoryUsers.add(s.user_id);
         const prof = profileMap[s.user_id] || { username: s.username, avatar_url: null };
-        // Don't show story ring if private and not following
         if(prof.is_private && s.user_id !== currentUser.id && !myFollowingIds.includes(s.user_id)) return;
         
         storiesHTML += `<div class="story-item" onclick="openStoryViewer('${s.user_id}')"><div class="story-ring"><img src="${prof.avatar_url || DEFAULT_PFP}" class="story-img"></div><div class="story-name">${escapeHTML(prof.username)}</div></div>`;
@@ -1233,6 +1326,12 @@ async function renderProfile(userId) {
   const isMe = userId === currentUser.id;
   const stats = await getFollowStats(userId);
 
+  let pendingCount = 0;
+  if (isMe && prof.is_private) {
+    const {count} = await sb.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', currentUser.id).eq('status', 'pending');
+    pendingCount = count || 0;
+  }
+
   el.innerHTML = `
     <div class="profile-header">
       <div class="profile-avatar"><img src="${prof.avatar_url || DEFAULT_PFP}" onerror="this.src='${DEFAULT_PFP}'"></div>
@@ -1244,6 +1343,7 @@ async function renderProfile(userId) {
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button style="background:var(--surface); border:1px solid var(--border); padding:9px 16px; border-radius:10px; font-weight:600; cursor:pointer; color:var(--text); font-size:14px;" onclick="openEditProfile()">Edit Profile</button>
             <button class="upload-quick-btn" onclick="switchPanel('upload')">＋ Upload</button>
+            ${pendingCount > 0 ? `<button style="background:var(--accent); border:none; color:#fff; padding:9px 16px; border-radius:10px; font-weight:600; cursor:pointer; font-size:14px;" onclick="openFollowRequests()">Requests (${pendingCount})</button>` : ''}
           </div>
         ` : ''}
       </div>
@@ -1266,7 +1366,7 @@ async function renderProfile(userId) {
   `;
   $('editUsername').value = prof.username;
   $('editBio').value = prof.bio || '';
-  $('editIsPrivate').checked = prof.is_private || false; // Set toggle state
+  $('editIsPrivate').checked = prof.is_private || false;
   $('saveProfileBtn').disabled = false;
   $('saveProfileBtn').textContent = 'Save Profile';
 }
@@ -1348,7 +1448,6 @@ async function openStoryViewer(userId) {
   const {data:stories} = await sb.from('stories').select('*').eq('user_id', userId).order('created_at', {ascending:true});
   if(!stories || stories.length === 0) return;
   
-  // Check if private and not following
   if (userId !== currentUser.id) {
     const {data:prof} = await sb.from('profiles').select('is_private').eq('id', userId).single();
     if (prof?.is_private) {
@@ -1426,7 +1525,8 @@ async function doSearch() {
       const userIds = [...new Set(posts.map(p=>p.user_id))];
       const {data:profiles} = await sb.from('profiles').select('id,is_private').in('id',userIds);
       const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
-      const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id);
+      
+      const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
       const myFollowingIds = (myFollows||[]).map(f => f.following_id);
 
       const visiblePosts = posts.filter(p => {

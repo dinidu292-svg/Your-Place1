@@ -149,6 +149,7 @@
   .vp-stats { display: flex; gap: 30px; justify-content: center; margin-bottom: 20px; }
   .vp-stat-num { font-weight: 700; font-size: 18px; }
   .vp-stat-label { font-size: 12px; color: var(--text-muted); }
+  .vp-private-notice { background: var(--surface); border: 1px dashed var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; font-size: 14px; color: var(--text-muted); }
 
   .group-user-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
   .group-user-item:hover { background: var(--surface-hover); }
@@ -183,6 +184,16 @@
   .follow-btn.following { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
 
   .creator-card { margin: 20px; padding: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; text-align: center; }
+
+  /* TOGGLE SWITCH CSS */
+  .switch { position: relative; display: inline-block; width: 46px; height: 26px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border); transition: .4s; }
+  .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }
+  input:checked + .slider { background-color: var(--primary); }
+  input:checked + .slider:before { transform: translateX(20px); }
+  .slider.round { border-radius: 34px; }
+  .slider.round:before { border-radius: 50%; }
 </style>
 </head>
 <body>
@@ -250,9 +261,12 @@
         <div><div class="vp-stat-num" id="vpFollowersCount">0</div><div class="vp-stat-label">Followers</div></div>
         <div><div class="vp-stat-num" id="vpFollowingCount">0</div><div class="vp-stat-label">Following</div></div>
       </div>
+      <div id="vpPrivateNotice" class="vp-private-notice" style="display:none;">
+        🔒 This account is private. Follow this account to see their photos and chat with them.
+      </div>
       <div id="vpActions" style="display:flex; gap:10px; justify-content:center;">
         <button class="follow-btn" id="vpFollowBtn" onclick="handleFollowFromModal()">Follow</button>
-        <button class="btn-primary" style="width:auto; padding:10px 26px;" onclick="messageUser()">Message</button>
+        <button class="btn-primary" id="vpMessageBtn" style="width:auto; padding:10px 26px;" onclick="messageUser()">Message</button>
       </div>
     </div>
   </div>
@@ -287,6 +301,19 @@
     <div class="input-group no-toggle"><input type="file" id="avatarFileInput" accept="image/*" onchange="uploadAvatar(event)" style="padding:10px; border:1px dashed var(--border);"></div>
     <div class="input-group no-toggle"><input id="editUsername" type="text" placeholder="Username" autocapitalize="none" spellcheck="false"></div>
     <div class="input-group no-toggle"><input id="editBio" type="text" placeholder="Bio"></div>
+    
+    <!-- Private Account Toggle -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; padding: 0 5px;">
+      <div>
+        <div style="font-weight:600; font-size:15px;">Private Account</div>
+        <div style="font-size:12px; color:var(--text-muted);">Only followers can see your posts</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="editIsPrivate">
+        <span class="slider round"></span>
+      </label>
+    </div>
+
     <button class="btn-primary" onclick="saveProfile()" id="saveProfileBtn">Save Profile</button>
     <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('editProfileOverlay').style.display='none'">Cancel</button>
   </div>
@@ -441,6 +468,11 @@ async function handleFollowFromModal() {
   $('vpFollowersCount').textContent = stats.followers;
   $('vpFollowingCount').textContent = stats.following;
   btn.disabled = false;
+  
+  // If they just followed a private account, refresh the modal to show content
+  if(newState === true) {
+    viewUserProfile(currentViewingUserId);
+  }
 }
 
 // ================= LOGOUT =================
@@ -514,8 +546,11 @@ async function viewUserProfile(userId) {
   $('vpFollowersCount').textContent = '...';
   $('vpFollowingCount').textContent = '...';
   $('vpPostsCount').textContent = '...';
+  
   const followBtn = $('vpFollowBtn');
   followBtn.style.display = 'none'; followBtn.disabled = true;
+  $('vpMessageBtn').style.display = 'none';
+  $('vpPrivateNotice').style.display = 'none';
 
   const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
   if(prof) {
@@ -523,14 +558,28 @@ async function viewUserProfile(userId) {
     $('vpBio').textContent = prof.bio || 'No bio yet.';
     if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
   }
+  
   const [stats, postsRes, followState] = await Promise.all([
     getFollowStats(userId),
     sb.from('posts').select('*', {count:'exact', head:true}).eq('user_id', userId),
     isFollowing(currentUser.id, userId)
   ]);
+  
   $('vpFollowersCount').textContent = stats.followers;
   $('vpFollowingCount').textContent = stats.following;
-  $('vpPostsCount').textContent = postsRes.count || 0;
+  
+  const isPrivate = prof.is_private || false;
+  const canView = !isPrivate || followState; // Can view if public OR if already following
+
+  if(canView) {
+    $('vpPostsCount').textContent = postsRes.count || 0;
+    $('vpMessageBtn').style.display = 'inline-block';
+  } else {
+    $('vpPostsCount').textContent = '🔒';
+    $('vpPrivateNotice').style.display = 'block';
+    // Message button is hidden by default
+  }
+
   followBtn.style.display = 'inline-flex';
   followBtn.disabled = false;
   followBtn.textContent = followState ? 'Following' : 'Follow';
@@ -542,6 +591,13 @@ async function messageUser() {
   if(!currentViewingUserId) return;
   $('viewProfileOverlay').style.display = 'none';
   try {
+    // Check if target is private and if we follow them
+    const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', currentViewingUserId).single();
+    if(targetProf?.is_private) {
+      const isF = await isFollowing(currentUser.id, currentViewingUserId);
+      if(!isF) { toast('🔒 Cannot message private account. Follow them first.'); return; }
+    }
+
     const {data:myRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
     const myRoomIds = (myRooms||[]).map(m => m.room_id);
     let existingRoomId = null;
@@ -586,6 +642,13 @@ async function openPrivateChatModal() {
 async function startPrivateChat(userId) {
   $('privateChatOverlay').style.display = 'none';
   try {
+    // Check if target is private and if we follow them
+    const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', userId).single();
+    if(targetProf?.is_private) {
+      const isF = await isFollowing(currentUser.id, userId);
+      if(!isF) { toast('🔒 Cannot message private account. Follow them first.'); return; }
+    }
+
     const {data:myRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
     const myRoomIds = (myRooms||[]).map(m => m.room_id);
     let existingRoomId = null;
@@ -840,13 +903,26 @@ async function renderFeed() {
   const el = $('panel-feed');
   el.innerHTML = `<div class="spinner"></div>`;
   try {
-    const {data:posts} = await sb.from('posts').select('*').order('created_at', {ascending:false}).limit(15);
+    const {data:posts} = await sb.from('posts').select('*').order('created_at', {ascending:false}).limit(30);
     const {data:stories} = await sb.from('stories').select('*').order('created_at', {ascending:false});
     if(!posts) posts = [];
     const userIds = [...new Set(posts.map(p=>p.user_id))];
-    const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url').in('id',userIds);
+    const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',userIds);
     const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
-    const postIds = posts.map(p => p.id);
+    
+    // Get my following list to check private accounts
+    const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id);
+    const myFollowingIds = (myFollows||[]).map(f => f.following_id);
+
+    // Filter out posts from private accounts I'm not following
+    const visiblePosts = posts.filter(p => {
+      if(p.user_id === currentUser.id) return true; // My own posts
+      const prof = profileMap[p.user_id];
+      if(prof && prof.is_private && !myFollowingIds.includes(p.user_id)) return false;
+      return true;
+    });
+
+    const postIds = visiblePosts.map(p => p.id);
     const likesRes = await sb.from('likes').select('*').in('post_id', postIds).then(r => r.data || []).catch(() => []);
     const commentsRes = await sb.from('comments').select('*').in('post_id', postIds).then(r => r.data || []).catch(() => []);
 
@@ -862,12 +938,20 @@ async function renderFeed() {
       if(!uniqueStoryUsers.has(s.user_id)) {
         uniqueStoryUsers.add(s.user_id);
         const prof = profileMap[s.user_id] || { username: s.username, avatar_url: null };
+        // Don't show story ring if private and not following
+        if(prof.is_private && s.user_id !== currentUser.id && !myFollowingIds.includes(s.user_id)) return;
+        
         storiesHTML += `<div class="story-item" onclick="openStoryViewer('${s.user_id}')"><div class="story-ring"><img src="${prof.avatar_url || DEFAULT_PFP}" class="story-img"></div><div class="story-name">${escapeHTML(prof.username)}</div></div>`;
       }
     });
     storiesHTML += `</div>`;
 
-    let postsHTML = posts.map(p => {
+    if(visiblePosts.length === 0) {
+      el.innerHTML = storiesHTML + `<div style="text-align:center; padding:40px 20px; color:var(--text-muted);">No posts to show. Follow some people!</div>`;
+      return;
+    }
+
+    let postsHTML = visiblePosts.map(p => {
       const prof = profileMap[p.user_id] || {username: p.username, avatar_url: null};
       const isVideo = p.video_url && p.video_url.length > 0;
       const postLikes = likesRes.filter(l => l.post_id === p.id);
@@ -879,7 +963,7 @@ async function renderFeed() {
         <div class="post-header">
           <div class="avatar" onclick="viewUserProfile('${p.user_id}')"><img src="${prof.avatar_url || DEFAULT_PFP}"></div>
           <div onclick="viewUserProfile('${p.user_id}')" style="flex:1;">
-            <div class="post-user">${escapeHTML(prof.username)}</div>
+            <div class="post-user">${escapeHTML(prof.username)} ${prof.is_private ? '🔒' : ''}</div>
             <div class="post-time">${timeAgo(p.created_at)}</div>
           </div>
           ${isOwn ? `<button class="delete-btn" onclick="deletePost(${p.id})">🗑️</button>` : ''}
@@ -1080,7 +1164,7 @@ async function handleAuth(e) {
       if(error) throw error;
       if(data.session) {
         currentUser = { id: data.user.id, username };
-        await sb.from('profiles').insert([{id: data.user.id, username}]);
+        await sb.from('profiles').insert([{id: data.user.id, username, is_private: false}]);
         $('authOverlay').style.display = 'none';
         document.querySelectorAll('.nav-item').forEach(el => el.style.pointerEvents = 'auto');
         $('authForm').reset();
@@ -1144,7 +1228,7 @@ async function createPost() {
 async function renderProfile(userId) {
   const el = $('panel-profile'); el.innerHTML = `<div class="spinner"></div>`;
   const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
-  if(!prof) prof = { username: currentUser.username, avatar_url: null, bio: '' };
+  if(!prof) prof = { username: currentUser.username, avatar_url: null, bio: '', is_private: false };
   const {data:posts} = await sb.from('posts').select('*').eq('user_id', userId).order('created_at', {ascending:false});
   const isMe = userId === currentUser.id;
   const stats = await getFollowStats(userId);
@@ -1153,7 +1237,9 @@ async function renderProfile(userId) {
     <div class="profile-header">
       <div class="profile-avatar"><img src="${prof.avatar_url || DEFAULT_PFP}" onerror="this.src='${DEFAULT_PFP}'"></div>
       <div style="flex:1; min-width:0;">
-        <h2 style="font-size:22px; font-weight:700; margin-bottom:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(prof.username)}</h2>
+        <h2 style="font-size:22px; font-weight:700; margin-bottom:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+          ${escapeHTML(prof.username)} ${prof.is_private ? '🔒' : ''}
+        </h2>
         ${isMe ? `
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
             <button style="background:var(--surface); border:1px solid var(--border); padding:9px 16px; border-radius:10px; font-weight:600; cursor:pointer; color:var(--text); font-size:14px;" onclick="openEditProfile()">Edit Profile</button>
@@ -1180,6 +1266,7 @@ async function renderProfile(userId) {
   `;
   $('editUsername').value = prof.username;
   $('editBio').value = prof.bio || '';
+  $('editIsPrivate').checked = prof.is_private || false; // Set toggle state
   $('saveProfileBtn').disabled = false;
   $('saveProfileBtn').textContent = 'Save Profile';
 }
@@ -1194,6 +1281,8 @@ async function saveProfile() {
   if(profileSaveInProgress) return;
   const newUsername = $('editUsername').value.trim();
   const newBio = $('editBio').value.trim();
+  const isPrivate = $('editIsPrivate').checked;
+  
   if(!newUsername) { toast('Username cannot be empty'); return; }
 
   profileSaveInProgress = true;
@@ -1201,13 +1290,16 @@ async function saveProfile() {
   btn.disabled = true; btn.textContent = 'Saving...';
 
   try {
-    const {error} = await sb.from('profiles').update({ username: newUsername, bio: newBio }).eq('id', currentUser.id);
+    const {error} = await sb.from('profiles').update({ 
+      username: newUsername, 
+      bio: newBio,
+      is_private: isPrivate
+    }).eq('id', currentUser.id);
+    
     if(error) throw error;
 
-    // Update in-memory currentUser so future operations use new username
     currentUser.username = newUsername;
 
-    // ✅ FIX: Catch block added for posts sync
     try {
       await sb.from('posts').update({username: newUsername}).eq('user_id', currentUser.id);
     } catch(syncErr) {
@@ -1217,9 +1309,7 @@ async function saveProfile() {
     $('editProfileOverlay').style.display = 'none';
     toast('Profile updated! ✅');
 
-    // Force fresh render
     await renderProfile(currentUser.id);
-    // Also refresh feed if visible
     if($('panel-feed').classList.contains('active')) renderFeed();
   } catch(ex) {
     toast('Error: ' + ex.message);
@@ -1257,6 +1347,16 @@ async function uploadAvatar(e) {
 async function openStoryViewer(userId) {
   const {data:stories} = await sb.from('stories').select('*').eq('user_id', userId).order('created_at', {ascending:true});
   if(!stories || stories.length === 0) return;
+  
+  // Check if private and not following
+  if (userId !== currentUser.id) {
+    const {data:prof} = await sb.from('profiles').select('is_private').eq('id', userId).single();
+    if (prof?.is_private) {
+      const isF = await isFollowing(currentUser.id, userId);
+      if(!isF) { toast('🔒 This account is private.'); return; }
+    }
+  }
+
   currentStories = stories; currentStoryIndex = 0;
   $('storyViewer').style.display = 'flex';
   loadStory(currentStoryIndex);
@@ -1296,7 +1396,7 @@ async function uploadStory() {
   finally { btn.textContent = 'Upload'; btn.disabled = false; }
 }
 
-// ================= SEARCH (INSTAGRAM-LIKE) =================
+// ================= SEARCH =================
 async function renderSearch() {
   $('panel-search').innerHTML = `
     <div style="padding:15px 20px 5px;">
@@ -1322,10 +1422,29 @@ async function doSearch() {
         resEl.innerHTML = `<div style="text-align:center; padding:60px 20px; color:var(--text-muted);">No posts yet. Be the first to upload!</div>`;
         return;
       }
+      
+      const userIds = [...new Set(posts.map(p=>p.user_id))];
+      const {data:profiles} = await sb.from('profiles').select('id,is_private').in('id',userIds);
+      const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
+      const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id);
+      const myFollowingIds = (myFollows||[]).map(f => f.following_id);
+
+      const visiblePosts = posts.filter(p => {
+        if(p.user_id === currentUser.id) return true;
+        const prof = profileMap[p.user_id];
+        if(prof && prof.is_private && !myFollowingIds.includes(p.user_id)) return false;
+        return true;
+      });
+
+      if (visiblePosts.length === 0) {
+        resEl.innerHTML = `<div style="text-align:center; padding:60px 20px; color:var(--text-muted);">Nothing to explore right now.</div>`;
+        return;
+      }
+
       resEl.innerHTML = `
         <div style="padding:10px 20px 8px;"><h3 style="font-weight:700; font-size:16px; color:var(--text-muted);">Explore</h3></div>
         <div class="grid-posts">
-          ${posts.map(p => `
+          ${visiblePosts.map(p => `
             <div class="grid-item" onclick="viewPost(${p.id})">
               ${p.image_url 
                 ? `<img src="${p.image_url}" onerror="this.src='${DEFAULT_PFP}'">` 
@@ -1351,7 +1470,7 @@ async function doSearch() {
       <div style="display:flex; align-items:center; gap:15px; padding:14px 20px; border-bottom:1px solid var(--border); cursor:pointer;" onclick="viewUserProfile('${u.id}')">
         <div class="avatar" style="width:50px; height:50px; flex-shrink:0;"><img src="${u.avatar_url || DEFAULT_PFP}"></div>
         <div style="flex:1; min-width:0;">
-          <div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)}</div>
+          <div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)} ${u.is_private ? '🔒' : ''}</div>
           ${u.bio ? `<div style="font-size:13px; color:var(--text-muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(u.bio).slice(0,60)}</div>` : ''}
         </div>
       </div>

@@ -466,7 +466,8 @@ async function toggleFollow(targetId, isTargetPrivate) {
     const pending = await isPending(currentUser.id, targetId);
     
     if(following || pending) {
-      await sb.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', targetId);
+      const {error} = await sb.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', targetId);
+      if(error) throw error;
       return 'unfollowed';
     } else {
       const status = isTargetPrivate ? 'pending' : 'accepted';
@@ -484,7 +485,6 @@ async function handleFollowFromModal() {
   const btn = $('vpFollowBtn');
   btn.disabled = true;
   
-  // Get target's privacy
   const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', currentViewingUserId).single();
   const isTargetPrivate = targetProf?.is_private || false;
   
@@ -549,18 +549,38 @@ async function openFollowRequests() {
 
 async function acceptRequest(followerId) {
   try {
-    await sb.from('follows').update({status: 'accepted'}).eq('follower_id', followerId).eq('following_id', currentUser.id);
+    const {error} = await sb.from('follows').update({status: 'accepted'}).eq('follower_id', followerId).eq('following_id', currentUser.id);
+    if(error) throw error;
     toast('Request accepted ✅');
-    openFollowRequests(); // refresh list
-  } catch(ex) { toast('Error: ' + ex.message); }
+    
+    // Refresh the list in the modal
+    openFollowRequests(); 
+    
+    // ✅ Refresh the profile page underneath so the button updates
+    if ($('panel-profile').classList.contains('active')) {
+      renderProfile(currentUser.id);
+    }
+  } catch(ex) { 
+    toast('Error accepting: ' + ex.message); 
+  }
 }
 
 async function declineRequest(followerId) {
   try {
-    await sb.from('follows').delete().eq('follower_id', followerId).eq('following_id', currentUser.id);
+    const {error} = await sb.from('follows').delete().eq('follower_id', followerId).eq('following_id', currentUser.id);
+    if(error) throw error;
     toast('Request declined ❌');
-    openFollowRequests(); // refresh list
-  } catch(ex) { toast('Error: ' + ex.message); }
+    
+    // Refresh the list in the modal
+    openFollowRequests(); 
+    
+    // ✅ Refresh the profile page underneath
+    if ($('panel-profile').classList.contains('active')) {
+      renderProfile(currentUser.id);
+    }
+  } catch(ex) { 
+    toast('Error declining: ' + ex.message); 
+  }
 }
 
 // ================= LOGOUT =================
@@ -1005,7 +1025,6 @@ async function renderFeed() {
     const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',userIds);
     const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
     
-    // Get ONLY 'accepted' follows
     const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
     const myFollowingIds = (myFollows||[]).map(f => f.following_id);
 

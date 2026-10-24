@@ -90,7 +90,7 @@
   .msg-bubble { padding: 14px 18px; border-radius: 22px; font-size: 15px; background: var(--surface); color: var(--text); border: 1px solid var(--border); word-wrap: break-word; }
   .msg.self .msg-bubble { background: var(--primary); color: #fff; border: none; border-bottom-right-radius: 4px; }
   .msg:not(.self) .msg-bubble { border-bottom-left-radius: 4px; }
-  .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 5px; text-align: right; }
+  .msg-time { font-size: 10px; color: var(--text-muted); margin-top: 5px; text-align: right; display:flex; justify-content:flex-end; align-items:center; gap:5px; }
   .msg-img { max-width: 220px; border-radius: 12px; margin-bottom: 6px; display: block; }
   .msg-sender { font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 4px; cursor: pointer; }
   .chat-input-area { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); background: var(--surface); border: 1px solid var(--border); padding: 10px 15px; display: flex; flex-direction: column; border-radius: 24px; z-index: 99; }
@@ -273,6 +273,7 @@
         <button class="follow-btn" id="vpFollowBtn" onclick="handleFollowFromModal()">Follow</button>
         <button class="btn-primary" id="vpMessageBtn" style="width:auto; padding:10px 26px;" onclick="messageUser()">Message</button>
       </div>
+      <div class="grid-posts" id="vpPostsGrid" style="margin-top:20px; display:none;"></div>
     </div>
   </div>
 </div>
@@ -283,6 +284,15 @@
     <h2 style="margin-bottom:20px;">Follow Requests</h2>
     <div id="followRequestsList" style="max-height:350px; overflow-y:auto; margin-bottom:10px;"></div>
     <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('followRequestsOverlay').style.display='none'">Close</button>
+  </div>
+</div>
+
+<!-- CONNECTIONS MODAL (Followers/Following) -->
+<div class="modal-overlay" id="connectionsOverlay">
+  <div class="modal-box">
+    <h2 id="connectionsTitle" style="margin-bottom:20px;">Followers</h2>
+    <div id="connectionsList" style="max-height:350px; overflow-y:auto; margin-bottom:10px;"></div>
+    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('connectionsOverlay').style.display='none'">Close</button>
   </div>
 </div>
 
@@ -514,7 +524,7 @@ async function handleFollowFromModal() {
   }
 }
 
-// ================= FOLLOW REQUESTS =================
+// ================= FOLLOW REQUESTS & CONNECTIONS =================
 async function openFollowRequests() {
   $('followRequestsOverlay').style.display = 'flex';
   const listEl = $('followRequestsList');
@@ -556,9 +566,13 @@ async function acceptRequest(followerId) {
     // Refresh the list in the modal
     openFollowRequests(); 
     
-    // ✅ Refresh the profile page underneath so the button updates
+    // Refresh the profile page
     if ($('panel-profile').classList.contains('active')) {
       renderProfile(currentUser.id);
+    }
+    // Refresh feed in background
+    if ($('panel-feed').classList.contains('active')) {
+      renderFeed();
     }
   } catch(ex) { 
     toast('Error accepting: ' + ex.message); 
@@ -570,17 +584,62 @@ async function declineRequest(followerId) {
     const {error} = await sb.from('follows').delete().eq('follower_id', followerId).eq('following_id', currentUser.id);
     if(error) throw error;
     toast('Request declined ❌');
-    
-    // Refresh the list in the modal
     openFollowRequests(); 
-    
-    // ✅ Refresh the profile page underneath
-    if ($('panel-profile').classList.contains('active')) {
-      renderProfile(currentUser.id);
-    }
+    if ($('panel-profile').classList.contains('active')) renderProfile(currentUser.id);
   } catch(ex) { 
     toast('Error declining: ' + ex.message); 
   }
+}
+
+async function openConnections(type) {
+  $('connectionsOverlay').style.display = 'flex';
+  $('connectionsTitle').textContent = type === 'followers' ? 'Followers' : 'Following';
+  const listEl = $('connectionsList');
+  listEl.innerHTML = `<div class="spinner"></div>`;
+  
+  try {
+    let query = sb.from('follows').select('follower_id, following_id').eq('status', 'accepted');
+    if (type === 'followers') {
+      query = query.eq('following_id', currentUser.id);
+    } else {
+      query = query.eq('follower_id', currentUser.id);
+    }
+    const {data: follows} = await query;
+    if(!follows || follows.length === 0) {
+      listEl.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">No ${type} yet.</div>`;
+      return;
+    }
+    const ids = follows.map(f => type === 'followers' ? f.follower_id : f.following_id);
+    const {data: profiles} = await sb.from('profiles').select('id, username, avatar_url').in('id', ids);
+    
+    listEl.innerHTML = profiles.map(u => `
+      <div style="display:flex; align-items:center; gap:10px; padding:12px; border-bottom:1px solid var(--border);">
+        <div class="avatar" style="width:40px; height:40px; cursor:pointer;" onclick="$('connectionsOverlay').style.display='none'; viewUserProfile('${u.id}')"><img src="${u.avatar_url || DEFAULT_PFP}"></div>
+        <div style="flex:1; font-weight:600; font-size:14px; cursor:pointer;" onclick="$('connectionsOverlay').style.display='none'; viewUserProfile('${u.id}')">${escapeHTML(u.username)}</div>
+        ${type === 'followers' 
+          ? `<button class="req-btn decline" onclick="removeFollower('${u.id}')">Remove</button>`
+          : `<button class="req-btn decline" onclick="unfollowUser('${u.id}')">Unfollow</button>`}
+      </div>
+    `).join('');
+  } catch(ex) { 
+    listEl.innerHTML = `<div style="padding:20px; text-align:center; color:var(--danger);">Error loading.</div>`; 
+  }
+}
+
+async function removeFollower(followerId) {
+  if(!confirm('Remove this follower?')) return;
+  await sb.from('follows').delete().eq('follower_id', followerId).eq('following_id', currentUser.id);
+  toast('Follower removed');
+  openConnections('followers');
+  if ($('panel-profile').classList.contains('active')) renderProfile(currentUser.id);
+}
+
+async function unfollowUser(followingId) {
+  if(!confirm('Unfollow this user?')) return;
+  await sb.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', followingId);
+  toast('Unfollowed');
+  openConnections('following');
+  if ($('panel-profile').classList.contains('active')) renderProfile(currentUser.id);
 }
 
 // ================= LOGOUT =================
@@ -654,6 +713,8 @@ async function viewUserProfile(userId) {
   $('vpFollowersCount').textContent = '...';
   $('vpFollowingCount').textContent = '...';
   $('vpPostsCount').textContent = '...';
+  $('vpPostsGrid').innerHTML = '';
+  $('vpPostsGrid').style.display = 'none';
   
   const followBtn = $('vpFollowBtn');
   followBtn.style.display = 'none'; followBtn.disabled = true;
@@ -684,6 +745,17 @@ async function viewUserProfile(userId) {
   if(canView) {
     $('vpPostsCount').textContent = postsRes.count || 0;
     $('vpMessageBtn').style.display = 'inline-block';
+    
+    // Fetch user posts to show in the modal grid
+    const {data:userPosts} = await sb.from('posts').select('*').eq('user_id', userId).order('created_at', {ascending:false});
+    if(userPosts && userPosts.length > 0) {
+      $('vpPostsGrid').style.display = 'grid';
+      $('vpPostsGrid').innerHTML = userPosts.map(p => `
+        <div class="grid-item" onclick="$('viewProfileOverlay').style.display='none'; viewPost(${p.id})">
+          ${p.image_url ? `<img src="${p.image_url}">` : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}
+        </div>
+      `).join('');
+    }
   } else {
     $('vpPostsCount').textContent = '🔒';
     $('vpPrivateNotice').style.display = 'block';
@@ -978,13 +1050,33 @@ function renderMessageContent(m) {
   if (m.audio_url) content += `<audio controls src="${m.audio_url}" style="max-width:200px; height:35px; filter: invert(1);"></audio>`;
   return content;
 }
+
+async function deleteChatMessage(msgId) {
+  if(!confirm('Delete this message?')) return;
+  try {
+    await sb.from('chat_messages').delete().eq('id', msgId);
+    loadMessages();
+  } catch(ex) { toast('Error deleting message'); }
+}
+
 async function loadMessages() {
   const {data:msgs} = await sb.from('chat_messages').select('*').eq('room_id', activeRoomId).order('created_at');
   const box = $('chatMessagesBox');
   if(!msgs || msgs.length === 0) { box.innerHTML = `<p style="text-align:center; font-size:13px; margin-top:20px; color:var(--text-muted);">Say hi! 👋</p>`; return; }
   box.innerHTML = msgs.map(m => {
     const isSelf = m.user_id === currentUser.id;
-    return `<div class="msg ${isSelf ? 'self' : ''}"><div>${!isSelf ? `<div class="msg-sender" onclick="viewUserProfile('${m.user_id}')">${escapeHTML(m.username)}</div>` : ''}<div class="msg-bubble">${renderMessageContent(m)}</div><div class="msg-time">${formatTime(m.created_at)}</div></div></div>`;
+    return `
+      <div class="msg ${isSelf ? 'self' : ''}">
+        <div>
+          ${!isSelf ? `<div class="msg-sender" onclick="viewUserProfile('${m.user_id}')">${escapeHTML(m.username)}</div>` : ''}
+          <div class="msg-bubble">${renderMessageContent(m)}</div>
+          <div class="msg-time">
+            ${formatTime(m.created_at)} 
+            ${isSelf ? `<span style="cursor:pointer; margin-left:5px; color:var(--danger);" onclick="deleteChatMessage(${m.id})" title="Delete">🗑️</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
   }).join('');
   requestAnimationFrame(() => { box.scrollTop = box.scrollHeight; });
 }
@@ -1025,13 +1117,11 @@ async function renderFeed() {
     const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',userIds);
     const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
     
-    const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
-    const myFollowingIds = (myFollows||[]).map(f => f.following_id);
-
+    // ෆීඩ් එකේ පෙන්නන්නේ පබ්ලික් අයගේ පෝස්ට් විතරයි (Private අයගේ පෝස්ට් මෙතන පෙන්නන්නේ නෑ)
     const visiblePosts = posts.filter(p => {
-      if(p.user_id === currentUser.id) return true; 
+      if(p.user_id === currentUser.id) return true; // මගේ පෝස්ට්
       const prof = profileMap[p.user_id];
-      if(prof && prof.is_private && !myFollowingIds.includes(p.user_id)) return false;
+      if(prof && prof.is_private) return false; // Private අයගේ පෝස්ට් ෆීඩ් එකට එන්නේ නෑ
       return true;
     });
 
@@ -1051,7 +1141,7 @@ async function renderFeed() {
       if(!uniqueStoryUsers.has(s.user_id)) {
         uniqueStoryUsers.add(s.user_id);
         const prof = profileMap[s.user_id] || { username: s.username, avatar_url: null };
-        if(prof.is_private && s.user_id !== currentUser.id && !myFollowingIds.includes(s.user_id)) return;
+        if(prof.is_private && s.user_id !== currentUser.id) return; // Private stories ෆීඩ් එකට එන්නේ නෑ
         
         storiesHTML += `<div class="story-item" onclick="openStoryViewer('${s.user_id}')"><div class="story-ring"><img src="${prof.avatar_url || DEFAULT_PFP}" class="story-img"></div><div class="story-name">${escapeHTML(prof.username)}</div></div>`;
       }
@@ -1369,8 +1459,8 @@ async function renderProfile(userId) {
     </div>
     <div class="profile-stats" style="padding: 0 20px; justify-content:center; gap:32px;">
       <div class="stat-box"><div class="stat-num">${(posts||[]).length}</div><div class="stat-label">Posts</div></div>
-      <div class="stat-box"><div class="stat-num">${stats.followers}</div><div class="stat-label">Followers</div></div>
-      <div class="stat-box"><div class="stat-num">${stats.following}</div><div class="stat-label">Following</div></div>
+      <div class="stat-box" onclick="openConnections('followers')"><div class="stat-num">${stats.followers}</div><div class="stat-label">Followers</div></div>
+      <div class="stat-box" onclick="openConnections('following')"><div class="stat-num">${stats.following}</div><div class="stat-label">Following</div></div>
     </div>
     <div style="padding:15px 20px 20px; font-size:15px; color:var(--text-muted); line-height:1.5;">
       <b style="color:var(--text);">${escapeHTML(prof.username)}</b><br>${linkify(prof.bio || '')}
@@ -1544,14 +1634,12 @@ async function doSearch() {
       const userIds = [...new Set(posts.map(p=>p.user_id))];
       const {data:profiles} = await sb.from('profiles').select('id,is_private').in('id',userIds);
       const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
-      
-      const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
-      const myFollowingIds = (myFollows||[]).map(f => f.following_id);
 
+      // Explore එකේ පෙන්නන්නේ පබ්ලික් පෝස්ට් විතරයි
       const visiblePosts = posts.filter(p => {
         if(p.user_id === currentUser.id) return true;
         const prof = profileMap[p.user_id];
-        if(prof && prof.is_private && !myFollowingIds.includes(p.user_id)) return false;
+        if(prof && prof.is_private) return false; // Private අයගේ ඒවා Explore එකට එන්නේ නෑ
         return true;
       });
 

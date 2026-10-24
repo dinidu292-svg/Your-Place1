@@ -559,7 +559,6 @@ async function openFollowRequests() {
 
 async function acceptRequest(followerId) {
   try {
-    // ✅ .select() එකතු කරලා තියෙනවා Database එකේ වෙනසක් වුනාද කියලා බලන්න
     const {data, error} = await sb.from('follows')
       .update({status: 'accepted'})
       .eq('follower_id', followerId)
@@ -750,7 +749,7 @@ async function viewUserProfile(userId) {
   $('vpFollowersCount').textContent = stats.followers;
   $('vpFollowingCount').textContent = stats.following;
   
-  // ✅ is_private අගය හරියටම true ද කියලා බලනවා
+  // ✅ Private නම් සහ Follow නොකර නම් Posts පෙන්නන්නේ නෑ
   const isPrivate = prof?.is_private === true;
   const canView = !isPrivate || followState;
 
@@ -1129,12 +1128,22 @@ async function renderFeed() {
     const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',userIds);
     const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
     
-    // ✅ Private අයගේ පෝස්ට් සම්පූර්ණයෙන්ම ෆීඩ් එකෙන් අයින් කරනවා
+    // Get accepted follows
+    const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
+    const myFollowingIds = (myFollows||[]).map(f => f.following_id);
+
+    // ✅ Private posts strict filter
     const visiblePosts = posts.filter(p => {
-      if(p.user_id === currentUser.id) return true; 
+      if(p.user_id === currentUser.id) return true; // My own posts
+      
       const prof = profileMap[p.user_id];
-      if(prof && prof.is_private === true) return false; 
-      return true;
+      if(!prof) return false; // Hide if profile missing to be safe
+      
+      if(prof.is_private === true) {
+        // Private: only show if I follow them
+        return myFollowingIds.includes(p.user_id);
+      }
+      return true; // Public
     });
 
     const postIds = visiblePosts.map(p => p.id);
@@ -1153,7 +1162,10 @@ async function renderFeed() {
       if(!uniqueStoryUsers.has(s.user_id)) {
         uniqueStoryUsers.add(s.user_id);
         const prof = profileMap[s.user_id] || { username: s.username, avatar_url: null };
-        if(prof.is_private === true && s.user_id !== currentUser.id) return; // Private stories ෆීඩ් එකට එන්නේ නෑ
+        
+        if (s.user_id !== currentUser.id) {
+          if (!prof || prof.is_private === true) return; // Hide private or missing stories
+        }
         
         storiesHTML += `<div class="story-item" onclick="openStoryViewer('${s.user_id}')"><div class="story-ring"><img src="${prof.avatar_url || DEFAULT_PFP}" class="story-img"></div><div class="story-name">${escapeHTML(prof.username)}</div></div>`;
       }
@@ -1517,7 +1529,10 @@ async function saveProfile() {
       is_private: isPrivate
     }).eq('id', currentUser.id);
     
-    if(error) throw error;
+    if(error) {
+      toast('Error saving: ' + error.message);
+      throw error;
+    }
 
     currentUser.username = newUsername;
 
@@ -1533,7 +1548,7 @@ async function saveProfile() {
     await renderProfile(currentUser.id);
     if($('panel-feed').classList.contains('active')) renderFeed();
   } catch(ex) {
-    toast('Error: ' + ex.message);
+    console.error('Save Error:', ex);
   } finally {
     profileSaveInProgress = false;
     btn.disabled = false; btn.textContent = 'Save Profile';
@@ -1650,7 +1665,8 @@ async function doSearch() {
       const visiblePosts = posts.filter(p => {
         if(p.user_id === currentUser.id) return true;
         const prof = profileMap[p.user_id];
-        if(prof && prof.is_private === true) return false; // Private අයගේ ඒවා Explore එකට එන්නේ නෑ
+        if(!prof) return false; // Hide if missing
+        if(prof.is_private === true) return false; // Private: NEVER show in Explore
         return true;
       });
 

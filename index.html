@@ -100,22 +100,38 @@
   .msg-img { max-width: 220px; border-radius: 12px; margin-bottom: 6px; display: block; }
   .msg-sender { font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 4px; cursor: pointer; }
   .chat-input-area { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); width: calc(100% - 30px); background: var(--surface); border: 1px solid var(--border); padding: 10px 15px; display: flex; flex-direction: column; border-radius: 24px; z-index: 99; }
-  .chat-tools { display: flex; gap: 20px; padding: 5px 10px 10px; color: var(--text-muted); }
+  .chat-tools { display: flex; gap: 15px; padding: 5px 10px 10px; color: var(--text-muted); align-items: center; }
   .chat-tools svg { width: 24px; height: 24px; cursor: pointer; fill: none; stroke: currentColor; stroke-width: 2; }
   .chat-input-row { display: flex; gap: 10px; align-items: center; }
   .chat-input-row input { flex: 1; padding: 12px 18px; border-radius: 20px; border: none; outline: none; font-size: 15px; background: var(--bg-color); color: var(--text); }
   .chat-send-btn { background: var(--primary); color: #fff; border: none; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; }
 
-  /* PROFILE */
-  .profile-header { padding: 25px 20px 15px; display: flex; align-items: center; gap: 20px; }
-  .profile-avatar { width: 90px; height: 90px; border-radius: 50%; padding: 3px; background: var(--surface); border: 2px solid var(--primary); flex-shrink: 0; }
-  .profile-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-  .profile-stats { display: flex; gap: 22px; margin-top: 12px; }
-  .stat-box { text-align: center; cursor: pointer; }
-  .stat-num { font-weight: 700; font-size: 18px; }
-  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-  .grid-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 0 3px; }
-  .grid-posts .grid-item { width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 4px; cursor: pointer; background: var(--surface); position: relative; }
+  /* EMOJI PICKER */
+  .emoji-picker { display: none; position: absolute; bottom: 100%; left: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px; width: 250px; max-height: 200px; overflow-y: auto; flex-wrap: wrap; gap: 5px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 100; margin-bottom: 10px; }
+  .emoji-picker span { font-size: 24px; cursor: pointer; padding: 5px; border-radius: 5px; }
+  .emoji-picker span:hover { background: var(--surface-hover); }
+
+  /* INSTAGRAM PROFILE STYLES */
+  .ig-profile-header { padding: 15px 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-color); z-index: 100; }
+  .ig-profile-info { padding: 15px 20px; display: flex; align-items: center; gap: 25px; }
+  .ig-avatar { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary); padding: 2px; }
+  .ig-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  .ig-stats { display: flex; flex: 1; justify-content: space-around; text-align: center; }
+  .ig-stat-num { font-weight: 700; font-size: 16px; }
+  .ig-stat-label { font-size: 13px; color: var(--text-muted); }
+  .ig-bio { padding: 0 20px 15px; font-size: 14px; line-height: 1.4; }
+  .ig-actions { padding: 0 20px 15px; display: flex; gap: 10px; }
+  .ig-btn { flex: 1; padding: 8px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; text-align: center; border: none; }
+  .ig-btn.primary { background: var(--primary); color: #fff; }
+  .ig-btn.secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+  
+  /* PROFILE TABS */
+  .ig-tabs { display: flex; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .ig-tab { flex: 1; text-align: center; padding: 12px 0; color: var(--text-muted); cursor: pointer; font-size: 20px; border-bottom: 2px solid transparent; display: flex; justify-content: center; }
+  .ig-tab.active { color: var(--text); border-bottom-color: var(--text); }
+  
+  .grid-posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0; margin-top: 2px; }
+  .grid-posts .grid-item { width: 100%; aspect-ratio: 1; overflow: hidden; cursor: pointer; background: var(--surface); position: relative; }
   .grid-posts img, .grid-posts video { width: 100%; height: 100%; object-fit: cover; }
   .grid-item-play-icon { position: absolute; top: 5px; right: 5px; color: #fff; font-size: 14px; text-shadow: 0 0 6px rgba(0,0,0,0.9); pointer-events: none; }
   
@@ -143,16 +159,8 @@
   .auth-hint { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 15px; line-height: 1.5; }
 
   /* FULL SCREEN PROFILE */
-  #viewProfileOverlay { background: var(--bg-color); padding: 0; display: none; flex-direction: column; }
-  #viewProfileOverlay .modal-box { width: 100%; height: 100%; max-width: 100%; border-radius: 0; border: none; overflow-y: auto; padding: 0; margin: 0; }
-  .vp-cover { height: 120px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
-  .vp-content { padding: 0 20px 20px; text-align: center; margin-top: -50px; position: relative; }
-  .vp-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--bg-color); margin: 0 auto 10px; background: var(--surface); }
-  .vp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-  .vp-stats { display: flex; gap: 30px; justify-content: center; margin-bottom: 20px; }
-  .vp-stat-num { font-weight: 700; font-size: 18px; }
-  .vp-stat-label { font-size: 12px; color: var(--text-muted); }
-  .vp-private-notice { background: var(--surface); border: 1px dashed var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; font-size: 14px; color: var(--text-muted); }
+  #viewProfileOverlay { background: var(--bg-color); padding: 0; display: none; flex-direction: column; z-index: 10000; position: fixed; inset: 0; overflow-y: auto; }
+  #viewProfileOverlay .modal-box { width: 100%; height: 100%; max-width: 100%; border-radius: 0; border: none; overflow-y: auto; padding: 0; margin: 0; background: var(--bg-color); }
 
   /* FULL SCREEN POST VIEWER */
   #viewPostOverlay { background: rgba(0,0,0,0.95); padding: 0; display: none; flex-direction: column; align-items: center; justify-content: center; }
@@ -302,26 +310,53 @@
 <!-- FULL SCREEN PROFILE OVERLAY -->
 <div id="viewProfileOverlay">
   <div class="modal-box">
-    <button class="modal-back-btn" onclick="closeViewProfile()">← Back</button>
-    <div class="vp-cover"></div>
-    <div class="vp-content">
-      <div class="vp-avatar"><img id="vpAvatar" src=""></div>
-      <h2 id="vpUsername" style="font-size:22px; font-weight:700; margin-bottom:5px;"></h2>
-      <div id="vpBio" style="font-size:14px; color:var(--text-muted); margin-bottom:15px;"></div>
-      <div class="vp-stats" id="vpStats">
-        <div><div class="vp-stat-num" id="vpPostsCount">0</div><div class="vp-stat-label">Posts</div></div>
-        <div><div class="vp-stat-num" id="vpFollowersCount">0</div><div class="vp-stat-label">Followers</div></div>
-        <div><div class="vp-stat-num" id="vpFollowingCount">0</div><div class="vp-stat-label">Following</div></div>
-      </div>
-      <div id="vpPrivateNotice" class="vp-private-notice" style="display:none;">
-        🔒 This account is private. Follow this account to see their photos and chat with them.
-      </div>
-      <div id="vpActions" style="display:flex; gap:10px; justify-content:center;">
-        <button class="follow-btn" id="vpFollowBtn" onclick="handleFollowFromModal()">Follow</button>
-        <button class="btn-primary" id="vpMessageBtn" style="width:auto; padding:10px 26px;" onclick="messageUser()">Message</button>
-      </div>
-      <div class="grid-posts" id="vpPostsGrid" style="margin-top:20px; display:none;"></div>
+    <!-- Top Header with Back & Username & Options -->
+    <div class="ig-profile-header">
+      <button style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer;" onclick="closeViewProfile()">←</button>
+      <h2 id="vpUsername" style="font-size:18px; font-weight:700; flex:1;"></h2>
+      <div style="font-size:20px; color:#fff; cursor:pointer;">•••</div>
     </div>
+
+    <!-- Profile Info -->
+    <div class="ig-profile-info">
+      <div class="ig-avatar"><img id="vpAvatar" src=""></div>
+      <div class="ig-stats">
+        <div><div class="ig-stat-num" id="vpPostsCount">0</div><div class="ig-stat-label">Posts</div></div>
+        <div onclick="openConnections('followers', currentViewingUserId)"><div class="ig-stat-num" id="vpFollowersCount">0</div><div class="ig-stat-label">Followers</div></div>
+        <div onclick="openConnections('following', currentViewingUserId)"><div class="ig-stat-num" id="vpFollowingCount">0</div><div class="ig-stat-label">Following</div></div>
+      </div>
+    </div>
+
+    <!-- Bio & Actions -->
+    <div class="ig-bio">
+      <div style="font-weight:600; font-size:15px;" id="vpUsername2">username</div>
+      <div id="vpBio" style="color:var(--text-muted); margin-top:2px;"></div>
+    </div>
+    
+    <div id="vpPrivateNotice" style="display:none; padding:0 20px 15px; text-align:center; color:var(--text-muted); font-size:14px;">
+      🔒 This account is private. Follow to see photos.
+    </div>
+
+    <div class="ig-actions" id="vpActions">
+      <button class="ig-btn primary" id="vpFollowBtn" onclick="handleFollowFromModal()">Follow</button>
+      <button class="ig-btn secondary" id="vpMessageBtn" onclick="messageUser()">Message</button>
+      <button class="ig-btn secondary" onclick="toast('Email feature coming soon')">Email</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="ig-tabs">
+      <div class="ig-tab active" onclick="switchProfileTab('posts', this)">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+      </div>
+      <div class="ig-tab" onclick="switchProfileTab('reels', this)">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+      </div>
+      <div class="ig-tab" onclick="switchProfileTab('tagged', this)">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+      </div>
+    </div>
+
+    <div class="grid-posts" id="vpPostsGrid"></div>
   </div>
 </div>
 
@@ -438,12 +473,11 @@ let profileSaveInProgress = false;
 let reelsObserver = null; 
 let allChatsCache = []; 
 
-// For Group Admin
 let activeRoomAdminId = null;
-
-// For Upload Filters
 let postFileObj = null;
 let currentFilter = 'none';
+let currentProfileTab = 'posts';
+let vpAllPosts = []; // Cache for viewing profiles
 
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231e293b'/><circle cx='50' cy='35' r='20' fill='%23818cf8'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%23818cf8'/></svg>";
 
@@ -590,35 +624,6 @@ async function handleFollowFromModal() {
   }
 }
 
-async function toggleFollowFromSearch(userId, btn) {
-  event.stopPropagation();
-  btn.disabled = true;
-  
-  const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', userId).single();
-  const isTargetPrivate = targetProf?.is_private === true;
-  
-  const newState = await toggleFollow(userId, isTargetPrivate);
-  if(newState === null) { btn.disabled = false; return; }
-  
-  if(newState === 'unfollowed') {
-    btn.textContent = 'Follow';
-    btn.className = 'req-btn accept';
-    btn.style.background = '';
-    btn.style.color = '';
-  } else if(newState === 'requested') {
-    btn.textContent = 'Requested';
-    btn.className = 'req-btn';
-    btn.style.background = 'var(--surface-hover)';
-    btn.style.color = 'var(--text)';
-  } else if(newState === 'following') {
-    btn.textContent = 'Unfollow';
-    btn.className = 'req-btn decline';
-    btn.style.background = '';
-    btn.style.color = '';
-  }
-  btn.disabled = false;
-}
-
 // ================= LOGOUT =================
 async function logout() {
   if(!confirm('Are you sure you want to log out?')) return;
@@ -650,22 +655,23 @@ async function logout() {
   } catch(ex) { console.error(ex); toast('Error logging out: ' + ex.message); }
 }
 
-// ================= VIEW USER PROFILE (FULL SCREEN) =================
+// ================= VIEW USER PROFILE (FULL SCREEN IG STYLE) =================
 async function viewUserProfile(userId) {
   if(userId === currentUser.id) { switchPanel('profile'); return; }
   currentViewingUserId = userId;
-  $('viewProfileOverlay').style.display = 'block'; // Full screen block
+  $('viewProfileOverlay').style.display = 'block'; 
+  
   $('vpUsername').textContent = 'Loading...';
+  $('vpUsername2').textContent = '';
   $('vpBio').textContent = '';
   $('vpAvatar').src = DEFAULT_PFP;
   $('vpFollowersCount').textContent = '...';
   $('vpFollowingCount').textContent = '...';
   $('vpPostsCount').textContent = '...';
   $('vpPostsGrid').innerHTML = '';
-  $('vpPostsGrid').style.display = 'none';
   
   const followBtn = $('vpFollowBtn');
-  followBtn.style.display = 'none'; followBtn.disabled = true;
+  followBtn.style.display = 'block'; followBtn.disabled = true;
   followBtn.classList.remove('following', 'requested');
   $('vpMessageBtn').style.display = 'none';
   $('vpPrivateNotice').style.display = 'none';
@@ -673,6 +679,7 @@ async function viewUserProfile(userId) {
   const {data:prof} = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
   if(prof) {
     $('vpUsername').textContent = prof.username;
+    $('vpUsername2').textContent = prof.username;
     $('vpBio').textContent = prof.bio || 'No bio yet.';
     if(prof.avatar_url) $('vpAvatar').src = prof.avatar_url;
   }
@@ -692,52 +699,77 @@ async function viewUserProfile(userId) {
 
   if(canView) {
     $('vpPostsCount').textContent = postsRes.count || 0;
-    $('vpMessageBtn').style.display = 'inline-block';
+    $('vpMessageBtn').style.display = 'block';
     
     const {data:userPosts} = await sb.from('posts').select('*').eq('user_id', userId).order('created_at', {ascending:false});
-    if(userPosts && userPosts.length > 0) {
-      $('vpPostsGrid').style.display = 'grid';
-      $('vpPostsGrid').innerHTML = userPosts.map(p => `
-        <div class="grid-item" onclick="$('viewProfileOverlay').style.display='none'; ${p.video_url ? `openReels(${p.id})` : `viewPost(${p.id})`}">
-          ${p.image_url ? `<img src="${p.image_url}">` : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}
-        </div>
-      `).join('');
-    }
+    vpAllPosts = userPosts || [];
+    renderViewProfileGrid('posts'); // default tab
   } else {
     $('vpPostsCount').textContent = '🔒';
     $('vpPrivateNotice').style.display = 'block';
   }
 
-  followBtn.style.display = 'inline-flex';
+  followBtn.style.display = 'block';
   followBtn.disabled = false;
   
   if (followState) {
     followBtn.textContent = 'Unfollow';
     followBtn.classList.add('following');
+    followBtn.style.background = 'var(--surface)';
+    followBtn.style.color = 'var(--text)';
   } else if (pendingState) {
     followBtn.textContent = 'Requested';
     followBtn.classList.add('requested');
+    followBtn.style.background = 'var(--surface)';
+    followBtn.style.color = 'var(--text-muted)';
   } else {
     followBtn.textContent = 'Follow';
+    followBtn.style.background = 'var(--primary)';
+    followBtn.style.color = '#fff';
   }
 }
 function closeViewProfile() { $('viewProfileOverlay').style.display = 'none'; }
 
-async function messageUser() {
-  if(!currentViewingUserId) return;
+function switchProfileTab(tab, el) {
+  currentProfileTab = tab;
+  document.querySelectorAll('.ig-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderViewProfileGrid(tab);
+}
+
+function renderViewProfileGrid(tab) {
+  const grid = $('vpPostsGrid');
+  if(tab === 'posts') {
+    const pList = vpAllPosts.filter(p => p.image_url);
+    if(pList.length === 0) { grid.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); width:100%; grid-column:1/-1;">No posts yet</div>`; return; }
+    grid.innerHTML = pList.map(p => `
+      <div class="grid-item" onclick="$('viewProfileOverlay').style.display='none'; viewPost(${p.id})">
+        <img src="${p.image_url}">
+      </div>
+    `).join('');
+  } else if (tab === 'reels') {
+    const rList = vpAllPosts.filter(p => p.video_url);
+    if(rList.length === 0) { grid.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); width:100%; grid-column:1/-1;">No reels yet</div>`; return; }
+    grid.innerHTML = rList.map(p => `
+      <div class="grid-item" onclick="$('viewProfileOverlay').style.display='none'; openReels(${p.id})">
+        <video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video>
+        <div class="grid-item-play-icon">▶</div>
+      </div>
+    `).join('');
+  } else {
+    grid.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); width:100%; grid-column:1/-1;">No tagged posts</div>`;
+  }
+}
+
+async function startChatFromSearch(userId, username) {
+  event.stopPropagation();
   closeViewProfile();
   try {
-    const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', currentViewingUserId).single();
-    if(targetProf?.is_private === true) {
-      const isF = await isFollowing(currentUser.id, currentViewingUserId);
-      if(!isF) { toast('🔒 Cannot message private account. Follow them first.'); return; }
-    }
-
     const {data:myRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
     const myRoomIds = (myRooms||[]).map(m => m.room_id);
     let existingRoomId = null;
     if(myRoomIds.length > 0) {
-      const {data:theirRooms} = await sb.from('room_members').select('room_id').eq('user_id', currentViewingUserId).in('room_id', myRoomIds);
+      const {data:theirRooms} = await sb.from('room_members').select('room_id').eq('user_id', userId).in('room_id', myRoomIds);
       for(const r of (theirRooms||[])) {
         const {data:room} = await sb.from('chat_rooms').select('*').eq('id', r.room_id).single();
         if(room && !room.is_group) { existingRoomId = room.id; break; }
@@ -747,15 +779,20 @@ async function messageUser() {
       const {data:newRoom, error} = await sb.from('chat_rooms').insert([{is_group: false, created_by: currentUser.id}]).select().single();
       if(error) throw error;
       existingRoomId = newRoom.id;
-      const {data:theirProf} = await sb.from('profiles').select('username, avatar_url').eq('id', currentViewingUserId).single();
+      const {data:theirProf} = await sb.from('profiles').select('username').eq('id', userId).single();
       await sb.from('room_members').insert([
         {room_id: existingRoomId, user_id: currentUser.id, username: currentUser.username},
-        {room_id: existingRoomId, user_id: currentViewingUserId, username: theirProf?.username || 'User'}
+        {room_id: existingRoomId, user_id: userId, username: theirProf?.username || 'User'}
       ]);
     }
     switchPanel('chat');
     openChatRoom(existingRoomId, false);
   } catch(ex) { toast('Error opening chat'); }
+}
+
+async function messageUser() {
+  if(!currentViewingUserId) return;
+  startChatFromSearch(currentViewingUserId);
 }
 
 // ================= INSTAGRAM REELS LOGIC =================
@@ -917,6 +954,7 @@ async function renderChatList() {
     const {data:memberships} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id);
     const roomIds = (memberships||[]).map(m => m.room_id);
     
+    // REMOVED "+ Chat" button, only "+ Group" remains
     let headerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:0 20px;">
         <h2 style="font-weight:700; font-size:24px;">Messages</h2>
@@ -1064,10 +1102,16 @@ async function openChatRoom(roomId, isGroup) {
       </div>
       <div class="chat-messages" id="chatMessagesBox"></div>
       <div class="chat-input-area">
-        <div class="chat-tools">
+        <div class="chat-tools" style="position:relative;">
           <span style="cursor:pointer;" onclick="$('chatImageUpload').click()"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></span>
           <input type="file" id="chatImageUpload" hidden accept="image/*" onchange="uploadChatImage(event)">
           <span style="cursor:pointer;" onclick="toggleRecording()" id="micBtn"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg></span>
+          
+          <!-- Emoji Toggle -->
+          <span style="cursor:pointer;" onclick="toggleEmojiPicker()">😀</span>
+          <div class="emoji-picker" id="emojiPicker">
+            ${['😀','😂','🥰','😎','😭','😡','👍','🔥','❤️','🎉','💯','🙏','👏','🤔','😍'].map(e => `<span onclick="addEmoji('${e}')">${e}</span>`).join('')}
+          </div>
         </div>
         <div class="chat-input-row">
           <input id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendChat()">
@@ -1079,12 +1123,23 @@ async function openChatRoom(roomId, isGroup) {
   loadMessages(); subscribeToMessages();
 }
 
+// Emoji functions
+function toggleEmojiPicker() {
+  const picker = $('emojiPicker');
+  picker.style.display = picker.style.display === 'flex' ? 'none' : 'flex';
+}
+function addEmoji(emoji) {
+  const input = $('chatInput');
+  input.value += emoji;
+  input.focus();
+  $('emojiPicker').style.display = 'none';
+}
+
 // ================= GROUP INFO & ADMIN =================
 async function openGroupInfo() {
   $('groupInfoOverlay').style.display = 'flex';
   $('groupInfoMembersList').innerHTML = `<div class="spinner"></div>`;
   
-  // Check if current user is admin
   const isAdmin = (activeRoomAdminId === currentUser.id);
   $('addMemberBtn').style.display = isAdmin ? 'block' : 'none';
 
@@ -1127,7 +1182,6 @@ async function removeGroupMember(userId) {
   try {
     await sb.from('room_members').delete().eq('room_id', activeRoomId).eq('user_id', userId);
     toast('Member removed');
-    // Refresh list
     const {data:members} = await sb.from('room_members').select('*').eq('room_id', activeRoomId);
     activeRoomMembers = members || [];
     openGroupInfo();
@@ -1150,7 +1204,6 @@ async function openAddMemberModal() {
   
   try {
     const currentMemberIds = activeRoomMembers.map(m => m.user_id);
-    // Fetch users not in group
     const {data:users} = await sb.from('profiles').select('id, username, avatar_url').not('id', 'in', `(${currentMemberIds.join(',')})`);
     
     if(!users || users.length === 0) {
@@ -1188,7 +1241,6 @@ async function submitAddMembers() {
     toast('Members added!');
     $('addMemberOverlay').style.display = 'none';
     
-    // Refresh
     const {data:members} = await sb.from('room_members').select('*').eq('room_id', activeRoomId);
     activeRoomMembers = members || [];
     openGroupInfo();
@@ -1201,14 +1253,16 @@ async function submitAddMembers() {
 
 // ================= MESSAGE LOGIC =================
 function toggleRecording() {
-  if(isRecording) { mediaRecorder.stop(); isRecording = false; $('micBtn').style.color = 'var(--text-muted)'; }
-  else {
+  if(isRecording) { 
+    mediaRecorder.stop(); isRecording = false; $('micBtn').style.color = 'var(--text-muted)'; 
+  } else {
     navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
       mediaRecorder = new MediaRecorder(stream); audioChunks = [];
-      mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+      mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const file = new File([audioBlob], `voice_${Date.now()}.webm`);
+        const audioBlob = new Blob(audioChunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+        const ext = mediaRecorder.mimeType.includes('mp4') ? 'mp4' : 'webm';
+        const file = new File([audioBlob], `voice_${Date.now()}.${ext}`);
         await uploadChatMedia(file, 'audio');
         stream.getTracks().forEach(track => track.stop());
       };
@@ -1223,13 +1277,16 @@ async function uploadChatMedia(file, type) {
     const {error: uploadError} = await sb.storage.from('chat_media').upload(path, file);
     if(uploadError) throw uploadError;
     const {data: {publicUrl}} = sb.storage.from('chat_media').getPublicUrl(path);
+    
     const msgData = { room_id: activeRoomId, user_id: currentUser.id, username: currentUser.username, text: '' };
     if(type === 'image') msgData.image_url = publicUrl;
     if(type === 'audio') msgData.audio_url = publicUrl;
+    
     const {error: dbError} = await sb.from('chat_messages').insert([msgData]);
     if(dbError) throw dbError;
   } catch(ex) { toast('Upload failed: ' + ex.message); }
 }
+
 function renderMessageContent(m) {
   let content = '';
   if (m.text) {
@@ -1237,7 +1294,7 @@ function renderMessageContent(m) {
     else content += `<div>${linkify(m.text)}</div>`;
   }
   if (m.image_url) content += `<img src="${m.image_url}" class="msg-img" alt="Image" />`;
-  if (m.audio_url) content += `<audio controls src="${m.audio_url}" style="max-width:200px; height:35px; filter: invert(1);"></audio>`;
+  if (m.audio_url) content += `<audio controls src="${m.audio_url}" style="max-width:200px; height:35px; filter: invert(1); margin-top:5px;"></audio>`;
   return content;
 }
 
@@ -1304,7 +1361,7 @@ function subscribeToMessages() {
 }
 function formatTime(dateStr) { if(!dateStr) return ''; return new Date(dateStr).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); }
 
-// ================= FEED (PUBLIC POSTS ONLY + MY POSTS) =================
+// ================= FEED (PUBLIC POSTS ONLY + 5MIN PRIVATE POSTS) =================
 async function renderFeed() {
   const el = $('panel-feed');
   el.innerHTML = `<div class="spinner"></div>`;
@@ -1320,11 +1377,25 @@ async function renderFeed() {
     const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',userIds);
     const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
     
+    // Get my following list for private posts logic
+    const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
+    const myFollowingIds = (myFollows||[]).map(f => f.following_id);
+
     const visiblePosts = posts.filter(p => {
       if(p.user_id === currentUser.id) return true; 
+      
       const prof = profileMap[p.user_id];
       if(!prof) return false; 
-      return prof.is_private !== true; 
+
+      // Private Posts Logic: Show on feed ONLY if I follow them AND it's less than 5 mins old
+      if (prof.is_private === true) {
+        if (!myFollowingIds.includes(p.user_id)) return false; // Not following
+        const diffMins = (new Date() - new Date(p.created_at)) / 60000;
+        if (diffMins > 5) return false; // Expired from feed
+        return true; // Show on feed
+      }
+      
+      return true; // Public
     });
 
     const postIds = visiblePosts.map(p => p.id);
@@ -1477,7 +1548,7 @@ async function doSearch() {
         if(status === 'accepted') {
           btnHtml = `
             <button class="req-btn decline" style="margin-left:5px;" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Unfollow</button>
-            <button class="req-btn accept" style="margin-left:5px; background:var(--surface); color:var(--text); border:1px solid var(--border);" onclick="event.stopPropagation(); currentViewingUserId='${u.id}'; messageUser()">Message</button>
+            <button class="req-btn accept" style="margin-left:5px; background:var(--surface); color:var(--text); border:1px solid var(--border);" onclick="event.stopPropagation(); startChatFromSearch('${u.id}', '${u.username}')">Message</button>
           `;
         } else if(status === 'pending') {
           btnHtml = `<button class="req-btn" style="margin-left:5px; background:var(--surface-hover); color:var(--text);" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Requested</button>`;
@@ -1518,43 +1589,86 @@ async function renderProfile(userId) {
     pendingCount = count || 0;
   }
 
+  // For Own Profile - Show IG Style
   el.innerHTML = `
-    <div class="profile-header">
-      <div class="profile-avatar"><img src="${prof.avatar_url || DEFAULT_PFP}" onerror="this.src='${DEFAULT_PFP}'"></div>
-      <div style="flex:1; min-width:0;">
-        <h2 style="font-size:22px; font-weight:700; margin-bottom:15px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-          ${escapeHTML(prof.username)} ${prof.is_private === true ? '🔒' : ''}
-        </h2>
-        ${isMe ? `
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button style="background:var(--surface); border:1px solid var(--border); padding:9px 16px; border-radius:10px; font-weight:600; cursor:pointer; color:var(--text); font-size:14px;" onclick="openEditProfile()">Edit Profile</button>
-            <button class="upload-quick-btn" onclick="switchPanel('upload')">＋ Upload</button>
-            ${pendingCount > 0 ? `<button style="background:var(--accent); border:none; color:#fff; padding:9px 16px; border-radius:10px; font-weight:600; cursor:pointer; font-size:14px;" onclick="openFollowRequests()">Requests (${pendingCount})</button>` : ''}
-          </div>
-        ` : ''}
+    <div class="ig-profile-header">
+      <h2 style="font-size:20px; font-weight:700; flex:1; text-align:center; padding-left:24px;">${escapeHTML(prof.username)}</h2>
+      <div style="font-size:20px; color:#fff; cursor:pointer;" onclick="openEditProfile()">☰</div>
+    </div>
+
+    <div class="ig-profile-info">
+      <div class="ig-avatar"><img src="${prof.avatar_url || DEFAULT_PFP}" onerror="this.src='${DEFAULT_PFP}'"></div>
+      <div class="ig-stats">
+        <div><div class="ig-stat-num">${(posts||[]).length}</div><div class="ig-stat-label">Posts</div></div>
+        <div onclick="openConnections('followers', currentUser.id)"><div class="ig-stat-num">${stats.followers}</div><div class="ig-stat-label">Followers</div></div>
+        <div onclick="openConnections('following', currentUser.id)"><div class="ig-stat-num">${stats.following}</div><div class="ig-stat-label">Following</div></div>
       </div>
     </div>
-    <div class="profile-stats" style="padding: 0 20px; justify-content:center; gap:32px;">
-      <div class="stat-box"><div class="stat-num">${(posts||[]).length}</div><div class="stat-label">Posts</div></div>
-      <div class="stat-box" onclick="openConnections('followers')"><div class="stat-num">${stats.followers}</div><div class="stat-label">Followers</div></div>
-      <div class="stat-box" onclick="openConnections('following')"><div class="stat-num">${stats.following}</div><div class="stat-label">Following</div></div>
+
+    <div class="ig-bio">
+      <div style="font-weight:600; font-size:15px;">${escapeHTML(prof.username)} ${prof.is_private === true ? '🔒' : ''}</div>
+      <div style="color:var(--text-muted); margin-top:2px;">${linkify(prof.bio || '')}</div>
     </div>
-    <div style="padding:15px 20px 20px; font-size:15px; color:var(--text-muted); line-height:1.5;">
-      <b style="color:var(--text);">${escapeHTML(prof.username)}</b><br>${linkify(prof.bio || '')}
+
+    <div class="ig-actions">
+      <button class="ig-btn secondary" onclick="openEditProfile()">Edit Profile</button>
+      <button class="ig-btn secondary" onclick="switchPanel('upload')">＋ Upload</button>
+      ${pendingCount > 0 ? `<button class="ig-btn secondary" style="background:var(--accent); color:#fff; flex:0.5;" onclick="openFollowRequests()">${pendingCount} Req</button>` : ''}
     </div>
-    <div class="grid-posts">
-      ${(posts||[]).map(p => `<div class="grid-item" onclick="${p.video_url ? `openReels(${p.id})` : `viewPost(${p.id})`}">${p.image_url ? `<img src="${p.image_url}" onerror="this.src='${DEFAULT_PFP}'">` : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}</div>`).join('')}
+
+    <div class="ig-tabs">
+      <div class="ig-tab active" onclick="switchOwnProfileTab('posts', this)">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+      </div>
+      <div class="ig-tab" onclick="switchOwnProfileTab('reels', this)">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+      </div>
     </div>
-    ${isMe ? `
-      <div class="creator-card"><h3 style="color:var(--primary); margin-bottom:10px;">About The Creator</h3><p style="font-size:14px; color:var(--text-muted);"><b>Dinidu Wijesinghe</b><br>"Hi there! I'm Dinidu, the creator behind Your Place 2026..."</p></div>
-      <div style="padding: 0 20px 30px;"><button class="logout-btn" style="width:100%;" onclick="logout()">Logout</button></div>
-    ` : ''}
+
+    <div class="grid-posts" id="ownProfileGrid"></div>
+
+    <div style="padding: 20px;">
+      <button class="logout-btn" style="width:100%;" onclick="logout()">Logout</button>
+    </div>
   `;
+
+  vpAllPosts = posts || [];
+  renderOwnProfileGrid('posts');
+
   $('editUsername').value = prof.username;
   $('editBio').value = prof.bio || '';
   $('editIsPrivate').checked = prof.is_private === true;
   $('saveProfileBtn').disabled = false;
   $('saveProfileBtn').textContent = 'Save Profile';
+}
+
+function switchOwnProfileTab(tab, el) {
+  currentProfileTab = tab;
+  document.querySelectorAll('.ig-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderOwnProfileGrid(tab);
+}
+
+function renderOwnProfileGrid(tab) {
+  const grid = $('ownProfileGrid');
+  if(tab === 'posts') {
+    const pList = vpAllPosts.filter(p => p.image_url);
+    if(pList.length === 0) { grid.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); width:100%; grid-column:1/-1;">No posts yet</div>`; return; }
+    grid.innerHTML = pList.map(p => `
+      <div class="grid-item" onclick="viewPost(${p.id})">
+        <img src="${p.image_url}">
+      </div>
+    `).join('');
+  } else if (tab === 'reels') {
+    const rList = vpAllPosts.filter(p => p.video_url);
+    if(rList.length === 0) { grid.innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted); width:100%; grid-column:1/-1;">No reels yet</div>`; return; }
+    grid.innerHTML = rList.map(p => `
+      <div class="grid-item" onclick="openReels(${p.id})">
+        <video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video>
+        <div class="grid-item-play-icon">▶</div>
+      </div>
+    `).join('');
+  }
 }
 
 function openEditProfile() {
@@ -1745,7 +1859,6 @@ function previewPost(e) {
   
   if (!isVideo) {
       $('filterSection').style.display = 'block';
-      // Update filter thumbnails
       document.querySelectorAll('.filter-thumb').forEach(t => t.src = url);
   } else {
       $('filterSection').style.display = 'none';
@@ -1919,59 +2032,6 @@ function timeAgo(dateStr){
   if(diff < 3600) return Math.floor(diff/60)+'m ago';
   if(diff < 86400) return Math.floor(diff/3600)+'h ago';
   return Math.floor(diff/86400)+'d ago';
-}
-
-// Dropdown for Group Admin to Add members
-function openAddMemberModal() {
-  $('addMemberOverlay').style.display = 'flex';
-  $('addMemberList').innerHTML = `<div class="spinner"></div>`;
-  
-  // Fetch users not in this group
-  const currentIds = activeRoomMembers.map(m => m.user_id);
-  
-  sb.from('profiles').select('*').limit(50).then(({data:users}) => {
-    const available = users.filter(u => !currentIds.includes(u.id));
-    if(available.length === 0) {
-      $('addMemberList').innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">No users available to add.</div>`;
-      return;
-    }
-    $('addMemberList').innerHTML = available.map(u => `
-      <label class="group-user-item">
-        <input type="checkbox" value="${u.id}" class="add-member-checkbox" style="width:20px; height:20px; accent-color:var(--primary);">
-        <img src="${u.avatar_url || DEFAULT_PFP}">
-        <span>${escapeHTML(u.username)}</span>
-      </label>
-    `).join('');
-  });
-}
-
-async function submitAddMembers() {
-  const checkboxes = document.querySelectorAll('.add-member-checkbox:checked');
-  if(checkboxes.length === 0) { toast('Select users first'); return; }
-  
-  const btn = $('addMemberSubmitBtn'); btn.textContent = 'Adding...'; btn.disabled = true;
-  
-  try {
-    const newMembers = [];
-    for(const cb of checkboxes) {
-      const uid = cb.value;
-      const uname = cb.parentElement.querySelector('span').textContent;
-      newMembers.push({ room_id: activeRoomId, user_id: uid, username: uname });
-    }
-    await sb.from('room_members').insert(newMembers);
-    
-    toast('Members added!');
-    $('addMemberOverlay').style.display = 'none';
-    
-    // Refresh
-    const {data:members} = await sb.from('room_members').select('*').eq('room_id', activeRoomId);
-    activeRoomMembers = members || [];
-    openGroupInfo();
-  } catch(ex) {
-    toast('Error: ' + ex.message);
-  } finally {
-    btn.textContent = 'Add'; btn.disabled = false;
-  }
 }
 
 init();

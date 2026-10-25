@@ -126,8 +126,9 @@
   .reels-back-btn { background:rgba(0,0,0,0.5); border:none; color:#fff; padding:8px 16px; border-radius:20px; font-size:16px; font-weight:600; cursor:pointer; backdrop-filter:blur(5px); }
   .reels-container { width:100%; height:100vh; overflow-y:scroll; scroll-snap-type:y mandatory; scrollbar-width:none; } .reels-container::-webkit-scrollbar { display:none; }
   .reel-slide { width:100%; height:100vh; scroll-snap-align:start; position:relative; display:flex; justify-content:center; align-items:center; background:#000; }
-  .reel-video { width:100%; height:100%; object-fit:contain; }
-  .reel-overlay-info { position:absolute; bottom:0; left:0; right:0; padding:20px; padding-bottom:40px; background:linear-gradient(to top, rgba(0,0,0,0.9), transparent); display:flex; align-items:flex-end; justify-content:space-between; }
+  .reel-video { width:100%; height:100%; object-fit:contain; cursor:pointer; }
+  .reel-overlay-info { position:absolute; bottom:0; left:0; right:0; padding:20px; padding-bottom:40px; background:linear-gradient(to top, rgba(0,0,0,0.9), transparent); display:flex; align-items:flex-end; justify-content:space-between; pointer-events:none; }
+  .reel-overlay-info > * { pointer-events:auto; }
   .reel-user-info { display:flex; align-items:center; gap:10px; color:#fff; cursor:pointer; }
   .reel-user-info img { width:40px; height:40px; border-radius:50%; border:2px solid #fff; }
   .reel-caption { color:#fff; font-size:14px; margin-top:10px; max-width:80%; }
@@ -139,10 +140,15 @@
   .filter-option.active img { border-color:var(--primary); }
   .filter-option span { font-size:10px; color:var(--text-muted); display:block; margin-top:4px; }
   
-  /* HAMBURGER MENU */
+  /* HAMBURGER MENU & BOTTOM SHEET */
   #hamburgerOverlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:10000; display:none; justify-content:flex-end; }
-  .hamburger-menu { background:var(--surface); width:260px; height:100%; padding:20px; display:flex; flex-direction:column; animation:slideIn 0.3s; }
+  .hamburger-menu { background:var(--surface); width:280px; height:100%; padding:20px; display:flex; flex-direction:column; animation:slideIn 0.3s; }
   @keyframes slideIn { from{transform:translateX(100%);} to{transform:translateX(0);} }
+
+  #reelCommentOverlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:100000; display:none; align-items:flex-end; }
+  .reel-comment-box { background:var(--surface); width:100%; border-radius:20px 20px 0 0; padding:20px; display:flex; flex-direction:column; max-height:70vh; animation:slideUp 0.3s; }
+  @keyframes slideUp { from{transform:translateY(100%);} to{transform:translateY(0);} }
+  .reel-comment-list { flex:1; overflow-y:auto; margin-bottom:15px; }
 </style>
 </head>
 <body>
@@ -162,6 +168,15 @@
   </div>
 </div>
 
+<!-- PRIVATE CHAT MODAL -->
+<div class="modal-overlay" id="privateChatOverlay">
+  <div class="modal-box">
+    <h2 style="margin-bottom:20px;">New Private Chat</h2>
+    <div id="privateChatUserList" style="max-height:300px; overflow-y:auto; margin-bottom:20px; border:1px solid var(--border); border-radius:10px;"></div>
+    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); cursor:pointer;" onclick="$('privateChatOverlay').style.display='none'">Cancel</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="groupChatOverlay"><div class="modal-box"><h2 style="margin-bottom:20px;">Create Group</h2><div class="input-group no-toggle"><input id="groupNameInput" type="text" placeholder="Group Name..."></div><div class="input-group no-toggle"><label style="color:var(--text-muted); font-size:12px; margin-bottom:5px; display:block;">Group Photo (Optional)</label><input type="file" id="groupPicInput" accept="image/*" style="padding:10px; border:1px dashed var(--border); width:100%; color:var(--text); border-radius:12px;"></div><div id="groupUserList" style="max-height:200px; overflow-y:auto; margin-bottom:20px; border:1px solid var(--border); border-radius:10px;"></div><button class="btn-primary" onclick="submitGroupChat()" id="createGroupBtn">Create Group</button><button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('groupChatOverlay').style.display='none'">Cancel</button></div></div>
 <div class="modal-overlay" id="groupInfoOverlay"><div class="modal-box"><h2 style="margin-bottom:20px;">Group Info</h2><input type="text" id="groupMemberSearch" placeholder="Search members..." oninput="filterGroupMembers()" style="width:100%; padding:12px; border-radius:10px; border:1px solid var(--border); background:var(--bg-color); color:var(--text); margin-bottom:10px; outline:none;"><div id="groupInfoMembersList" style="max-height:300px; overflow-y:auto; margin-bottom:20px; border:1px solid var(--border); border-radius:10px;"></div><button class="btn-primary" onclick="openAddMemberModal()" id="addMemberBtn" style="display:none; margin-bottom:10px;">Add Member</button><button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:5px; cursor:pointer;" onclick="$('groupInfoOverlay').style.display='none'">Close</button></div></div>
 <div class="modal-overlay" id="addMemberOverlay"><div class="modal-box"><h2 style="margin-bottom:20px;">Add Members</h2><div id="addMemberList" style="max-height:250px; overflow-y:auto; margin-bottom:20px; border:1px solid var(--border); border-radius:10px;"></div><button class="btn-primary" onclick="submitAddMembers()" id="addMemberSubmitBtn">Add</button><button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('addMemberOverlay').style.display='none'">Cancel</button></div></div>
@@ -171,22 +186,31 @@
 <div class="modal-overlay" id="connectionsOverlay"><div class="modal-box"><h2 id="connectionsTitle" style="margin-bottom:20px;">Followers</h2><div id="connectionsList" style="max-height:350px; overflow-y:auto; margin-bottom:10px;"></div><button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('connectionsOverlay').style.display='none'">Close</button></div></div>
 <div id="reelsOverlay"><div class="reels-top-bar"><button class="reels-back-btn" onclick="closeReels()">← Back</button></div><div class="reels-container" id="reelsContainer"></div></div>
 
-<!-- HAMBURGER MENU OVERLAY -->
+<!-- REEL COMMENT BOTTOM SHEET -->
+<div id="reelCommentOverlay" onclick="if(event.target===this) closeReelComments()">
+  <div class="reel-comment-box">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+      <h3 style="font-size:16px; font-weight:700;">Comments</h3>
+      <button style="background:none; border:none; color:#fff; font-size:24px;" onclick="closeReelComments()">×</button>
+    </div>
+    <div class="reel-comment-list" id="reelCommentList"></div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <input type="text" id="reelCommentInput" placeholder="Add a comment..." style="flex:1; background:var(--bg-color); border:1px solid var(--border); border-radius:20px; padding:12px 18px; color:var(--text); outline:none; font-size:15px;" onkeydown="if(event.key==='Enter')addReelComment()">
+      <button style="background:var(--primary); color:#fff; border:none; padding:10px 20px; border-radius:20px; font-weight:600; cursor:pointer;" onclick="addReelComment()">Post</button>
+    </div>
+  </div>
+</div>
+
 <div id="hamburgerOverlay" onclick="if(event.target===this) $('hamburgerOverlay').style.display='none'">
   <div class="hamburger-menu">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
       <h2 style="font-size:20px; font-weight:700;">Menu</h2>
       <button style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer;" onclick="$('hamburgerOverlay').style.display='none'">×</button>
     </div>
-    
     <div style="background:var(--bg-color); border:1px solid var(--border); border-radius:12px; padding:15px; margin-bottom:20px; text-align:center;">
       <h3 style="color:var(--primary); font-weight:700; margin-bottom:10px; font-size:16px;">FOUNDER</h3>
-      <p style="font-size:14px; color:var(--text-muted); line-height:1.5;">
-        <b style="color:var(--text);">Dinidu Wijesinghe</b><br>
-        "Hi there! I'm Dinidu, the creator behind Your Place 2026. I built this platform with a simple vision: to create a safe, fun, and fast space for friends to connect, share moments, and chat without distractions. Thank you for being a part of this journey. Let's build a great community together!"
-      </p>
+      <p style="font-size:14px; color:var(--text-muted); line-height:1.5;"><b style="color:var(--text);">Dinidu Wijesinghe</b><br>"Hi there! I'm Dinidu, the creator behind Your Place 2026. I built this platform with a simple vision: to create a safe, fun, and fast space for friends to connect, share moments, and chat without distractions. Thank you for being a part of this journey. Let's build a great community together!"</p>
     </div>
-
     <button class="logout-btn" style="width:100%;" onclick="logout()">Logout</button>
   </div>
 </div>
@@ -218,6 +242,8 @@ let currentFilter = 'none';
 let currentProfileTab = 'posts';
 let vpAllPosts = []; 
 
+let activeReelPostId = null; // For Reels Comments
+
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231e293b'/><circle cx='50' cy='35' r='20' fill='%23818cf8'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%23818cf8'/></svg>";
 
 function $(id){ return document.getElementById(id); }
@@ -229,8 +255,6 @@ function scrollAuthButtonIntoView() { setTimeout(() => { const btn = $('authSubm
 function togglePasswordVisibility() { const input = $('authPassword'), btn = $('pwToggleBtn'); if(input.type==='password'){ input.type='text'; btn.textContent='🙈'; } else { input.type='password'; btn.textContent='👁️'; } }
 function showAuthError(msg) { const err = $('authError'); err.textContent = msg; err.style.display = 'block'; setTimeout(() => err.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100); }
 function hideAuthError() { $('authError').style.display = 'none'; }
-
-// HAMBURGER MENU
 function openHamburgerMenu() { $('hamburgerOverlay').style.display = 'flex'; }
 
 function switchPanel(name){
@@ -418,22 +442,38 @@ function closeViewPost() { const v = document.querySelector('#postViewerMediaWra
 function toggleCommentsInModal(postId) { const el = $(`modal-comments-${postId}`); el.style.display = el.style.display === 'block' ? 'none' : 'block'; }
 async function addCommentInModal(postId) { const inputEl = $(`modal-cinput-${postId}`); const text = inputEl.value.trim(); if(!text) return; try { await sb.from('comments').insert([{post_id: postId, user_id: currentUser.id, username: currentUser.username, text}]); inputEl.value = ''; viewPost(postId); } catch(ex) { toast('Error'); } }
 
+// ================= REELS COMMENTS =================
+async function openReelComments(postId) {
+  activeReelPostId = postId;
+  $('reelCommentOverlay').style.display = 'flex';
+  const listEl = $('reelCommentList'); listEl.innerHTML = `<div class="spinner" style="margin:10px auto;"></div>`;
+  try {
+    const {data:comments} = await sb.from('comments').select('*').eq('post_id', postId).order('created_at');
+    if(!comments || comments.length === 0) { listEl.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:14px; padding:20px;">No comments yet. Be the first!</div>`; return; }
+    listEl.innerHTML = comments.map(c => `<div style="margin-bottom:12px; font-size:14px;"><strong style="color:#fff;">${escapeHTML(c.username)}</strong> <span style="color:var(--text-muted);">${linkify(c.text)}</span></div>`).join('');
+    listEl.scrollTop = listEl.scrollHeight;
+  } catch(ex) { listEl.innerHTML = `<div style="color:var(--danger);">Error loading comments.</div>`; }
+}
+function closeReelComments() { $('reelCommentOverlay').style.display = 'none'; $('reelCommentInput').value = ''; activeReelPostId = null; }
+async function addReelComment() {
+  const text = $('reelCommentInput').value.trim(); if(!text || !activeReelPostId) return;
+  $('reelCommentInput').value = '';
+  try {
+    await sb.from('comments').insert([{post_id: activeReelPostId, user_id: currentUser.id, username: currentUser.username, text}]);
+    openReelComments(activeReelPostId); // refresh
+  } catch(ex) { toast('Error'); }
+}
+
 // ================= DELETE & LIKE & SHARE =================
 async function deletePost(postId) {
   if(!confirm('Delete this post?')) return;
-  try {
-    const {error} = await sb.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id);
-    if(error) throw error;
-    toast('Post deleted'); closeViewPost(); 
-    if($('panel-feed').classList.contains('active')) renderFeed();
-    if($('panel-profile').classList.contains('active')) renderProfile(currentUser.id);
-  } catch(ex) { toast('Error deleting post'); }
+  try { const {error} = await sb.from('posts').delete().eq('id', postId).eq('user_id', currentUser.id); if(error) throw error; toast('Post deleted'); closeViewPost(); if($('panel-feed').classList.contains('active')) renderFeed(); if($('panel-profile').classList.contains('active')) renderProfile(currentUser.id); } catch(ex) { toast('Error'); }
 }
 async function toggleLike(postId, btn) {
   const isLiked = btn.classList.contains('liked'); btn.classList.toggle('liked');
   const countEl = $(`likes-count-${postId}`);
   if(countEl) { let count = parseInt(countEl.textContent) || 0; countEl.textContent = isLiked ? `${Math.max(0, count - 1)} likes` : `${count + 1} likes`; }
-  try { if(isLiked) await sb.from('likes').delete().eq('post_id', postId).eq('user_id', currentUser.id); else await sb.from('likes').insert([{post_id: postId, user_id: currentUser.id}]); } catch(ex) { btn.classList.toggle('liked'); toast('Error liking post'); }
+  try { if(isLiked) await sb.from('likes').delete().eq('post_id', postId).eq('user_id', currentUser.id); else await sb.from('likes').insert([{post_id: postId, user_id: currentUser.id}]); } catch(ex) { btn.classList.toggle('liked'); toast('Error'); }
 }
 function sharePost(postId) { const url = window.location.origin + '?post=' + postId; if (navigator.share) { navigator.share({ title: 'Your Place', text: 'Check out this post!', url: url }).then(() => toast('Shared!')).catch(() => fallbackCopy(url)); } else { fallbackCopy(url); } }
 function fallbackCopy(text) { if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => toast('Link copied! 🔗')); else { const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "absolute"; ta.style.left = "-999999px"; document.body.prepend(ta); ta.select(); try { document.execCommand('copy'); toast('Link copied! 🔗'); } catch (err) { toast('Failed'); } ta.remove(); } }
@@ -507,13 +547,22 @@ async function startChatFromSearch(userId) {
     switchPanel('chat'); openChatRoom(existingRoomId, false);
   } catch(ex) { toast('Error opening chat'); }
 }
+
+async function openPrivateChatModal() {
+  $('privateChatOverlay').style.display = 'flex';
+  $('privateChatUserList').innerHTML = `<div class="spinner"></div>`;
+  const {data:users} = await sb.from('profiles').select('*').neq('id', currentUser.id);
+  if(!users || users.length === 0) { $('privateChatUserList').innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">No other users.</div>`; return; }
+  $('privateChatUserList').innerHTML = users.map(u => `<div class="group-user-item" onclick="$('privateChatOverlay').style.display='none'; startChatFromSearch('${u.id}')"><img src="${u.avatar_url || DEFAULT_PFP}"><span style="font-weight:600;">${escapeHTML(u.username)}</span></div>`).join('');
+}
+
 function filterChatList() { const q = $('chatSearchInput').value.toLowerCase(); const filtered = allChatsCache.filter(c => c.displayName.toLowerCase().includes(q)); renderChatListDOM(filtered); }
 async function renderChatList() {
   const el = $('panel-chat'); el.innerHTML = `<div class="spinner"></div>`;
   try {
     const {data:memberships} = await sb.from('room_members').select('room_id').eq('user_id', currentUser.id); const roomIds = (memberships||[]).map(m => m.room_id);
-    let headerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:0 20px;"><h2 style="font-weight:700; font-size:24px;">Messages</h2><div style="display:flex; gap:10px;"><button onclick="openGroupModal()" style="background:var(--primary); border:none; color:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600;">+ Group</button></div></div><div class="chat-search-box"><input type="text" id="chatSearchInput" placeholder="Search chats..." oninput="filterChatList()" style="font-size:16px;"></div>`;
-    if(roomIds.length === 0) { el.innerHTML = headerHTML + `<div style="text-align:center; padding:40px; color:var(--text-muted);">No messages yet.<br><br>Go to Search and tap "Message" on a user!</div>`; allChatsCache = []; return; }
+    let headerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:0 20px;"><h2 style="font-weight:700; font-size:24px;">Messages</h2><div style="display:flex; gap:10px;"><button onclick="openPrivateChatModal()" style="background:var(--surface); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600;">+ Chat</button><button onclick="openGroupModal()" style="background:var(--primary); border:none; color:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600;">+ Group</button></div></div><div class="chat-search-box"><input type="text" id="chatSearchInput" placeholder="Search chats..." oninput="filterChatList()" style="font-size:16px;"></div>`;
+    if(roomIds.length === 0) { el.innerHTML = headerHTML + `<div style="text-align:center; padding:40px; color:var(--text-muted);">No messages yet.<br><br>Tap "+ Chat" to start!</div>`; allChatsCache = []; return; }
     const [roomsRes, membersRes, messagesRes] = await Promise.all([sb.from('chat_rooms').select('*').in('id', roomIds).order('created_at', {ascending:false}), sb.from('room_members').select('*').in('room_id', roomIds), sb.from('chat_messages').select('*').in('room_id', roomIds).order('created_at', {ascending:false})]);
     const rooms = roomsRes.data || [], allMembers = membersRes.data || [], allMessages = messagesRes.data || [];
     const userIdsForAvatars = [...new Set(allMembers.map(m => m.user_id))]; const {data:profilesForAvatars} = await sb.from('profiles').select('id, avatar_url').in('id', userIdsForAvatars); const avatarMap = {}; (profilesForAvatars||[]).forEach(p => avatarMap[p.id] = p.avatar_url);
@@ -652,7 +701,6 @@ async function renderProfile(userId) {
   const {data:posts} = await sb.from('posts').select('*').eq('user_id', userId).order('created_at', {ascending:false}); const isMe = userId === currentUser.id; const stats = await getFollowStats(userId);
   let pendingCount = 0; if (isMe && prof.is_private === true) { const {count} = await sb.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', currentUser.id).eq('status', 'pending'); pendingCount = count || 0; }
   
-  // Profile header with Hamburger Menu
   el.innerHTML = `<div class="ig-profile-header"><h2 style="font-size:20px; font-weight:700; flex:1; text-align:center; padding-left:24px;">${escapeHTML(prof.username)}</h2><div style="font-size:24px; color:#fff; cursor:pointer;" onclick="openHamburgerMenu()">☰</div></div><div class="ig-profile-info"><div class="ig-avatar"><img src="${prof.avatar_url || DEFAULT_PFP}" onerror="this.src='${DEFAULT_PFP}'"></div><div class="ig-stats"><div><div class="ig-stat-num">${(posts||[]).length}</div><div class="ig-stat-label">Posts</div></div><div onclick="openConnections('followers', currentUser.id)"><div class="ig-stat-num">${stats.followers}</div><div class="ig-stat-label">Followers</div></div><div onclick="openConnections('following', currentUser.id)"><div class="ig-stat-num">${stats.following}</div><div class="ig-stat-label">Following</div></div></div></div><div class="ig-bio"><div style="font-weight:600; font-size:15px;">${escapeHTML(prof.username)} ${prof.is_private === true ? '🔒' : ''}</div><div style="color:var(--text-muted); margin-top:2px;">${linkify(prof.bio || '')}</div></div><div class="ig-actions"><button class="ig-btn secondary" onclick="openEditProfile()">Edit Profile</button><button class="ig-btn secondary" onclick="switchPanel('upload')">＋ Upload</button>${pendingCount > 0 ? `<button class="ig-btn secondary" style="background:var(--accent); color:#fff; flex:0.5;" onclick="openFollowRequests()">${pendingCount} Req</button>` : ''}</div><div class="ig-tabs"><div class="ig-tab active" onclick="switchOwnProfileTab('posts', this)"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg></div><div class="ig-tab" onclick="switchOwnProfileTab('reels', this)"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg></div></div><div class="grid-posts" id="ownProfileGrid"></div>`;
   
   vpAllPosts = posts || []; renderOwnProfileGrid('posts');
@@ -720,7 +768,7 @@ async function openReels(startPostId) {
     const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted'); const myFollowingIds = (myFollows||[]).map(f => f.following_id);
     const visiblePosts = posts.filter(p => { if(p.user_id === currentUser.id) return true; const prof = profileMap[p.user_id]; if(!prof) return false; if(prof.is_private === true && !myFollowingIds.includes(p.user_id)) return false; return true; });
     if(visiblePosts.length === 0) { closeReels(); return; }
-    $('reelsContainer').innerHTML = visiblePosts.map(p => { const prof = profileMap[p.user_id] || { username: p.username, avatar_url: null }; return `<div class="reel-slide" data-id="${p.id}"><video class="reel-video" src="${p.video_url}" loop playsinline preload="metadata" muted></video><div class="reel-overlay-info"><div><div class="reel-user-info" onclick="closeReels(); viewUserProfile('${p.user_id}')"><img src="${prof.avatar_url || DEFAULT_PFP}"><span style="font-weight:600;">${escapeHTML(prof.username)}</span></div><div class="reel-caption">${linkify(p.caption || '')}</div></div><div style="color:#fff; text-align:center;"><div class="action-btn ${p.isLiked ? 'liked' : ''}" onclick="toggleLike(${p.id}, this)" style="flex-direction:column; gap:2px; margin-bottom:15px;"><svg viewBox="0 0 24 24" style="width:32px; height:32px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div><div class="action-btn" onclick="closeReels(); viewPost(${p.id})" style="flex-direction:column; gap:2px;"><svg viewBox="0 0 24 24" style="width:32px; height:32px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></div></div></div></div>`; }).join('');
+    $('reelsContainer').innerHTML = visiblePosts.map(p => { const prof = profileMap[p.user_id] || { username: p.username, avatar_url: null }; return `<div class="reel-slide" data-id="${p.id}"><video class="reel-video" src="${p.video_url}" loop playsinline preload="metadata" muted onclick="this.paused ? this.play() : this.pause()"></video><div class="reel-overlay-info"><div><div class="reel-user-info" onclick="closeReels(); viewUserProfile('${p.user_id}')"><img src="${prof.avatar_url || DEFAULT_PFP}"><span style="font-weight:600;">${escapeHTML(prof.username)}</span></div><div class="reel-caption">${linkify(p.caption || '')}</div></div><div style="color:#fff; text-align:center;"><div class="action-btn ${p.isLiked ? 'liked' : ''}" onclick="toggleLike(${p.id}, this)" style="flex-direction:column; gap:2px; margin-bottom:15px;"><svg viewBox="0 0 24 24" style="width:32px; height:32px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div><div class="action-btn" onclick="openReelComments(${p.id})" style="flex-direction:column; gap:2px;"><svg viewBox="0 0 24 24" style="width:32px; height:32px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg></div></div></div></div>`; }).join('');
     setTimeout(() => { const targetSlide = document.querySelector(`.reel-slide[data-id="${startPostId}"]`); if(targetSlide) targetSlide.scrollIntoView({ behavior: 'instant' }); if(reelsObserver) reelsObserver.disconnect(); reelsObserver = new IntersectionObserver((entries) => { entries.forEach(entry => { const video = entry.target.querySelector('video'); if(entry.isIntersecting) { video.play().catch(e => console.log("Auto-play blocked", e)); } else { video.pause(); video.currentTime = 0; } }); }, { threshold: 0.6 }); document.querySelectorAll('.reel-slide').forEach(slide => reelsObserver.observe(slide)); }, 100);
   } catch(ex) { console.error(ex); toast('Error loading reels'); closeReels(); }
 }

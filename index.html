@@ -39,45 +39,13 @@
   
   /* THINNER BOTTOM NAV */
   .bottom-nav { 
-    position: fixed; 
-    bottom: 15px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    width: calc(100% - 30px); 
-    height: 55px; /* උස අඩු කළා */
-    background: rgba(30, 41, 59, 0.95); 
-    backdrop-filter: blur(10px); 
-    border: 1px solid var(--border); 
-    border-radius: 18px; 
-    display: flex; 
-    justify-content: space-around; 
-    align-items: center; 
-    z-index: 100; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+    position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); 
+    width: calc(100% - 30px); height: 55px; background: rgba(30, 41, 59, 0.95); 
+    backdrop-filter: blur(10px); border: 1px solid var(--border); border-radius: 18px; 
+    display: flex; justify-content: space-around; align-items: center; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
   }
-  
-  .nav-item { 
-    cursor: pointer; 
-    color: var(--text-muted); 
-    transition: all 0.2s; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    width: 42px; /* පොඩි කළා */
-    height: 42px; /* පොඩි කළා */
-    border-radius: 12px; 
-  }
-  
-  .nav-item svg { 
-    width: 22px; /* අයිකනය පොඩි කළා */
-    height: 22px; 
-    fill: none; 
-    stroke: currentColor; 
-    stroke-width: 2; 
-    stroke-linecap: round; 
-    stroke-linejoin: round; 
-  }
-  
+  .nav-item { cursor: pointer; color: var(--text-muted); transition: all 0.2s; display: flex; justify-content: center; align-items: center; width: 42px; height: 42px; border-radius: 12px; }
+  .nav-item svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
   .nav-item.active { color: var(--text); background: var(--surface-hover); }
   .nav-item.active svg { stroke: var(--primary); }
 
@@ -174,6 +142,18 @@
 
   .auth-hint { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 15px; line-height: 1.5; }
 
+  /* FULL SCREEN PROFILE */
+  #viewProfileOverlay { background: var(--bg-color); padding: 0; display: none; flex-direction: column; }
+  #viewProfileOverlay .modal-box { width: 100%; height: 100%; max-width: 100%; border-radius: 0; border: none; overflow-y: auto; padding: 0; margin: 0; }
+  .vp-cover { height: 120px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
+  .vp-content { padding: 0 20px 20px; text-align: center; margin-top: -50px; position: relative; }
+  .vp-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--bg-color); margin: 0 auto 10px; background: var(--surface); }
+  .vp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+  .vp-stats { display: flex; gap: 30px; justify-content: center; margin-bottom: 20px; }
+  .vp-stat-num { font-weight: 700; font-size: 18px; }
+  .vp-stat-label { font-size: 12px; color: var(--text-muted); }
+  .vp-private-notice { background: var(--surface); border: 1px dashed var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; font-size: 14px; color: var(--text-muted); }
+
   /* FULL SCREEN POST VIEWER */
   #viewPostOverlay { background: rgba(0,0,0,0.95); padding: 0; display: none; flex-direction: column; align-items: center; justify-content: center; }
   #viewPostOverlay .modal-box { max-width: 100%; width: 100%; height: 100%; padding: 0; background: transparent; border: none; display: flex; flex-direction: column; justify-content: center; }
@@ -181,16 +161,6 @@
   .post-viewer-media-wrap { flex: 1; display: flex; justify-content: center; align-items: center; overflow: hidden; }
   .post-viewer-media { max-width: 100%; max-height: 100vh; object-fit: contain; }
   .post-viewer-bottom { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); z-index: 10; }
-  
-  #viewProfileOverlay .modal-box { max-width: 450px; padding: 0; overflow: hidden; background: var(--bg-color); }
-  .vp-cover { height: 120px; background: linear-gradient(135deg, var(--primary), var(--accent)); }
-  .vp-content { padding: 0 20px 20px; text-align: center; margin-top: -50px; }
-  .vp-avatar { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--bg-color); margin: 0 auto 10px; background: var(--surface); }
-  .vp-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
-  .vp-stats { display: flex; gap: 30px; justify-content: center; margin-bottom: 20px; }
-  .vp-stat-num { font-weight: 700; font-size: 18px; }
-  .vp-stat-label { font-size: 12px; color: var(--text-muted); }
-  .vp-private-notice { background: var(--surface); border: 1px dashed var(--border); padding: 15px; border-radius: 12px; margin-bottom: 15px; font-size: 14px; color: var(--text-muted); }
 
   .group-user-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: 0.2s; }
   .group-user-item:hover { background: var(--surface-hover); }
@@ -250,6 +220,14 @@
   /* CHAT SEARCH */
   .chat-search-box { padding: 10px 20px; }
   .chat-search-box input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text); outline: none; font-size: 14px; }
+  
+  /* UPLOAD FILTERS */
+  .filter-carousel { display: flex; gap: 10px; overflow-x: auto; padding: 10px 20px; margin-bottom: 10px; scrollbar-width: none; }
+  .filter-carousel::-webkit-scrollbar { display: none; }
+  .filter-option { flex-shrink: 0; text-align: center; cursor: pointer; }
+  .filter-option img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid transparent; }
+  .filter-option.active img { border-color: var(--primary); }
+  .filter-option span { font-size: 10px; color: var(--text-muted); display: block; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -290,11 +268,23 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="privateChatOverlay">
+<!-- GROUP INFO MODAL -->
+<div class="modal-overlay" id="groupInfoOverlay">
   <div class="modal-box">
-    <h2 style="margin-bottom:20px;">New Private Chat</h2>
-    <div id="privateChatUserList" style="max-height:300px; overflow-y:auto; margin-bottom:20px; border:1px solid var(--border); border-radius:10px;"></div>
-    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); cursor:pointer;" onclick="$('privateChatOverlay').style.display='none'">Cancel</button>
+    <h2 style="margin-bottom:20px;">Group Info</h2>
+    <div id="groupInfoMembersList" style="max-height:300px; overflow-y:auto; margin-bottom:20px; border:1px solid var(--border); border-radius:10px;"></div>
+    <button class="btn-primary" onclick="openAddMemberModal()" id="addMemberBtn" style="display:none; margin-bottom:10px;">Add Member</button>
+    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:5px; cursor:pointer;" onclick="$('groupInfoOverlay').style.display='none'">Close</button>
+  </div>
+</div>
+
+<!-- ADD MEMBER MODAL -->
+<div class="modal-overlay" id="addMemberOverlay">
+  <div class="modal-box">
+    <h2 style="margin-bottom:20px;">Add Members</h2>
+    <div id="addMemberList" style="max-height:250px; overflow-y:auto; margin-bottom:20px; border:1px solid var(--border); border-radius:10px;"></div>
+    <button class="btn-primary" onclick="submitAddMembers()" id="addMemberSubmitBtn">Add</button>
+    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="$('addMemberOverlay').style.display='none'">Cancel</button>
   </div>
 </div>
 
@@ -309,7 +299,8 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="viewProfileOverlay">
+<!-- FULL SCREEN PROFILE OVERLAY -->
+<div id="viewProfileOverlay">
   <div class="modal-box">
     <button class="modal-back-btn" onclick="closeViewProfile()">← Back</button>
     <div class="vp-cover"></div>
@@ -446,6 +437,13 @@ let authInProgress = false;
 let profileSaveInProgress = false;
 let reelsObserver = null; 
 let allChatsCache = []; 
+
+// For Group Admin
+let activeRoomAdminId = null;
+
+// For Upload Filters
+let postFileObj = null;
+let currentFilter = 'none';
 
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231e293b'/><circle cx='50' cy='35' r='20' fill='%23818cf8'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%23818cf8'/></svg>";
 
@@ -652,11 +650,11 @@ async function logout() {
   } catch(ex) { console.error(ex); toast('Error logging out: ' + ex.message); }
 }
 
-// ================= VIEW USER PROFILE =================
+// ================= VIEW USER PROFILE (FULL SCREEN) =================
 async function viewUserProfile(userId) {
   if(userId === currentUser.id) { switchPanel('profile'); return; }
   currentViewingUserId = userId;
-  $('viewProfileOverlay').style.display = 'flex';
+  $('viewProfileOverlay').style.display = 'block'; // Full screen block
   $('vpUsername').textContent = 'Loading...';
   $('vpBio').textContent = '';
   $('vpAvatar').src = DEFAULT_PFP;
@@ -727,7 +725,7 @@ function closeViewProfile() { $('viewProfileOverlay').style.display = 'none'; }
 
 async function messageUser() {
   if(!currentViewingUserId) return;
-  $('viewProfileOverlay').style.display = 'none';
+  closeViewProfile();
   try {
     const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', currentViewingUserId).single();
     if(targetProf?.is_private === true) {
@@ -906,7 +904,7 @@ async function addCommentInModal(postId) {
   } catch(ex) { toast('Error adding comment'); }
 }
 
-// ================= CHAT SEARCH =================
+// ================= CHAT SEARCH & LIST =================
 function filterChatList() {
   const q = $('chatSearchInput').value.toLowerCase();
   const filtered = allChatsCache.filter(c => c.displayName.toLowerCase().includes(q));
@@ -923,7 +921,6 @@ async function renderChatList() {
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; padding:0 20px;">
         <h2 style="font-weight:700; font-size:24px;">Messages</h2>
         <div style="display:flex; gap:10px;">
-          <button onclick="openPrivateChatModal()" style="background:var(--surface); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600;">+ Chat</button>
           <button onclick="openGroupModal()" style="background:var(--primary); border:none; color:#fff; padding:8px 12px; border-radius:10px; cursor:pointer; font-weight:600;">+ Group</button>
         </div>
       </div>
@@ -933,7 +930,7 @@ async function renderChatList() {
     `;
 
     if(roomIds.length === 0) { 
-      el.innerHTML = headerHTML + `<div style="text-align:center; padding:40px; color:var(--text-muted);">No messages yet.</div>`; 
+      el.innerHTML = headerHTML + `<div style="text-align:center; padding:40px; color:var(--text-muted);">No messages yet.<br><br>Go to Search and tap "Message" on a user to start!</div>`; 
       allChatsCache = [];
       return; 
     }
@@ -1025,21 +1022,31 @@ async function openChatRoom(roomId, isGroup) {
   activeRoomId = roomId;
   const el = $('panel-chat'); el.innerHTML = `<div class="spinner"></div>`;
   const {data:room} = await sb.from('chat_rooms').select('*').eq('id', roomId).single();
+  activeRoomAdminId = room.admin_id; // Save admin for group
+  
   const {data:members} = await sb.from('room_members').select('*').eq('room_id', roomId);
   activeRoomMembers = members || [];
+  
   let roomName = room.name || 'Chat';
   if(!isGroup) { const other = activeRoomMembers.find(m => m.user_id !== currentUser.id); if(other) roomName = other.username; }
   const otherUser = !isGroup ? activeRoomMembers.find(m => m.user_id !== currentUser.id) : null;
   const isOnline = otherUser && onlineUsersMap.has(otherUser.user_id);
-  const statusHTML = !isGroup ? `<div style="font-size:12px; color:${isOnline ? 'var(--success)' : 'var(--text-muted)'};">${isOnline ? '● Online' : 'Offline'}</div>` : `<div style="font-size:12px; color:var(--primary);">Group Chat</div>`;
   
+  let statusHTML = '';
+  if (!isGroup) {
+      statusHTML = `<div style="font-size:12px; color:${isOnline ? 'var(--success)' : 'var(--text-muted)'};">${isOnline ? '● Online' : 'Offline'}</div>`;
+  } else {
+      statusHTML = `<div style="font-size:12px; color:var(--primary);">Group Chat • Tap to view info</div>`;
+  }
+
   let hAvatarUrl = DEFAULT_PFP;
   if (isGroup) hAvatarUrl = room.avatar_url || '';
   else if (otherUser) {
       const {data:theirProf} = await sb.from('profiles').select('avatar_url').eq('id', otherUser.user_id).single();
       if (theirProf?.avatar_url) hAvatarUrl = theirProf.avatar_url;
   }
-  let headerAvatar = `<div class="avatar" style="width:40px; height:40px;" onclick="${!isGroup && otherUser ? `viewUserProfile('${otherUser.user_id}')` : ''}">`;
+  
+  let headerAvatar = `<div class="avatar" style="width:40px; height:40px;" onclick="${isGroup ? `openGroupInfo()` : (otherUser ? `viewUserProfile('${otherUser.user_id}')` : '')}">`;
   if(isGroup) headerAvatar += room.avatar_url ? `<img src="${room.avatar_url}">` : `👥`;
   else headerAvatar += `<img src="${hAvatarUrl}">`;
   headerAvatar += `</div>`;
@@ -1049,7 +1056,7 @@ async function openChatRoom(roomId, isGroup) {
       <div class="chat-header">
         <button style="background:transparent; border:none; color:var(--text); font-size:26px; cursor:pointer;" onclick="renderChatList()">←</button>
         ${headerAvatar}
-        <div style="flex:1;">
+        <div style="flex:1; cursor:pointer;" onclick="${isGroup ? `openGroupInfo()` : ''}">
           <div style="font-weight:600; font-size:17px;">${escapeHTML(roomName)}</div>
           ${statusHTML}
         </div>
@@ -1070,6 +1077,126 @@ async function openChatRoom(roomId, isGroup) {
     </div>
   `;
   loadMessages(); subscribeToMessages();
+}
+
+// ================= GROUP INFO & ADMIN =================
+async function openGroupInfo() {
+  $('groupInfoOverlay').style.display = 'flex';
+  $('groupInfoMembersList').innerHTML = `<div class="spinner"></div>`;
+  
+  // Check if current user is admin
+  const isAdmin = (activeRoomAdminId === currentUser.id);
+  $('addMemberBtn').style.display = isAdmin ? 'block' : 'none';
+
+  try {
+    const userIds = activeRoomMembers.map(m => m.user_id);
+    const {data:profiles} = await sb.from('profiles').select('id, username, avatar_url').in('id', userIds);
+    const profMap = {};
+    (profiles||[]).forEach(p => profMap[p.id] = p);
+
+    $('groupInfoMembersList').innerHTML = activeRoomMembers.map(m => {
+      const p = profMap[m.user_id] || { username: m.username, avatar_url: null };
+      const isThisAdmin = (m.user_id === activeRoomAdminId);
+      
+      let controls = '';
+      if (isAdmin && !isThisAdmin) {
+        controls = `
+          <button onclick="removeGroupMember('${m.user_id}')" style="background:var(--danger); color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px; cursor:pointer; margin-right:5px;">Remove</button>
+          <button onclick="makeGroupAdmin('${m.user_id}')" style="background:var(--primary); color:#fff; border:none; padding:4px 8px; border-radius:6px; font-size:12px; cursor:pointer;">Make Admin</button>
+        `;
+      }
+
+      return `
+        <div style="display:flex; align-items:center; gap:10px; padding:12px; border-bottom:1px solid var(--border);">
+          <div class="avatar" style="width:40px; height:40px;"><img src="${p.avatar_url || DEFAULT_PFP}"></div>
+          <div style="flex:1;">
+            <div style="font-weight:600; font-size:14px;">${escapeHTML(p.username)}</div>
+            ${isThisAdmin ? `<div style="font-size:10px; color:var(--primary);">Admin</div>` : ''}
+          </div>
+          ${controls}
+        </div>
+      `;
+    }).join('');
+  } catch(ex) {
+    $('groupInfoMembersList').innerHTML = `<div style="padding:20px; text-align:center; color:var(--danger);">Error loading members.</div>`;
+  }
+}
+
+async function removeGroupMember(userId) {
+  if(!confirm('Remove this member from the group?')) return;
+  try {
+    await sb.from('room_members').delete().eq('room_id', activeRoomId).eq('user_id', userId);
+    toast('Member removed');
+    // Refresh list
+    const {data:members} = await sb.from('room_members').select('*').eq('room_id', activeRoomId);
+    activeRoomMembers = members || [];
+    openGroupInfo();
+  } catch(ex) { toast('Error: ' + ex.message); }
+}
+
+async function makeGroupAdmin(userId) {
+  if(!confirm('Make this user the group Admin? You will lose Admin rights.')) return;
+  try {
+    await sb.from('chat_rooms').update({admin_id: userId}).eq('id', activeRoomId);
+    activeRoomAdminId = userId;
+    toast('Admin updated');
+    openGroupInfo();
+  } catch(ex) { toast('Error: ' + ex.message); }
+}
+
+async function openAddMemberModal() {
+  $('addMemberOverlay').style.display = 'flex';
+  $('addMemberList').innerHTML = `<div class="spinner"></div>`;
+  
+  try {
+    const currentMemberIds = activeRoomMembers.map(m => m.user_id);
+    // Fetch users not in group
+    const {data:users} = await sb.from('profiles').select('id, username, avatar_url').not('id', 'in', `(${currentMemberIds.join(',')})`);
+    
+    if(!users || users.length === 0) {
+      $('addMemberList').innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">No new users to add.</div>`;
+      return;
+    }
+
+    $('addMemberList').innerHTML = users.map(u => `
+      <label class="group-user-item">
+        <input type="checkbox" value="${u.id}" class="add-member-checkbox" style="width:20px; height:20px; accent-color:var(--primary);">
+        <img src="${u.avatar_url || DEFAULT_PFP}">
+        <span>${escapeHTML(u.username)}</span>
+      </label>
+    `).join('');
+  } catch(ex) {
+    $('addMemberList').innerHTML = `<div style="padding:20px; text-align:center; color:var(--danger);">Error loading users.</div>`;
+  }
+}
+
+async function submitAddMembers() {
+  const checkboxes = document.querySelectorAll('.add-member-checkbox:checked');
+  if(checkboxes.length === 0) { toast('Select users first'); return; }
+  
+  const btn = $('addMemberSubmitBtn'); btn.textContent = 'Adding...'; btn.disabled = true;
+  
+  try {
+    const newMembers = [];
+    for(const cb of checkboxes) {
+      const uid = cb.value;
+      const uname = cb.parentElement.querySelector('span').textContent;
+      newMembers.push({ room_id: activeRoomId, user_id: uid, username: uname });
+    }
+    await sb.from('room_members').insert(newMembers);
+    
+    toast('Members added!');
+    $('addMemberOverlay').style.display = 'none';
+    
+    // Refresh
+    const {data:members} = await sb.from('room_members').select('*').eq('room_id', activeRoomId);
+    activeRoomMembers = members || [];
+    openGroupInfo();
+  } catch(ex) {
+    toast('Error: ' + ex.message);
+  } finally {
+    btn.textContent = 'Add'; btn.disabled = false;
+  }
 }
 
 // ================= MESSAGE LOGIC =================
@@ -1348,11 +1475,14 @@ async function doSearch() {
       if(u.id !== currentUser.id) {
         const status = myFollowMap[u.id];
         if(status === 'accepted') {
-          btnHtml = `<button class="req-btn decline" style="margin-left:auto;" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Unfollow</button>`;
+          btnHtml = `
+            <button class="req-btn decline" style="margin-left:5px;" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Unfollow</button>
+            <button class="req-btn accept" style="margin-left:5px; background:var(--surface); color:var(--text); border:1px solid var(--border);" onclick="event.stopPropagation(); currentViewingUserId='${u.id}'; messageUser()">Message</button>
+          `;
         } else if(status === 'pending') {
-          btnHtml = `<button class="req-btn" style="margin-left:auto; background:var(--surface-hover); color:var(--text);" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Requested</button>`;
+          btnHtml = `<button class="req-btn" style="margin-left:5px; background:var(--surface-hover); color:var(--text);" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Requested</button>`;
         } else {
-          btnHtml = `<button class="req-btn accept" style="margin-left:auto;" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Follow</button>`;
+          btnHtml = `<button class="req-btn accept" style="margin-left:5px;" onclick="event.stopPropagation(); toggleFollowFromSearch('${u.id}', this)">Follow</button>`;
         }
       }
       return `
@@ -1362,7 +1492,9 @@ async function doSearch() {
           <div style="font-weight:600; font-size:15px;">${escapeHTML(u.username)} ${u.is_private === true ? '🔒' : ''}</div>
           ${u.bio ? `<div style="font-size:13px; color:var(--text-muted); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${escapeHTML(u.bio).slice(0,60)}</div>` : ''}
         </div>
-        ${btnHtml}
+        <div style="display:flex;">
+          ${btnHtml}
+        </div>
       </div>
       `;
     }).join('');
@@ -1556,38 +1688,127 @@ async function uploadStory() {
   finally { btn.textContent = 'Upload'; btn.disabled = false; }
 }
 
-// ================= UPLOAD =================
+// ================= UPLOAD (WITH FILTERS & REELS) =================
 function renderUpload() {
+  postFileObj = null;
+  currentFilter = 'none';
+  
   $('panel-upload').innerHTML = `
     <div style="padding: 20px;">
       <h2 style="margin-bottom: 20px; font-size: 24px;">Create Post</h2>
+      
       <input type="file" id="postFile" accept="image/*,video/*" style="display:none;" onchange="previewPost(event)">
-      <div class="upload-card" onclick="$('postFile').click()" style="margin:0 0 20px 0; border: 1px dashed var(--border); border-radius: 16px; padding: 30px; text-align: center; cursor: pointer;">
+      
+      <div id="uploadInitialCard" class="upload-card" onclick="$('postFile').click()" style="margin:0 0 20px 0; border: 1px dashed var(--border); border-radius: 16px; padding: 40px 30px; text-align: center; cursor: pointer;">
         <div style="font-size: 40px; color: var(--primary);">📸</div>
         <div style="font-weight: 600; margin-top:10px;">Tap to select Image / Video</div>
       </div>
-      <img id="postPreview" class="preview-img" style="width:100%; border-radius:12px; margin-bottom:20px; display:none;">
-      <textarea id="postCaption" rows="3" placeholder="Write a caption..." style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:15px; color:var(--text); outline:none; font-family:inherit; font-size:16px; margin-bottom:20px;"></textarea>
-      <button class="btn-primary" id="postBtn" onclick="createPost()">Share Post</button>
+
+      <!-- EDITOR UI -->
+      <div id="uploadEditorUI" style="display:none;">
+         <div style="width:100%; aspect-ratio:1; background:#000; border-radius:12px; overflow:hidden; margin-bottom:15px; display:flex; justify-content:center; align-items:center;">
+             <img id="postPreview" style="width:100%; height:100%; object-fit:contain;">
+         </div>
+         
+         <!-- Filters (Only for Images) -->
+         <div id="filterSection" style="display:none;">
+             <div class="filter-carousel">
+               <div class="filter-option active" onclick="applyFilter('none', this)"><img src="" class="filter-thumb"><span>Normal</span></div>
+               <div class="filter-option" onclick="applyFilter('grayscale(100%)', this)"><img src="" class="filter-thumb" style="filter:grayscale(100%);"><span>B&W</span></div>
+               <div class="filter-option" onclick="applyFilter('sepia(100%)', this)"><img src="" class="filter-thumb" style="filter:sepia(100%);"><span>Vintage</span></div>
+               <div class="filter-option" onclick="applyFilter('contrast(150%)', this)"><img src="" class="filter-thumb" style="filter:contrast(150%);"><span>Punch</span></div>
+               <div class="filter-option" onclick="applyFilter('brightness(150%)', this)"><img src="" class="filter-thumb" style="filter:brightness(150%);"><span>Bright</span></div>
+               <div class="filter-option" onclick="applyFilter('saturate(200%)', this)"><img src="" class="filter-thumb" style="filter:saturate(200%);"><span>Vivid</span></div>
+             </div>
+         </div>
+
+         <textarea id="postCaption" rows="3" placeholder="Write a caption..." style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:15px; color:var(--text); outline:none; font-family:inherit; font-size:16px; margin-bottom:20px;"></textarea>
+         
+         <button class="btn-primary" id="postBtn" onclick="createPost()">Share Post</button>
+         <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="renderUpload()">Cancel</button>
+      </div>
     </div>
   `;
 }
-let postFileObj = null;
+
 function previewPost(e) {
-  const file = e.target.files[0]; if(!file) return; postFileObj = file;
-  const img = $('postPreview'); img.src = URL.createObjectURL(file); img.style.display = 'block';
+  const file = e.target.files[0]; if(!file) return; 
+  postFileObj = file;
+  const isVideo = file.type.startsWith('video');
+  
+  const url = URL.createObjectURL(file);
+  $('uploadInitialCard').style.display = 'none';
+  $('uploadEditorUI').style.display = 'block';
+  
+  const img = $('postPreview');
+  img.src = url;
+  
+  if (!isVideo) {
+      $('filterSection').style.display = 'block';
+      // Update filter thumbnails
+      document.querySelectorAll('.filter-thumb').forEach(t => t.src = url);
+  } else {
+      $('filterSection').style.display = 'none';
+  }
 }
+
+function applyFilter(cssFilter, el) {
+  currentFilter = cssFilter;
+  $('postPreview').style.filter = cssFilter;
+  document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('active'));
+  el.classList.add('active');
+}
+
 async function createPost() {
-  const caption = $('postCaption').value.trim(); if(!postFileObj) { toast('Select media'); return; }
-  const btn = $('postBtn'); btn.textContent = 'Uploading...'; btn.disabled = true;
+  const caption = $('postCaption').value.trim(); 
+  if(!postFileObj) { toast('Select media'); return; }
+  
+  const btn = $('postBtn'); btn.textContent = 'Processing...'; btn.disabled = true;
+  
   try {
-    const isVideo = postFileObj.type.startsWith('video'); const bucket = isVideo ? 'videos' : 'posts';
-    const path = `${currentUser.id}/${Date.now()}.${postFileObj.name.split('.').pop()}`;
-    const {error: uploadErr} = await sb.storage.from(bucket).upload(path, postFileObj); if(uploadErr) throw uploadErr;
+    const isVideo = postFileObj.type.startsWith('video'); 
+    const bucket = isVideo ? 'videos' : 'posts';
+    let finalFile = postFileObj;
+
+    // Apply filter via Canvas if it's an image and a filter is selected
+    if (!isVideo && currentFilter !== 'none') {
+        const img = new Image();
+        img.src = URL.createObjectURL(postFileObj);
+        await new Promise(res => img.onload = res);
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.filter = currentFilter;
+        ctx.drawImage(img, 0, 0);
+        
+        const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9));
+        finalFile = new File([blob], `filtered_${Date.now()}.jpg`, {type: 'image/jpeg'});
+    }
+
+    const path = `${currentUser.id}/${Date.now()}.${finalFile.name.split('.').pop()}`;
+    const {error: uploadErr} = await sb.storage.from(bucket).upload(path, finalFile); 
+    if(uploadErr) throw uploadErr;
+    
     const {data: {publicUrl}} = sb.storage.from(bucket).getPublicUrl(path);
-    await sb.from('posts').insert([{user_id: currentUser.id, username: currentUser.username, caption: caption || '', image_url: isVideo ? null : publicUrl, video_url: isVideo ? publicUrl : null}]);
-    toast('Posted!'); postFileObj = null; switchPanel('feed');
-  } catch(ex) { toast('Error: ' + ex.message); } finally { btn.textContent = 'Share Post'; btn.disabled = false; }
+    
+    await sb.from('posts').insert([{
+        user_id: currentUser.id, 
+        username: currentUser.username, 
+        caption: caption || '', 
+        image_url: isVideo ? null : publicUrl, 
+        video_url: isVideo ? publicUrl : null
+    }]);
+    
+    toast('Posted!'); 
+    renderUpload(); // Reset
+    switchPanel('feed');
+  } catch(ex) { 
+    toast('Error: ' + ex.message); 
+  } finally { 
+    btn.textContent = 'Share Post'; btn.disabled = false; 
+  }
 }
 
 // ================= AUTH & INIT =================
@@ -1698,6 +1919,59 @@ function timeAgo(dateStr){
   if(diff < 3600) return Math.floor(diff/60)+'m ago';
   if(diff < 86400) return Math.floor(diff/3600)+'h ago';
   return Math.floor(diff/86400)+'d ago';
+}
+
+// Dropdown for Group Admin to Add members
+function openAddMemberModal() {
+  $('addMemberOverlay').style.display = 'flex';
+  $('addMemberList').innerHTML = `<div class="spinner"></div>`;
+  
+  // Fetch users not in this group
+  const currentIds = activeRoomMembers.map(m => m.user_id);
+  
+  sb.from('profiles').select('*').limit(50).then(({data:users}) => {
+    const available = users.filter(u => !currentIds.includes(u.id));
+    if(available.length === 0) {
+      $('addMemberList').innerHTML = `<div style="padding:20px; text-align:center; color:var(--text-muted);">No users available to add.</div>`;
+      return;
+    }
+    $('addMemberList').innerHTML = available.map(u => `
+      <label class="group-user-item">
+        <input type="checkbox" value="${u.id}" class="add-member-checkbox" style="width:20px; height:20px; accent-color:var(--primary);">
+        <img src="${u.avatar_url || DEFAULT_PFP}">
+        <span>${escapeHTML(u.username)}</span>
+      </label>
+    `).join('');
+  });
+}
+
+async function submitAddMembers() {
+  const checkboxes = document.querySelectorAll('.add-member-checkbox:checked');
+  if(checkboxes.length === 0) { toast('Select users first'); return; }
+  
+  const btn = $('addMemberSubmitBtn'); btn.textContent = 'Adding...'; btn.disabled = true;
+  
+  try {
+    const newMembers = [];
+    for(const cb of checkboxes) {
+      const uid = cb.value;
+      const uname = cb.parentElement.querySelector('span').textContent;
+      newMembers.push({ room_id: activeRoomId, user_id: uid, username: uname });
+    }
+    await sb.from('room_members').insert(newMembers);
+    
+    toast('Members added!');
+    $('addMemberOverlay').style.display = 'none';
+    
+    // Refresh
+    const {data:members} = await sb.from('room_members').select('*').eq('room_id', activeRoomId);
+    activeRoomMembers = members || [];
+    openGroupInfo();
+  } catch(ex) {
+    toast('Error: ' + ex.message);
+  } finally {
+    btn.textContent = 'Add'; btn.disabled = false;
+  }
 }
 
 init();

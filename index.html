@@ -61,7 +61,7 @@
   .post-user { font-weight: 600; font-size: 15px; }
   .post-time { font-size: 12px; color: var(--text-muted); }
   
-  .post-media { width: 100%; max-height: 80vh; object-fit: contain; display: block; background: #000; }
+  .post-media { width: 100%; max-height: 80vh; object-fit: contain; display: block; background: #000; cursor: pointer; }
   .post-image { width: 100%; max-height: 600px; object-fit: cover; display: block; }
   
   .post-actions { display: flex; padding: 15px 20px; gap: 20px; align-items: center; }
@@ -164,14 +164,6 @@
   .story-back-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; backdrop-filter: blur(6px); white-space: nowrap; }
   .story-back-btn:active { transform: scale(0.95); }
 
-  .post-media-wrap { position: relative; background: #000; overflow: hidden; }
-  .reel-video { cursor: pointer; }
-  .reel-play-overlay { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.25); cursor: pointer; z-index: 2; }
-  .reel-play-overlay.hidden { display: none; }
-  .reel-play-overlay .play-circle { width: 72px; height: 72px; border-radius: 50%; background: rgba(0,0,0,0.55); border: 2px solid rgba(255,255,255,0.85); display: flex; justify-content: center; align-items: center; color: #fff; font-size: 26px; padding-left: 5px; box-shadow: 0 0 25px rgba(0,0,0,0.6); }
-  .reel-back-btn { position: absolute; top: 12px; left: 12px; z-index: 5; display: none; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; align-items: center; gap: 6px; backdrop-filter: blur(6px); }
-  .reel-back-btn.show { display: inline-flex; }
-
   .modal-back-btn { position: absolute; top: 15px; left: 15px; z-index: 10; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.25); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; backdrop-filter: blur(6px); }
 
   .logout-btn { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); color: var(--danger); padding: 10px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 15px; }
@@ -200,6 +192,19 @@
   input:checked + .slider:before { transform: translateX(20px); }
   .slider.round { border-radius: 34px; }
   .slider.round:before { border-radius: 50%; }
+
+  /* INSTAGRAM REELS STYLES */
+  #reelsOverlay { position: fixed; inset: 0; background: #000; z-index: 99999; display: none; flex-direction: column; }
+  .reels-top-bar { position: absolute; top: 0; left: 0; right: 0; padding: 15px 20px; display: flex; align-items: center; z-index: 10; background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent); }
+  .reels-back-btn { background: rgba(0,0,0,0.5); border: none; color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 16px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; backdrop-filter: blur(5px); }
+  .reels-container { width: 100%; height: 100vh; height: 100dvh; overflow-y: scroll; scroll-snap-type: y mandatory; scrollbar-width: none; }
+  .reels-container::-webkit-scrollbar { display: none; }
+  .reel-slide { width: 100%; height: 100vh; height: 100dvh; scroll-snap-align: start; position: relative; display: flex; justify-content: center; align-items: center; background: #000; }
+  .reel-video { width: 100%; height: 100%; object-fit: contain; }
+  .reel-overlay-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; padding-bottom: 40px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; align-items: flex-end; justify-content: space-between; }
+  .reel-user-info { display: flex; align-items: center; gap: 10px; color: #fff; cursor: pointer; }
+  .reel-user-info img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; }
+  .reel-caption { color: #fff; font-size: 14px; margin-top: 10px; max-width: 80%; }
 </style>
 </head>
 <body>
@@ -297,6 +302,14 @@
   </div>
 </div>
 
+<!-- INSTAGRAM REELS OVERLAY -->
+<div id="reelsOverlay">
+  <div class="reels-top-bar">
+    <button class="reels-back-btn" onclick="closeReels()">← Back</button>
+  </div>
+  <div class="reels-container" id="reelsContainer"></div>
+</div>
+
 <div class="modal-overlay" id="authOverlay">
   <div class="modal-box">
     <h2 style="text-align:center; margin-bottom:25px; font-weight:800; color:var(--text); font-size:28px;" id="authTitle">Welcome Back</h2>
@@ -381,6 +394,7 @@ let currentStories = [], currentStoryIndex = 0, storyTimer = null;
 let currentViewingUserId = null;
 let authInProgress = false;
 let profileSaveInProgress = false;
+let reelsObserver = null; // For Instagram Reels auto-play
 
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231e293b'/><circle cx='50' cy='35' r='20' fill='%23818cf8'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%23818cf8'/></svg>";
 
@@ -436,7 +450,7 @@ async function forceResetSession(e) {
 
 // ================= NAVIGATION =================
 function switchPanel(name){
-  pauseAllReels();
+  closeReels(); // Close Reels if open
   document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.panel === name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   $(`panel-${name}`).classList.add('active');
@@ -526,9 +540,8 @@ async function handleFollowFromModal() {
   }
 }
 
-// Search list එකෙන් Follow/Unfollow කරන function එක
 async function toggleFollowFromSearch(userId, btn) {
-  event.stopPropagation(); // Profile modal එක open වෙන එක නවත්තන්න
+  event.stopPropagation();
   btn.disabled = true;
   
   const {data:targetProf} = await sb.from('profiles').select('is_private').eq('id', userId).single();
@@ -692,7 +705,7 @@ async function unfollowUser(followingId) {
 async function logout() {
   if(!confirm('Are you sure you want to log out?')) return;
   try {
-    pauseAllReels(); closeStoryViewer(); closeViewPost(); closeViewProfile();
+    closeReels(); closeStoryViewer(); closeViewPost(); closeViewProfile();
     if(presenceChannel) {
       try { await presenceChannel.untrack(); } catch(e){}
       try { await sb.removeChannel(presenceChannel); } catch(e){}
@@ -796,7 +809,7 @@ async function viewUserProfile(userId) {
     if(userPosts && userPosts.length > 0) {
       $('vpPostsGrid').style.display = 'grid';
       $('vpPostsGrid').innerHTML = userPosts.map(p => `
-        <div class="grid-item" onclick="$('viewProfileOverlay').style.display='none'; viewPost(${p.id})">
+        <div class="grid-item" onclick="$('viewProfileOverlay').style.display='none'; ${p.video_url ? `openReels(${p.id})` : `viewPost(${p.id})`}">
           ${p.image_url ? `<img src="${p.image_url}">` : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}
         </div>
       `).join('');
@@ -810,7 +823,7 @@ async function viewUserProfile(userId) {
   followBtn.disabled = false;
   
   if (followState) {
-    followBtn.textContent = 'Unfollow'; // Follow කරලා නම් Unfollow කියලා පෙන්නනවා
+    followBtn.textContent = 'Unfollow';
     followBtn.classList.add('following');
   } else if (pendingState) {
     followBtn.textContent = 'Requested';
@@ -854,6 +867,99 @@ async function messageUser() {
     switchPanel('chat');
     openChatRoom(existingRoomId, false);
   } catch(ex) { toast('Error opening chat'); }
+}
+
+// ================= INSTAGRAM REELS LOGIC =================
+async function openReels(startPostId) {
+  $('reelsOverlay').style.display = 'flex';
+  $('reelsContainer').innerHTML = `<div class="spinner" style="margin-top:40vh;"></div>`;
+  
+  try {
+    // Fetch all videos (Public + My own)
+    const {data:posts} = await sb.from('posts').select('*').not('video_url', 'is', null).order('created_at', {ascending:false});
+    if(!posts) { closeReels(); return; }
+
+    const userIds = [...new Set(posts.map(p=>p.user_id))];
+    const {data:profiles} = await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',userIds);
+    const profileMap = {}; (profiles||[]).forEach(p=>profileMap[p.id]=p);
+    
+    const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
+    const myFollowingIds = (myFollows||[]).map(f => f.following_id);
+
+    // Filter out private posts we shouldn't see
+    const visiblePosts = posts.filter(p => {
+      if(p.user_id === currentUser.id) return true;
+      const prof = profileMap[p.user_id];
+      if(!prof) return false;
+      if(prof.is_private === true && !myFollowingIds.includes(p.user_id)) return false;
+      return true;
+    });
+
+    if(visiblePosts.length === 0) { closeReels(); return; }
+
+    // Render Reels
+    $('reelsContainer').innerHTML = visiblePosts.map(p => {
+      const prof = profileMap[p.user_id] || { username: p.username, avatar_url: null };
+      return `
+        <div class="reel-slide" data-id="${p.id}">
+          <video class="reel-video" src="${p.video_url}" loop playsinline preload="metadata" muted></video>
+          
+          <div class="reel-overlay-info">
+            <div>
+              <div class="reel-user-info" onclick="closeReels(); viewUserProfile('${p.user_id}')">
+                <img src="${prof.avatar_url || DEFAULT_PFP}">
+                <span style="font-weight:600;">${escapeHTML(prof.username)}</span>
+              </div>
+              <div class="reel-caption">${linkify(p.caption || '')}</div>
+            </div>
+            
+            <div style="color:#fff; text-align:center;">
+              <div class="action-btn ${p.isLiked ? 'liked' : ''}" onclick="toggleLike(${p.id}, this)" style="flex-direction:column; gap:2px; margin-bottom:15px;">
+                <svg viewBox="0 0 24 24" style="width:32px; height:32px;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </div>
+              <div class="action-btn" onclick="closeReels(); viewPost(${p.id})" style="flex-direction:column; gap:2px;">
+                <svg viewBox="0 0 24 24" style="width:32px; height:32px;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Scroll to the clicked post
+    setTimeout(() => {
+      const targetSlide = document.querySelector(`.reel-slide[data-id="${startPostId}"]`);
+      if(targetSlide) targetSlide.scrollIntoView({ behavior: 'instant' });
+      
+      // Setup Intersection Observer for Auto-Play
+      if(reelsObserver) reelsObserver.disconnect();
+      reelsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const video = entry.target.querySelector('video');
+          if(entry.isIntersecting) {
+            video.play().catch(e => console.log("Auto-play blocked", e));
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
+        });
+      }, { threshold: 0.6 });
+      
+      document.querySelectorAll('.reel-slide').forEach(slide => reelsObserver.observe(slide));
+    }, 100);
+
+  } catch(ex) {
+    console.error(ex);
+    toast('Error loading reels');
+    closeReels();
+  }
+}
+
+function closeReels() {
+  if(reelsObserver) { reelsObserver.disconnect(); reelsObserver = null; }
+  document.querySelectorAll('.reel-video').forEach(v => { v.pause(); v.src = ''; });
+  $('reelsContainer').innerHTML = '';
+  $('reelsOverlay').style.display = 'none';
 }
 
 // ================= PRIVATE / GROUP CHAT =================
@@ -1167,7 +1273,6 @@ async function renderFeed() {
     const {data:myFollows} = await sb.from('follows').select('following_id').eq('follower_id', currentUser.id).eq('status', 'accepted');
     const myFollowingIds = (myFollows||[]).map(f => f.following_id);
 
-    // ✅ Private posts strict filter
     const visiblePosts = posts.filter(p => {
       if(p.user_id === currentUser.id) return true; // My own posts
       
@@ -1229,10 +1334,11 @@ async function renderFeed() {
           ${isOwn ? `<button class="delete-btn" onclick="deletePost(${p.id})">🗑️</button>` : ''}
         </div>
         ${isVideo ? `
-        <div class="post-media-wrap" id="reel-wrap-${p.id}">
-          <video id="reel-video-${p.id}" src="${p.video_url}" playsinline preload="metadata" muted class="post-media reel-video" onended="stopReel(${p.id})"></video>
-          <div class="reel-play-overlay" id="reel-overlay-${p.id}" onclick="playReel(${p.id})"><div class="play-circle">▶</div></div>
-          <button class="reel-back-btn" id="reel-back-${p.id}" onclick="event.stopPropagation(); stopReel(${p.id})">← Back</button>
+        <div class="post-media-wrap" id="reel-wrap-${p.id}" onclick="openReels(${p.id})">
+          <video src="${p.video_url}#t=0.1" playsinline preload="metadata" muted class="post-media"></video>
+          <div style="position:absolute; inset:0; display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,0.2);">
+            <div style="width:60px; height:60px; border-radius:50%; background:rgba(0,0,0,0.5); border:2px solid #fff; display:flex; justify-content:center; align-items:center; color:#fff; font-size:24px; padding-left:5px;">▶</div>
+          </div>
         </div>` : `
         <div onclick="viewPost(${p.id})" style="cursor:pointer;"><img src="${p.image_url}" class="post-image" onerror="this.src='${DEFAULT_PFP}'"></div>`}
         <div class="post-actions">
@@ -1282,34 +1388,6 @@ async function toggleLike(postId, btn) {
   } catch(ex) { btn.classList.toggle('liked'); toast('Error liking post'); }
 }
 
-// ================= INLINE REEL PLAYER =================
-let activeReelId = null;
-function playReel(postId) {
-  if (activeReelId && activeReelId !== postId) stopReel(activeReelId);
-  const video = $(`reel-video-${postId}`), overlay = $(`reel-overlay-${postId}`), backBtn = $(`reel-back-${postId}`);
-  if (!video) return;
-  activeReelId = postId; video.muted = false; video.controls = true;
-  if(overlay) overlay.classList.add('hidden');
-  if(backBtn) backBtn.classList.add('show');
-  const p = video.play();
-  if (p && p.catch) p.catch(() => { video.muted = true; video.play().catch(()=>{}); });
-}
-function stopReel(postId) {
-  const video = $(`reel-video-${postId}`), overlay = $(`reel-overlay-${postId}`), backBtn = $(`reel-back-${postId}`);
-  if (!video) return;
-  video.pause(); try { video.currentTime = 0; } catch(e){}
-  video.controls = false; video.muted = true;
-  if(overlay) overlay.classList.remove('hidden');
-  if(backBtn) backBtn.classList.remove('show');
-  if (activeReelId === postId) activeReelId = null;
-}
-function pauseAllReels() {
-  document.querySelectorAll('.reel-video').forEach(v => { if (!v.paused) v.pause(); });
-  document.querySelectorAll('.reel-back-btn.show').forEach(b => b.classList.remove('show'));
-  document.querySelectorAll('.reel-play-overlay.hidden').forEach(o => o.classList.remove('hidden'));
-  document.querySelectorAll('.reel-video').forEach(v => { v.controls = false; v.muted = true; });
-  activeReelId = null;
-}
 function closeViewPost() {
   const v = document.querySelector('#viewPostContent video');
   if (v) v.pause();
@@ -1524,7 +1602,7 @@ async function renderProfile(userId) {
       <b style="color:var(--text);">${escapeHTML(prof.username)}</b><br>${linkify(prof.bio || '')}
     </div>
     <div class="grid-posts">
-      ${(posts||[]).map(p => `<div class="grid-item" onclick="viewPost(${p.id})">${p.image_url ? `<img src="${p.image_url}" onerror="this.src='${DEFAULT_PFP}'">` : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}</div>`).join('')}
+      ${(posts||[]).map(p => `<div class="grid-item" onclick="${p.video_url ? `openReels(${p.id})` : `viewPost(${p.id})`}">${p.image_url ? `<img src="${p.image_url}" onerror="this.src='${DEFAULT_PFP}'">` : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}</div>`).join('')}
     </div>
     ${isMe ? `
       <div class="creator-card"><h3 style="color:var(--primary); margin-bottom:10px;">About The Creator</h3><p style="font-size:14px; color:var(--text-muted);"><b>Dinidu Wijesinghe</b><br>"Hi there! I'm Dinidu, the creator behind Your Place 2026..."</p></div>
@@ -1713,7 +1791,7 @@ async function doSearch() {
         <div style="padding:10px 20px 8px;"><h3 style="font-weight:700; font-size:16px; color:var(--text-muted);">Explore</h3></div>
         <div class="grid-posts">
           ${visiblePosts.map(p => `
-            <div class="grid-item" onclick="viewPost(${p.id})">
+            <div class="grid-item" onclick="${p.video_url ? `openReels(${p.id})` : `viewPost(${p.id})`}">
               ${p.image_url 
                 ? `<img src="${p.image_url}" onerror="this.src='${DEFAULT_PFP}'">` 
                 : `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-item-play-icon">▶</div>`}
@@ -1729,19 +1807,23 @@ async function doSearch() {
 
   resEl.innerHTML = `<div class="spinner"></div>`;
   try {
-    // User Search (Only Public)
-    const {data:users} = await sb.from('profiles').select('*').ilike('username', `%${q}%`).eq('is_private', false).limit(20);
-    if(!users || users.length === 0) {
+    // User Search - Fetch ALL matching profiles
+    const {data:allUsers} = await sb.from('profiles').select('*').ilike('username', `%${q}%`).limit(50);
+    
+    // STRICT Filter out Private Users in JS
+    const publicUsers = (allUsers || []).filter(u => u.is_private !== true);
+
+    if(publicUsers.length === 0) {
       resEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-muted);">No public users found</div>`;
       return;
     }
 
-    // අපි දැන් බලමු අපි කවුරුව හරි Follow කරලා තියෙනවද කියලා
+    // Check Follow Status for these users
     const {data:myFollows} = await sb.from('follows').select('following_id, status').eq('follower_id', currentUser.id);
     const myFollowMap = {};
     (myFollows||[]).forEach(f => myFollowMap[f.following_id] = f.status);
 
-    resEl.innerHTML = users.map(u => {
+    resEl.innerHTML = publicUsers.map(u => {
       let btnHtml = '';
       if(u.id !== currentUser.id) {
         const status = myFollowMap[u.id];

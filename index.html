@@ -134,11 +134,6 @@
   .reel-caption { color:#fff; font-size:14px; margin-top:10px; max-width:80%; }
   .chat-search-box { padding:10px 20px; }
   .chat-search-box input { width:100%; padding:12px 16px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:14px; }
-  .filter-carousel { display:flex; gap:10px; overflow-x:auto; padding:10px 20px; margin-bottom:10px; scrollbar-width:none; } .filter-carousel::-webkit-scrollbar { display:none; }
-  .filter-option { flex-shrink:0; text-align:center; cursor:pointer; }
-  .filter-option img { width:60px; height:60px; object-fit:cover; border-radius:8px; border:2px solid transparent; }
-  .filter-option.active img { border-color:var(--primary); }
-  .filter-option span { font-size:10px; color:var(--text-muted); display:block; margin-top:4px; }
   
   /* HAMBURGER MENU & BOTTOM SHEET */
   #hamburgerOverlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); z-index:10000; display:none; justify-content:flex-end; }
@@ -149,6 +144,40 @@
   .reel-comment-box { background:var(--surface); width:100%; border-radius:20px 20px 0 0; padding:20px; display:flex; flex-direction:column; max-height:70vh; animation:slideUp 0.3s; }
   @keyframes slideUp { from{transform:translateY(100%);} to{transform:translateY(0);} }
   .reel-comment-list { flex:1; overflow-y:auto; margin-bottom:15px; }
+
+  /* --- NEW UPLOAD UI STYLES --- */
+  .upload-screen { background:var(--bg-color); min-height:100vh; display:flex; flex-direction:column; }
+  .upload-top { display:flex; align-items:center; padding:15px 20px; border-bottom:1px solid var(--border); }
+  .upload-top h2 { flex:1; text-align:center; font-size:17px; font-weight:700; margin-right:24px; }
+  .upload-preview-area { flex:1; display:flex; justify-content:center; align-items:center; padding:20px; background:#000; position:relative; }
+  .upload-preview-box { width:100%; max-width:300px; aspect-ratio:9/16; background:var(--surface); border-radius:12px; overflow:hidden; position:relative; display:flex; justify-content:center; align-items:center; }
+  .upload-preview-box img, .upload-preview-box video { width:100%; height:100%; object-fit:cover; }
+  .preview-tag { position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.6); color:#fff; padding:4px 10px; border-radius:6px; font-size:12px; font-weight:600; backdrop-filter:blur(4px); }
+  .edit-cover-btn { position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.6); color:#fff; padding:6px 12px; border-radius:6px; font-size:12px; font-weight:600; border:none; cursor:pointer; backdrop-filter:blur(4px); }
+  
+  .upload-form-area { background:var(--bg-color); padding:20px; display:flex; flex-direction:column; gap:15px; border-top:1px solid var(--border); }
+  .upload-caption { width:100%; background:transparent; border:none; outline:none; color:var(--text); font-size:15px; resize:none; min-height:40px; border-bottom:1px solid var(--border); padding-bottom:10px; }
+  
+  .upload-settings-list { display:flex; flex-direction:column; }
+  .upload-setting-item { display:flex; align-items:center; gap:15px; padding:15px 0; border-bottom:1px solid var(--border); cursor:pointer; }
+  .upload-setting-icon { width:24px; height:24px; stroke:var(--text); fill:none; stroke-width:2; }
+  .upload-setting-text { flex:1; font-weight:600; font-size:15px; }
+  .upload-setting-arrow { width:16px; height:16px; stroke:var(--text-muted); fill:none; stroke-width:2; }
+  
+  .trial-badge { background:#3b82f6; color:#fff; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; margin-left:8px; }
+  
+  .upload-bottom-actions { display:flex; gap:10px; margin-top:10px; }
+  .btn-draft { flex:1; padding:15px; border-radius:12px; background:var(--surface); color:var(--text); font-weight:700; font-size:16px; border:1px solid var(--border); cursor:pointer; }
+  .btn-share { flex:1; padding:15px; border-radius:12px; background:#3b82f6; color:#fff; font-weight:700; font-size:16px; border:none; cursor:pointer; }
+
+  /* TRIAL INFO MODAL */
+  #trialInfoOverlay { align-items:center; }
+  #trialInfoOverlay .modal-box { background:var(--surface); border-radius:24px; padding:30px 25px; text-align:center; max-width:340px; }
+  .trial-icon-area { font-size:50px; margin-bottom:20px; position:relative; display:inline-block; }
+  .trial-title { font-size:20px; font-weight:800; margin-bottom:20px; line-height:1.3; }
+  .trial-bullet { display:flex; gap:15px; text-align:left; margin-bottom:15px; font-size:13px; color:var(--text-muted); line-height:1.5; }
+  .trial-bullet-icon { font-size:20px; flex-shrink:0; }
+  .trial-bullet strong { color:var(--text); }
 </style>
 </head>
 <body>
@@ -168,7 +197,33 @@
   </div>
 </div>
 
-<!-- NEW CHAT ACTION MODAL -->
+<!-- TRIAL INFO MODAL -->
+<div class="modal-overlay" id="trialInfoOverlay">
+  <div class="modal-box">
+    <div class="trial-icon-area">✨</div>
+    <h2 class="trial-title">Try out content with a new audience using trial reels</h2>
+    
+    <div class="trial-bullet">
+      <div class="trial-bullet-icon">👥</div>
+      <div>Show a trial reel to <strong>non-followers</strong> to get early feedback on whether your content resonates.</div>
+    </div>
+    
+    <div class="trial-bullet">
+      <div class="trial-bullet-icon">📊</div>
+      <div>You'll see <strong>key insights</strong> within 24 hours after sharing so you can understand how your trial reel is performing.</div>
+    </div>
+    
+    <div class="trial-bullet">
+      <div class="trial-bullet-icon">🔒</div>
+      <div>Trial reels <strong>don't appear on your profile</strong>. Some followers may still see your trial reel, like when they share it with someone.</div>
+    </div>
+    
+    <button class="btn-primary" onclick="$('trialInfoOverlay').style.display='none'" style="margin-top:20px; background:#3b82f6;">Try it</button>
+    <button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer; font-weight:600;" onclick="$('trialInfoOverlay').style.display='none'">Close</button>
+  </div>
+</div>
+
+<!-- CHAT ACTION MODAL -->
 <div class="modal-overlay" id="chatActionOverlay">
   <div class="modal-box" style="max-width: 300px;">
     <h2 style="margin-bottom:20px; text-align:center;">New Message</h2>
@@ -247,13 +302,14 @@ let profileSaveInProgress = false;
 let reelsObserver = null; 
 let allChatsCache = []; 
 let activeRoomAdminId = null;
-let postFileObj = null;
-let currentFilter = 'none';
-let currentProfileTab = 'posts';
-let vpAllPosts = []; 
 
 let activeReelPostId = null; 
-let currentChatTab = 'primary'; // New for Chat Tabs
+let currentChatTab = 'primary'; 
+
+// For New Upload Screen
+let postFileObj = null;
+let currentFilter = 'none';
+let currentMediaType = null; // 'image' or 'video'
 
 const DEFAULT_PFP = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231e293b'/><circle cx='50' cy='35' r='20' fill='%23818cf8'/><path d='M50 60 C25 60 15 75 15 100 L85 100 C85 75 75 60 50 60 Z' fill='%23818cf8'/></svg>";
 
@@ -277,7 +333,12 @@ function switchPanel(name){
   if(name==='chat') renderChatList();
   if(name==='profile' && currentUser) renderProfile(currentUser.id);
   if(name==='search') renderSearch();
-  if(name==='upload') renderUpload();
+  if(name==='upload') {
+    if(!postFileObj) {
+      renderUpload(); // Show initial select
+      $('trialInfoOverlay').style.display = 'flex'; // Show trial popup by default when opening upload
+    }
+  }
 }
 
 // ================= AUTH =================
@@ -838,20 +899,159 @@ async function uploadAvatar(e) {
   try { const ext = file.name.split('.').pop(); const path = `${currentUser.id}/avatar_${Date.now()}.${ext}`; const {error: upErr} = await sb.storage.from('avatars').upload(path, file, {upsert: true}); if(upErr) throw upErr; const {data: {publicUrl}} = sb.storage.from('avatars').getPublicUrl(path); const finalUrl = publicUrl + '?v=' + Date.now(); const {error: dbErr} = await sb.from('profiles').update({avatar_url: finalUrl}).eq('id', currentUser.id); if(dbErr) throw dbErr; currentUser.avatar_url = finalUrl; toast('Photo updated!'); await renderProfile(currentUser.id); } catch(ex) { toast('Error: ' + ex.message); } finally { btn.disabled = false; btn.textContent = 'Save Profile'; e.target.value = ''; }
 }
 
+// ================= NEW UPLOAD SCREEN =================
 function renderUpload() {
-  postFileObj = null; currentFilter = 'none';
-  $('panel-upload').innerHTML = `<div style="padding: 20px;"><h2 style="margin-bottom: 20px; font-size: 24px;">Create Post</h2><input type="file" id="postFile" accept="image/*,video/*" style="display:none;" onchange="previewPost(event)"><div id="uploadInitialCard" class="upload-card" onclick="$('postFile').click()" style="margin:0 0 20px 0; border: 1px dashed var(--border); border-radius: 16px; padding: 40px 30px; text-align: center; cursor: pointer;"><div style="font-size: 40px; color: var(--primary);">📸</div><div style="font-weight: 600; margin-top:10px;">Tap to select Image / Video</div></div><div id="uploadEditorUI" style="display:none;"><div style="width:100%; aspect-ratio:1; background:#000; border-radius:12px; overflow:hidden; margin-bottom:15px; display:flex; justify-content:center; align-items:center;"><img id="postPreview" style="width:100%; height:100%; object-fit:contain;"></div><div id="filterSection" style="display:none;"><div class="filter-carousel"><div class="filter-option active" onclick="applyFilter('none', this)"><img src="" class="filter-thumb"><span>Normal</span></div><div class="filter-option" onclick="applyFilter('grayscale(100%)', this)"><img src="" class="filter-thumb" style="filter:grayscale(100%);"><span>B&W</span></div><div class="filter-option" onclick="applyFilter('sepia(100%)', this)"><img src="" class="filter-thumb" style="filter:sepia(100%);"><span>Vintage</span></div><div class="filter-option" onclick="applyFilter('contrast(150%)', this)"><img src="" class="filter-thumb" style="filter:contrast(150%);"><span>Punch</span></div><div class="filter-option" onclick="applyFilter('brightness(150%)', this)"><img src="" class="filter-thumb" style="filter:brightness(150%);"><span>Bright</span></div><div class="filter-option" onclick="applyFilter('saturate(200%)', this)"><img src="" class="filter-thumb" style="filter:saturate(200%);"><span>Vivid</span></div></div></div><textarea id="postCaption" rows="3" placeholder="Write a caption..." style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:15px; color:var(--text); outline:none; font-family:inherit; font-size:16px; margin-bottom:20px;"></textarea><button class="btn-primary" id="postBtn" onclick="createPost()">Share Post</button><button style="width:100%; background:transparent; border:none; color:var(--text-muted); margin-top:15px; cursor:pointer;" onclick="renderUpload()">Cancel</button></div></div>`;
+  postFileObj = null; currentFilter = 'none'; currentMediaType = null;
+  
+  $('panel-upload').innerHTML = `
+    <div class="upload-screen">
+      <div class="upload-top">
+        <button style="background:none; border:none; color:#fff; font-size:24px; cursor:pointer;" onclick="switchPanel('feed')">←</button>
+        <h2>New reel</h2>
+        <div style="width:24px;"></div>
+      </div>
+
+      <input type="file" id="postFile" accept="image/*,video/*" style="display:none;" onchange="previewPost(event)">
+      
+      <!-- State 1: Empty Preview -->
+      <div id="uploadPreviewEmpty" class="upload-preview-area" onclick="$('postFile').click()">
+        <div class="upload-preview-box" style="border: 2px dashed var(--border); flex-direction:column; gap:10px;">
+          <div style="font-size:40px; color:var(--primary);">📸</div>
+          <div style="font-size:15px; font-weight:600;">Select Image / Video</div>
+        </div>
+      </div>
+
+      <!-- State 2: Filled Preview -->
+      <div id="uploadPreviewFilled" class="upload-preview-area" style="display:none;">
+         <div class="upload-preview-box">
+             <img id="postPreviewImg" style="display:none;">
+             <video id="postPreviewVid" controls playsinline style="display:none;"></video>
+             <div class="preview-tag">Preview</div>
+             <button class="edit-cover-btn" onclick="toast('Cover editing coming soon')">Edit cover</button>
+         </div>
+      </div>
+
+      <!-- Form Area -->
+      <div class="upload-form-area" id="uploadFormArea" style="display:none;">
+        
+        <textarea id="postCaption" class="upload-caption" rows="3" placeholder="Write a caption..."></textarea>
+        
+        <div class="upload-settings-list">
+            
+            <div class="upload-setting-item" onclick="$('trialInfoOverlay').style.display='flex'">
+                <svg class="upload-setting-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                <div class="upload-setting-text">Trial <span class="trial-badge">NEW</span></div>
+                <label class="switch" onclick="event.stopPropagation()">
+                  <input type="checkbox" id="isTrialReel">
+                  <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <div class="upload-setting-item" onclick="toast('Tagging feature coming soon')">
+                <svg class="upload-setting-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <div class="upload-setting-text">Tag people</div>
+                <svg class="upload-setting-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+
+            <div class="upload-setting-item" onclick="toast('Topics feature coming soon')">
+                <svg class="upload-setting-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                <div class="upload-setting-text">Add topics</div>
+                <svg class="upload-setting-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+
+            <div class="upload-setting-item" onclick="toast('Audience settings coming soon')">
+                <svg class="upload-setting-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                <div class="upload-setting-text">Audience</div>
+                <svg class="upload-setting-arrow" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+            </div>
+
+        </div>
+
+        <div class="upload-bottom-actions">
+            <button class="btn-draft" onclick="toast('Saved to drafts')">Save draft</button>
+            <button class="btn-share" id="postBtn" onclick="createPost()">Share</button>
+        </div>
+
+        <!-- Filters (Hidden unless Image) -->
+        <div id="filterSection" style="display:none; margin-top:20px;">
+            <div class="filter-carousel">
+               <div class="filter-option active" onclick="applyFilter('none', this)"><img src="" class="filter-thumb"><span>Normal</span></div>
+               <div class="filter-option" onclick="applyFilter('grayscale(100%)', this)"><img src="" class="filter-thumb" style="filter:grayscale(100%);"><span>B&W</span></div>
+               <div class="filter-option" onclick="applyFilter('sepia(100%)', this)"><img src="" class="filter-thumb" style="filter:sepia(100%);"><span>Vintage</span></div>
+               <div class="filter-option" onclick="applyFilter('contrast(150%)', this)"><img src="" class="filter-thumb" style="filter:contrast(150%);"><span>Punch</span></div>
+               <div class="filter-option" onclick="applyFilter('brightness(150%)', this)"><img src="" class="filter-thumb" style="filter:brightness(150%);"><span>Bright</span></div>
+            </div>
+        </div>
+
+      </div>
+    </div>
+  `;
 }
-function previewPost(e) { const file = e.target.files[0]; if(!file) return; postFileObj = file; const isVideo = file.type.startsWith('video'); const url = URL.createObjectURL(file); $('uploadInitialCard').style.display = 'none'; $('uploadEditorUI').style.display = 'block'; const img = $('postPreview'); img.src = url; if (!isVideo) { $('filterSection').style.display = 'block'; document.querySelectorAll('.filter-thumb').forEach(t => t.src = url); } else { $('filterSection').style.display = 'none'; } }
-function applyFilter(cssFilter, el) { currentFilter = cssFilter; $('postPreview').style.filter = cssFilter; document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('active')); el.classList.add('active'); }
+
+function previewPost(e) { 
+  const file = e.target.files[0]; if(!file) return; 
+  postFileObj = file; 
+  currentMediaType = file.type.startsWith('video') ? 'video' : 'image';
+  
+  const url = URL.createObjectURL(file); 
+  $('uploadPreviewEmpty').style.display = 'none'; 
+  $('uploadPreviewFilled').style.display = 'flex'; 
+  $('uploadFormArea').style.display = 'flex'; 
+  
+  if (currentMediaType === 'video') { 
+    const vid = $('postPreviewVid'); vid.src = url; vid.style.display = 'block'; $('postPreviewImg').style.display = 'none';
+    $('filterSection').style.display = 'none'; 
+  } else { 
+    const img = $('postPreviewImg'); img.src = url; img.style.display = 'block'; $('postPreviewVid').style.display = 'none';
+    $('filterSection').style.display = 'block'; 
+    document.querySelectorAll('.filter-thumb').forEach(t => t.src = url); 
+  } 
+}
+
+function applyFilter(cssFilter, el) { 
+  currentFilter = cssFilter; 
+  $('postPreviewImg').style.filter = cssFilter; 
+  document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('active')); 
+  el.classList.add('active'); 
+}
+
 async function createPost() {
-  const caption = $('postCaption').value.trim(); if(!postFileObj) return toast('Select media'); const btn = $('postBtn'); btn.textContent = 'Processing...'; btn.disabled = true;
+  const caption = $('postCaption').value.trim(); 
+  if(!postFileObj) return toast('Select media'); 
+  
+  // Here you could check if $('isTrialReel').checked to change DB logic
+  const isTrial = $('isTrialReel').checked;
+  console.log("Is Trial Reel?", isTrial);
+
+  const btn = $('postBtn'); btn.textContent = 'Sharing...'; btn.disabled = true;
   try {
-    const isVideo = postFileObj.type.startsWith('video'); const bucket = isVideo ? 'videos' : 'posts'; let finalFile = postFileObj;
-    if (!isVideo && currentFilter !== 'none') { const img = new Image(); img.src = URL.createObjectURL(postFileObj); await new Promise(res => img.onload = res); const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; const ctx = canvas.getContext('2d'); ctx.filter = currentFilter; ctx.drawImage(img, 0, 0); const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9)); finalFile = new File([blob], `filtered_${Date.now()}.jpg`, {type: 'image/jpeg'}); }
-    const path = `${currentUser.id}/${Date.now()}.${finalFile.name.split('.').pop()}`; const {error: uploadErr} = await sb.storage.from(bucket).upload(path, finalFile); if(uploadErr) throw uploadErr; const {data: {publicUrl}} = sb.storage.from(bucket).getPublicUrl(path);
-    await sb.from('posts').insert([{user_id: currentUser.id, username: currentUser.username, caption: caption || '', image_url: isVideo ? null : publicUrl, video_url: isVideo ? publicUrl : null}]); toast('Posted!'); renderUpload(); switchPanel('feed');
-  } catch(ex) { toast('Error: ' + ex.message); } finally { btn.textContent = 'Share Post'; btn.disabled = false; }
+    const isVideo = currentMediaType === 'video'; 
+    const bucket = isVideo ? 'videos' : 'posts'; 
+    let finalFile = postFileObj;
+
+    if (!isVideo && currentFilter !== 'none') { 
+      const img = new Image(); img.src = URL.createObjectURL(postFileObj); await new Promise(res => img.onload = res); 
+      const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; 
+      const ctx = canvas.getContext('2d'); ctx.filter = currentFilter; ctx.drawImage(img, 0, 0); 
+      const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.9)); 
+      finalFile = new File([blob], `filtered_${Date.now()}.jpg`, {type: 'image/jpeg'}); 
+    }
+
+    const path = `${currentUser.id}/${Date.now()}.${finalFile.name.split('.').pop()}`; 
+    const {error: uploadErr} = await sb.storage.from(bucket).upload(path, finalFile); 
+    if(uploadErr) throw uploadErr; 
+    const {data: {publicUrl}} = sb.storage.from(bucket).getPublicUrl(path);
+    
+    await sb.from('posts').insert([{user_id: currentUser.id, username: currentUser.username, caption: caption || '', image_url: isVideo ? null : publicUrl, video_url: isVideo ? publicUrl : null}]); 
+    
+    toast('Posted!'); 
+    renderUpload(); // Reset form
+    switchPanel('feed');
+  } catch(ex) { 
+    toast('Error: ' + ex.message); 
+  } finally { 
+    btn.textContent = 'Share'; btn.disabled = false; 
+  }
 }
 
 // ================= STORIES & REELS =================

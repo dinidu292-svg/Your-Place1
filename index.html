@@ -9,7 +9,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ============ SOFT MIDNIGHT THEME (EYE FRIENDLY & UNIQUE) ============ */
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:'Outfit',-apple-system,sans-serif}
 :root{
   --bg:#0F172A; --bg-alt:#1E293B; --surface:#1E293B; --surface-2:#334155;
@@ -131,7 +130,7 @@ input,textarea{font-family:inherit}
 .follow-btn.following{background:var(--surface-2);color:var(--text);border:1px solid var(--border)}
 .follow-btn.requested{background:var(--surface-2);color:var(--text-3);border:1px solid var(--border)}
 
-/* ============ CHAT (EYE FRIENDLY) ============ */
+/* CHAT */
 .chat-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg);position:sticky;top:70px;z-index:50}
 .chat-head h2{font-size:22px;font-weight:700}
 .chat-tabs{display:flex;gap:10px;padding:16px 24px;overflow-x:auto;scrollbar-width:none}
@@ -147,7 +146,7 @@ input,textarea{font-family:inherit}
 .chat-item-name{font-weight:600;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
 .chat-item-preview{font-size:14px;color:var(--text-3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* CHAT ROOM (FIXED POSITIONING) */
+/* CHAT ROOM */
 .chat-room{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;flex-direction:column}
 .chat-room-head{display:flex;align-items:center;gap:14px;padding:16px 20px;border-bottom:1px solid var(--border);background:rgba(15,23,42,0.9);backdrop-filter:blur(20px);position:sticky;top:0;z-index:50}
 .chat-room-head .back{background:var(--surface);border:1px solid var(--border);width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text);flex-shrink:0}
@@ -166,8 +165,6 @@ input,textarea{font-family:inherit}
 .msg-delete{position:absolute;top:-8px;right:-8px;background:var(--danger);color:#fff;width:24px;height:24px;border-radius:50%;font-size:12px;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer}
 .msg.self .msg-delete{display:flex;opacity:0}
 .msg.self:hover .msg-delete{opacity:1}
-
-/* CHAT INPUT BAR (FIXED & VISIBLE) */
 .chat-input-wrap{position:fixed;bottom:0;left:0;right:0;background:rgba(15,23,42,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 16px;z-index:1001;display:flex;align-items:center;gap:8px}
 .chat-input-box{flex:1;display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:4px 8px;gap:4px}
 .chat-tool-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-3);transition:all .2s;background:transparent;flex-shrink:0}
@@ -254,13 +251,16 @@ input:checked + .slider:before{transform:translateX(22px)}
 .img-fullscreen img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
 .img-fullscreen-close{position:absolute;top:24px;right:24px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:28px;cursor:pointer;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center}
 
-/* POST VIEWER */
+/* POST VIEWER (FIXED FULLSCREEN) */
 #viewPostModal .modal-card{max-width:100%;max-height:100vh;border-radius:0;height:100vh;background:#000;border:none}
 .viewer{position:relative;width:100%;height:100%;display:flex;flex-direction:column}
-@media(min-width:768px){.viewer{flex-direction:row;background:var(--bg);margin:auto;max-width:1200px;max-height:calc(100vh - 40px);border-radius:24px;overflow:hidden}#viewPostModal .modal-card{max-width:1200px;max-height:calc(100vh - 40px);border-radius:24px;height:auto;background:var(--bg);margin:auto}}
-.viewer-media{flex:1;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:400px}
+@media(min-width:768px){
+  .viewer{flex-direction:row;background:var(--bg);margin:auto;max-width:1200px;max-height:calc(100vh - 40px);border-radius:24px;overflow:hidden}
+  #viewPostModal .modal-card{max-width:1200px;max-height:calc(100vh - 40px);border-radius:24px;height:auto;background:var(--bg);margin:auto}
+}
+.viewer-media{flex:1;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:400px;position:relative}
 .viewer-media img,.viewer-media video{max-width:100%;max-height:100%;object-fit:contain;display:block}
-.viewer-side{width:380px;background:var(--surface);display:flex;flex-direction:column;border-left:1px solid var(--border);height:100%}
+.viewer-side{width:400px;background:var(--surface);display:flex;flex-direction:column;border-left:1px solid var(--border);height:100%}
 @media(max-width:767px){.viewer-side{display:none}}
 .viewer-side-head{padding:20px;border-bottom:1px solid var(--border);display:flex;gap:14px;align-items:center}
 .viewer-side-head img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
@@ -276,6 +276,13 @@ input:checked + .slider:before{transform:translateX(22px)}
 .viewer-comment-row button{background:none;border:none;color:var(--accent);font-weight:600;font-size:15px}
 .viewer-close-mobile{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border:1px solid var(--border);color:#fff;width:48px;height:48px;border-radius:50%;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
 @media(min-width:768px){.viewer-close-mobile{display:none}}
+
+/* MOBILE FULLSCREEN ACTIONS (RIGHT SIDE) */
+.mobile-actions-rail{position:absolute;right:16px;bottom:80px;display:flex;flex-direction:column;gap:20px;z-index:10}
+@media(min-width:768px){.mobile-actions-rail{display:none}}
+.mob-act-btn{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;font-size:12px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
+.mob-act-btn svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
+.mob-act-btn.liked svg{fill:var(--danger);stroke:var(--danger)}
 
 /* REELS */
 #reelsOverlay{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
@@ -506,6 +513,16 @@ const linkify=t=>esc(t).replace(/(https?:\/\/[^\s]+)/g,u=>`<a href="${u}" target
 const timeAgo=d=>{const s=Math.floor((new Date()-new Date(d))/1000);if(s<60)return'now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d'};
 function toast(m){const t=$('toast');t.textContent=m;t.style.transform='translateX(-50%) translateY(0)';t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateX(-50%) translateY(100px)';t.style.opacity='0'},2800)}
 
+// SHARE POST LINK
+function sharePostLink(pid) {
+  const url = window.location.origin + window.location.pathname + '?post=' + pid;
+  if (navigator.share) {
+    navigator.share({ title: 'View this post on Your Place', url: url }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => toast('Link copied to clipboard!')).catch(() => prompt('Copy this link:', url));
+  }
+}
+
 function viewImageFull(url){
   if(!url)return;
   const div=document.createElement('div');
@@ -585,6 +602,13 @@ async function init(){
     const {data:prof}=await sb.from('profiles').select('*').eq('id',data.session.user.id).maybeSingle();
     currentUser={id:data.session.user.id,username:prof?.username||'User',avatar_url:prof?.avatar_url};
     $('authOverlay').classList.remove('active');initApp();
+    
+    // Check for share link
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get('post');
+    if (postId) {
+      setTimeout(() => openPostViewer(postId), 1000);
+    }
   }catch(e){}
 }
 async function initApp(){
@@ -715,6 +739,7 @@ async function renderFeed(){
         <div class="post-actions">
           <button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
           <button class="pa-btn" onclick="openPostViewer(${p.id})"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+          <button class="pa-btn" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
           <button class="pa-btn bookmark" onclick="toggleBookmark(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
         </div>
         <div class="post-likes" id="likes-${p.id}">${pl.length} ${pl.length===1?'like':'likes'}</div>
@@ -755,7 +780,7 @@ async function toggleBookmark(pid,btn){
   }catch(e){btn.classList.toggle('saved');toast('Error')}
 }
 
-// POST VIEWER
+// POST VIEWER (WITH MOBILE ACTIONS + SHARE)
 async function openPostViewer(pid){
   const w=$('viewerWrap');w.innerHTML='<div class="spinner"></div>';
   $('viewPostModal').classList.add('active');
@@ -767,12 +792,44 @@ async function openPostViewer(pid){
     const liked=(likes||[]).some(l=>l.user_id===currentUser?.id);
     const isV=p.video_url&&p.video_url.length>0;
     const isOwn=p.user_id===currentUser.id;
+    
     const header=`<div class="viewer-side-head"><button class="back-btn" onclick="closePostViewer()" style="width:38px;height:38px"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><img src="${prof?.avatar_url||DPFP}" onclick="closePostViewer();viewUserProfile('${p.user_id}')" style="cursor:pointer;margin-left:4px"><div style="flex:1"><div class="un">${esc(prof?.username||p.username)}</div></div>${isOwn?`<button onclick="deletePost(${p.id});closePostViewer()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-3)">🗑️</button>`:''}</div>`;
     const media=isV?`<video src="${p.video_url}" controls autoplay playsinline></video>`:`<img src="${p.image_url}" onerror="this.src='${DPFP}'" onclick="viewImageFull('${p.image_url}')">`;
-    const actions=`<div class="viewer-side-actions"><div class="row1"><button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div><div class="viewer-likes" id="likes-${p.id}">${(likes||[]).length} ${(likes||[]).length===1?'like':'likes'}</div><div style="font-size:15px;line-height:1.4"><strong style="color:var(--accent)">${esc(prof?.username||p.username)}</strong> ${linkify(p.caption||'')}</div></div>`;
+    
+    // Desktop Actions Panel
+    const actions=`<div class="viewer-side-actions"><div class="row1"><button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button><button class="pa-btn" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div><div class="viewer-likes" id="likes-${p.id}">${(likes||[]).length} ${(likes||[]).length===1?'like':'likes'}</div><div style="font-size:15px;line-height:1.4"><strong style="color:var(--accent)">${esc(prof?.username||p.username)}</strong> ${linkify(p.caption||'')}</div></div>`;
+    
     const commentList=(comments||[]).map(c=>`<div class="viewer-side-comment"><strong>${esc(c.username)}</strong>${linkify(c.text)}</div>`).join('');
     const commentRow=`<div class="viewer-comment-row"><input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})"><button onclick="addViewerComment(${p.id})">Post</button></div>`;
-    w.innerHTML=`<div class="viewer"><button class="viewer-close-mobile" onclick="closePostViewer()">×</button><div class="viewer-media">${media}</div><div class="viewer-side">${header}<div class="viewer-side-comments">${commentList||'<div style="text-align:center;color:var(--text-3);font-size:15px;padding:20px">No comments yet.</div>'}</div>${actions}${commentRow}</div></div>`;
+    
+    // Mobile Actions Rail
+    const mobileRail = `<div class="mobile-actions-rail">
+      <button class="mob-act-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        <span>${(likes||[]).length}</span>
+      </button>
+      <button class="mob-act-btn" onclick="document.getElementById('vcInput-${p.id}').focus()">
+        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        <span>${(comments||[]).length}</span>
+      </button>
+      <button class="mob-act-btn" onclick="sharePostLink(${p.id})">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>`;
+
+    w.innerHTML=`<div class="viewer">
+      <button class="viewer-close-mobile" onclick="closePostViewer()">×</button>
+      <div class="viewer-media">
+        ${media}
+        ${mobileRail}
+        <!-- Mobile inline comment input (hidden unless focused) -->
+        <div class="viewer-comment-row" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);display:flex;">
+          <input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})" style="color:#fff;flex:1">
+          <button onclick="addViewerComment(${p.id})" style="color:var(--accent)">Post</button>
+        </div>
+      </div>
+      <div class="viewer-side">${header}<div class="viewer-side-comments">${commentList||'<div style="text-align:center;color:var(--text-3);font-size:15px;padding:20px">No comments yet.</div>'}</div>${actions}${commentRow}</div>
+    </div>`;
   }catch(ex){w.innerHTML=`<div style="color:#fff;padding:40px;text-align:center">Error</div>`}
 }
 function closePostViewer(){const v=document.querySelector('#viewerWrap video');if(v)v.pause();$('viewPostModal').classList.remove('active');$('viewerWrap').innerHTML=''}
@@ -787,7 +844,7 @@ async function addViewerComment(pid){
   }catch(e){toast('Error')}
 }
 
-// SEARCH
+// SEARCH / EXPLORE (STRICTLY PUBLIC ONLY)
 async function renderSearch(){
   $('panel-search').innerHTML=`<div class="search-bar"><div class="search-input"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" placeholder="Search users..." oninput="doSearch()"></div></div><div id="searchResults"></div>`;
   doSearch();
@@ -799,7 +856,19 @@ async function doSearch(){
     try{
       const{data:posts}=await sb.from('posts').select('*').not('video_url','is',null).order('created_at',{ascending:false}).limit(30);
       if(!posts||!posts.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No reels yet</h3></div>';return}
-      r.innerHTML=`<div class="explore-grid">${posts.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}</div>`;
+      const uids=[...new Set(posts.map(p=>p.user_id))];
+      const{data:profs}=await sb.from('profiles').select('id,is_private').in('id',uids);
+      const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
+      
+      // STRICT FILTER: Only public accounts (or my own) in Explore
+      const vis=posts.filter(p=>{
+        if(p.user_id===currentUser.id)return true;
+        const pr=pm[p.user_id];
+        return pr && pr.is_private === false; 
+      });
+      
+      if(!vis.length) { r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels</h3></div>'; return; }
+      r.innerHTML=`<div class="explore-grid">${vis.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}</div>`;
     }catch(e){r.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">Error</div>'}
     return;
   }
@@ -1011,7 +1080,7 @@ async function renderChat(){
       const last=mg.find(m=>m.room_id===r.id);
       let preview=last?.text||'No messages';
       if(last?.media_url)preview=last.media_type==='video'?'🎥 Video':'📷 Photo';
-      return{id:r.id,isGroup:r.is_group,name:r.is_group?(r.name||'Group'):(other?.username||'Chat'),preview,avatar:r.is_group?(r.avatar_url||DPFP):(am[other?.user_id]||DPFP),online,otherUid:other?.user_id};
+      return{id:r.id,isGroup:r.is_group,name:r.is_group?(r.name||'Unnamed Group'):(other?.username||'Chat'),preview,avatar:r.is_group?(r.avatar_url||DPFP):(am[other?.user_id]||DPFP),online,otherUid:other?.user_id};
     });
     el.innerHTML=head+'<div id="chatListBox"></div>';switchChatTab('primary');
   }catch(e){el.innerHTML='<div class="empty-state"><div class="em">⚠️</div><h3>Error</h3></div>'}
@@ -1028,11 +1097,11 @@ function switchChatTab(t,q=''){
 async function openChatRoom(id,isGroup){
   activeRoomId=id;
   const el=$('panel-chat');el.innerHTML='';
-  $('bottomNav').style.display='none'; // Hide bottom nav for full focus
+  $('bottomNav').style.display='none';
   const{data:room}=await sb.from('chat_rooms').select('*').eq('id',id).single();
   const{data:mem}=await sb.from('room_members').select('*').eq('room_id',id);
   activeMembers=mem||[];
-  let name=room.name||'Chat';let av=DPFP;
+  let name=room.name||(isGroup?'Unnamed Group':'Chat');let av=DPFP;
   if(!isGroup){const o=activeMembers.find(m=>m.user_id!==currentUser.id);if(o){name=o.username;const{data:pp}=await sb.from('profiles').select('avatar_url').eq('id',o.user_id).single();if(pp?.avatar_url)av=pp.avatar_url}}
   else if(room.avatar_url)av=room.avatar_url;
   
@@ -1044,7 +1113,7 @@ async function openChatRoom(id,isGroup){
         <h3>${esc(name)}</h3>
         <div class="status">${isGroup?'Group':'Online'}</div>
       </div>
-      <button class="menu-btn" onclick="openChatSettings(${id}, ${isGroup}, ${room.admin_id||0})">
+      <button class="menu-btn" onclick="openChatSettings(${id}, ${isGroup}, '${room.admin_id||''}')">
         <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
       </button>
     </div>
@@ -1267,23 +1336,22 @@ function viewStory(url,type){
   setTimeout(()=>{if(ov.parentElement)ov.remove()},5000);
 }
 
-// REELS (NEWEST FIRST, PUBLIC ONLY)
+// REELS (STRICTLY PUBLIC ONLY)
 async function openReels(startId){
   $('reelsOverlay').classList.add('active');
   $('reelsScroll').innerHTML='<div class="spinner" style="margin-top:40vh;border-color:rgba(255,255,255,0.2);border-top-color:#fff"></div>';
   try{
-    // Fetch reels ordered by newest
     const{data:posts}=await sb.from('posts').select('*').not('video_url','is',null).order('created_at',{ascending:false});
     if(!posts||!posts.length){closeReels();return}
     const uids=[...new Set(posts.map(p=>p.user_id))];
     const{data:profs}=await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',uids);
     const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
     
-    // STRICT RULE: Only public profiles (or my own) show in Reels feed
+    // STRICT FILTER: Only public accounts (or my own) show in Reels feed
     const vis=posts.filter(p=>{
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
-      return pr && !pr.is_private;
+      return pr && pr.is_private === false;
     });
     
     if(!vis.length){closeReels();return}

@@ -89,6 +89,12 @@ input,textarea{font-family:inherit}
 .post-caption strong{font-weight:700;margin-right:8px;cursor:pointer;color:var(--accent)}
 .post-comments-link{padding:8px 20px;font-size:14px;color:var(--text-3);cursor:pointer;font-weight:500}
 
+/* LINK PREVIEW (ADVANCED) */
+.link-preview{display:inline-flex;align-items:center;gap:6px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.2);padding:6px 12px;border-radius:10px;margin-top:8px;text-decoration:none;color:var(--accent);font-weight:600;font-size:13px}
+.yt-preview{position:relative;display:block;max-width:280px;border-radius:12px;overflow:hidden;margin-top:8px;border:1px solid var(--border)}
+.yt-preview img{width:100%;display:block}
+.yt-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);color:#fff;font-size:30px}
+
 /* PROFILE */
 .profile-info{display:flex;padding:24px 24px 20px;gap:24px;align-items:center}
 .profile-av{width:92px;height:92px;border-radius:50%;padding:3px;background:var(--grad);flex-shrink:0}
@@ -155,16 +161,20 @@ input,textarea{font-family:inherit}
 .chat-room-head .status{font-size:12px;color:var(--success);margin-top:2px}
 .chat-room-head .menu-btn{margin-left:auto;color:var(--text-3);padding:8px}
 .chat-msgs{flex:1;overflow-y:auto;padding:20px;padding-bottom:100px;display:flex;flex-direction:column;gap:10px;background:var(--bg)}
-.msg{display:flex;max-width:80%;position:relative}
-.msg.self{align-self:flex-end}
+.msg{display:flex;max-width:80%;position:relative;align-items:flex-end;gap:6px}
+.msg.self{align-self:flex-end;flex-direction:row-reverse}
 .msg-bubble{padding:12px 18px;border-radius:20px;font-size:15px;background:var(--surface);color:var(--text);border:1px solid var(--border);word-wrap:break-word;line-height:1.5;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
 .msg.self .msg-bubble{background:var(--grad);color:#fff;border:none;border-bottom-right-radius:4px}
 .msg:not(.self) .msg-bubble{border-bottom-left-radius:4px}
-.msg-bubble img{max-width:260px;border-radius:14px;display:block;margin-bottom:6px}
+.msg-bubble img{max-width:260px;border-radius:14px;display:block;margin-bottom:6px;cursor:pointer}
 .msg-bubble video{max-width:260px;border-radius:14px;display:block;margin-bottom:6px}
 .msg-delete{position:absolute;top:-8px;right:-8px;background:var(--danger);color:#fff;width:24px;height:24px;border-radius:50%;font-size:12px;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer}
-.msg.self .msg-delete{display:flex;opacity:0}
-.msg.self:hover .msg-delete{opacity:1}
+.msg.self:hover .msg-delete{display:flex}
+
+/* SEEN STATUS (RED CROSS) */
+.seen-status{color:var(--danger);font-size:12px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:2px}
+
+/* CHAT INPUT */
 .chat-input-wrap{position:fixed;bottom:0;left:0;right:0;background:rgba(15,23,42,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 16px;z-index:1001;display:flex;align-items:center;gap:8px}
 .chat-input-box{flex:1;display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:4px 8px;gap:4px}
 .chat-tool-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-3);transition:all .2s;background:transparent;flex-shrink:0}
@@ -246,12 +256,13 @@ input:checked + .slider:before{transform:translateX(22px)}
 .btn-blue{width:100%;padding:16px;border-radius:14px;background:var(--grad);color:#fff;font-weight:600;font-size:15px;box-shadow:var(--glow)}
 .btn-text{width:100%;padding:14px;background:none;border:none;color:var(--text-3);font-weight:600;font-size:15px}
 
-/* FULLSCREEN IMAGE VIEWER */
+/* FULLSCREEN MEDIA VIEWER */
 .img-fullscreen{position:fixed;inset:0;background:rgba(0,0,0,0.98);z-index:9900;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;animation:fadeIn .2s}
 .img-fullscreen img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
+.img-fullscreen video{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
 .img-fullscreen-close{position:absolute;top:24px;right:24px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:28px;cursor:pointer;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center}
 
-/* POST VIEWER (FIXED FULLSCREEN) */
+/* POST VIEWER */
 #viewPostModal .modal-card{max-width:100%;max-height:100vh;border-radius:0;height:100vh;background:#000;border:none}
 .viewer{position:relative;width:100%;height:100%;display:flex;flex-direction:column}
 @media(min-width:768px){
@@ -277,12 +288,17 @@ input:checked + .slider:before{transform:translateX(22px)}
 .viewer-close-mobile{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border:1px solid var(--border);color:#fff;width:48px;height:48px;border-radius:50%;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
 @media(min-width:768px){.viewer-close-mobile{display:none}}
 
-/* MOBILE FULLSCREEN ACTIONS (RIGHT SIDE) */
+/* MOBILE FULLSCREEN ACTIONS */
 .mobile-actions-rail{position:absolute;right:16px;bottom:80px;display:flex;flex-direction:column;gap:20px;z-index:10}
 @media(min-width:768px){.mobile-actions-rail{display:none}}
 .mob-act-btn{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;font-size:12px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
 .mob-act-btn svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
 .mob-act-btn.liked svg{fill:var(--danger);stroke:var(--danger)}
+
+/* WHATSAPP STYLE VIDEO LOADER */
+.wa-video-loader{position:absolute;inset:0;background:rgba(0,0,0,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index:5;color:#fff}
+.wa-video-loader .play-btn{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:10px;backdrop-filter:blur(5px)}
+.wa-video-loader .size-info{font-size:14px;font-weight:600;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:20px}
 
 /* REELS */
 #reelsOverlay{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
@@ -482,6 +498,7 @@ input:checked + .slider:before{transform:translateX(22px)}
 <div class="modal-ov" id="viewPostModal"><div class="modal-card"><div id="viewerWrap"></div></div></div>
 
 <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none" onchange="handleChatMedia(event)">
+<input type="file" id="groupPfpInput" accept="image/*" style="display:none" onchange="uploadGroupAvatar(event)">
 <div class="emoji-picker" id="emojiPicker"></div>
 
 <div id="reelsOverlay">
@@ -509,25 +526,32 @@ let upFile=null,upType=null,upFilter='none',upObjUrl=null,upAsStory=false;
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const linkify=t=>esc(t).replace(/(https?:\/\/[^\s]+)/g,u=>`<a href="${u}" target="_blank" style="color:var(--accent)">${u}</a>`);
+
+const linkify = t => esc(t).replace(/(https?:\/\/[^\s]+)/g, u => {
+  const ytMatch = u.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+  if (ytMatch) {
+    return `<div class="yt-preview" onclick="window.open('${u}', '_blank')">
+      <img src="https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg">
+      <div class="yt-play">▶</div>
+    </div>`;
+  }
+  try {
+    const domain = new URL(u).hostname.replace('www.', '');
+    return `<a href="${u}" target="_blank" class="link-preview">🔗 ${domain} <span style="font-size:10px;opacity:0.7">Link</span></a>`;
+  } catch { return `<a href="${u}" target="_blank" style="color:var(--accent)">${u}</a>`; }
+});
+
 const timeAgo=d=>{const s=Math.floor((new Date()-new Date(d))/1000);if(s<60)return'now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d'};
 function toast(m){const t=$('toast');t.textContent=m;t.style.transform='translateX(-50%) translateY(0)';t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateX(-50%) translateY(100px)';t.style.opacity='0'},2800)}
 
-// SHARE POST LINK
-function sharePostLink(pid) {
-  const url = window.location.origin + window.location.pathname + '?post=' + pid;
-  if (navigator.share) {
-    navigator.share({ title: 'View this post on Your Place', url: url }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(url).then(() => toast('Link copied to clipboard!')).catch(() => prompt('Copy this link:', url));
-  }
-}
-
-function viewImageFull(url){
+function viewMediaFull(url, isVideo = false){
   if(!url)return;
   const div=document.createElement('div');
   div.className='img-fullscreen';
-  div.innerHTML=`<button class="img-fullscreen-close" onclick="event.stopPropagation();this.parentElement.remove()">×</button><img src="${url}" onclick="event.stopPropagation()">`;
+  const mediaHtml = isVideo 
+    ? `<video src="${url}" controls autoplay style="max-width:100%;max-height:100%;object-fit:contain"></video>` 
+    : `<img src="${url}" onclick="event.stopPropagation()">`;
+  div.innerHTML=`<button class="img-fullscreen-close" onclick="event.stopPropagation();this.parentElement.remove()">×</button>${mediaHtml}`;
   div.onclick=()=>div.remove();
   document.body.appendChild(div);
 }
@@ -603,12 +627,9 @@ async function init(){
     currentUser={id:data.session.user.id,username:prof?.username||'User',avatar_url:prof?.avatar_url};
     $('authOverlay').classList.remove('active');initApp();
     
-    // Check for share link
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('post');
-    if (postId) {
-      setTimeout(() => openPostViewer(postId), 1000);
-    }
+    if (postId) { setTimeout(() => openPostViewer(postId), 1000); }
   }catch(e){}
 }
 async function initApp(){
@@ -677,7 +698,7 @@ async function followFromProfile(){
   const s=await getStats(currentViewingUserId);$('vpFollowersCount').textContent=s.followers;$('vpFollowingCount').textContent=s.following;b.disabled=false;
 }
 
-// FEED (1-MINUTE HIDDEN PRIVATE RULE)
+// FEED
 async function renderFeed(){
   const el=$('panel-feed');el.innerHTML='<div class="spinner"></div>';
   try{
@@ -695,9 +716,8 @@ async function renderFeed(){
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
       if(!pr)return false;
-      if(pr.is_private){
+      if(pr.is_private===true || pr.is_private===1){
         if(!fid.includes(p.user_id))return false;
-        // 1 minute rule for private profiles on Home Feed
         const created=new Date(p.created_at).getTime();
         if(now-created > 60000)return false;
       }
@@ -713,7 +733,7 @@ async function renderFeed(){
     (stories||[]).forEach(s=>{
       if(seen.has(s.user_id))return;seen.add(s.user_id);
       const p=pm[s.user_id]||{username:s.username,avatar_url:null,is_private:false};
-      if(s.user_id!==currentUser.id&&p.is_private)return;
+      if(s.user_id!==currentUser.id && (p.is_private===true||p.is_private===1))return;
       storiesHtml+=`<button class="story" onclick="viewStory('${esc(s.media_url||'')}','${s.media_type||'image'}')"><div class="story-ring"><img src="${p.avatar_url||DPFP}"></div><div class="story-name">${esc(p.username)}</div></button>`;
     });
     storiesHtml+='</div>';
@@ -727,6 +747,11 @@ async function renderFeed(){
       const pl=likes.filter(l=>l.post_id===p.id),pc=comments.filter(c=>c.post_id===p.id);
       const liked=pl.some(l=>l.user_id===currentUser?.id);
       const isVid=p.video_url&&p.video_url.length>0;
+      
+      const mediaHtml = isVid 
+        ? `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="video-badge">▶ Reel</div>`
+        : `<img src="${p.image_url}" onerror="this.src='${DPFP}'">`;
+
       return `<div class="post" data-post="${p.id}">
         <div class="post-head" onclick="viewUserProfile('${p.user_id}')">
           <div class="post-avatar"><img src="${pr.avatar_url||DPFP}"></div>
@@ -734,13 +759,12 @@ async function renderFeed(){
           <button class="post-more" onclick="event.stopPropagation();postMenu(${p.id},${p.user_id===currentUser.id})">⋯</button>
         </div>
         <div class="post-media" onclick="openPostViewer(${p.id})" ondblclick="toggleLike(${p.id},this.closest('.post').querySelector('.pa-btn'))">
-          ${isVid?`<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="video-badge">▶ Reel</div>`:`<img src="${p.image_url}" onerror="this.src='${DPFP}'">`}
+          ${mediaHtml}
         </div>
         <div class="post-actions">
           <button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
           <button class="pa-btn" onclick="openPostViewer(${p.id})"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
           <button class="pa-btn" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-          <button class="pa-btn bookmark" onclick="toggleBookmark(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
         </div>
         <div class="post-likes" id="likes-${p.id}">${pl.length} ${pl.length===1?'like':'likes'}</div>
         ${p.caption?`<div class="post-caption"><strong onclick="viewUserProfile('${p.user_id}')">${esc(pr.username)}</strong>${linkify(p.caption)}</div>`:''}
@@ -771,16 +795,13 @@ async function toggleLike(pid,btn){
     }
   }catch(e){btn.classList.toggle('liked');toast('Error')}
 }
-async function toggleBookmark(pid,btn){
-  const saved=btn.classList.contains('saved');btn.classList.toggle('saved');
-  try{
-    if(saved)await sb.from('bookmarks').delete().eq('post_id',pid).eq('user_id',currentUser.id);
-    else await sb.from('bookmarks').insert([{post_id:pid,user_id:currentUser.id}]);
-    toast(saved?'Removed':'Saved');
-  }catch(e){btn.classList.toggle('saved');toast('Error')}
+function sharePostLink(pid) {
+  const url = window.location.origin + window.location.pathname + '?post=' + pid;
+  if (navigator.share) { navigator.share({ title: 'View this post on Your Place', url: url }).catch(() => {}); } 
+  else { navigator.clipboard.writeText(url).then(() => toast('Link copied!')).catch(() => prompt('Copy:', url)); }
 }
 
-// POST VIEWER (WITH MOBILE ACTIONS + SHARE)
+// POST VIEWER
 async function openPostViewer(pid){
   const w=$('viewerWrap');w.innerHTML='<div class="spinner"></div>';
   $('viewPostModal').classList.add('active');
@@ -794,15 +815,13 @@ async function openPostViewer(pid){
     const isOwn=p.user_id===currentUser.id;
     
     const header=`<div class="viewer-side-head"><button class="back-btn" onclick="closePostViewer()" style="width:38px;height:38px"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><img src="${prof?.avatar_url||DPFP}" onclick="closePostViewer();viewUserProfile('${p.user_id}')" style="cursor:pointer;margin-left:4px"><div style="flex:1"><div class="un">${esc(prof?.username||p.username)}</div></div>${isOwn?`<button onclick="deletePost(${p.id});closePostViewer()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-3)">🗑️</button>`:''}</div>`;
-    const media=isV?`<video src="${p.video_url}" controls autoplay playsinline></video>`:`<img src="${p.image_url}" onerror="this.src='${DPFP}'" onclick="viewImageFull('${p.image_url}')">`;
+    const media=isV?`<video src="${p.video_url}" controls autoplay playsinline></video>`:`<img src="${p.image_url}" onerror="this.src='${DPFP}'" onclick="viewMediaFull('${p.image_url}')">`;
     
-    // Desktop Actions Panel
     const actions=`<div class="viewer-side-actions"><div class="row1"><button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button><button class="pa-btn" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div><div class="viewer-likes" id="likes-${p.id}">${(likes||[]).length} ${(likes||[]).length===1?'like':'likes'}</div><div style="font-size:15px;line-height:1.4"><strong style="color:var(--accent)">${esc(prof?.username||p.username)}</strong> ${linkify(p.caption||'')}</div></div>`;
     
     const commentList=(comments||[]).map(c=>`<div class="viewer-side-comment"><strong>${esc(c.username)}</strong>${linkify(c.text)}</div>`).join('');
     const commentRow=`<div class="viewer-comment-row"><input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})"><button onclick="addViewerComment(${p.id})">Post</button></div>`;
     
-    // Mobile Actions Rail
     const mobileRail = `<div class="mobile-actions-rail">
       <button class="mob-act-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)">
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -822,7 +841,6 @@ async function openPostViewer(pid){
       <div class="viewer-media">
         ${media}
         ${mobileRail}
-        <!-- Mobile inline comment input (hidden unless focused) -->
         <div class="viewer-comment-row" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);display:flex;">
           <input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})" style="color:#fff;flex:1">
           <button onclick="addViewerComment(${p.id})" style="color:var(--accent)">Post</button>
@@ -844,7 +862,7 @@ async function addViewerComment(pid){
   }catch(e){toast('Error')}
 }
 
-// SEARCH / EXPLORE (STRICTLY PUBLIC ONLY)
+// SEARCH / EXPLORE (STRICT PUBLIC)
 async function renderSearch(){
   $('panel-search').innerHTML=`<div class="search-bar"><div class="search-input"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" placeholder="Search users..." oninput="doSearch()"></div></div><div id="searchResults"></div>`;
   doSearch();
@@ -854,22 +872,24 @@ async function doSearch(){
   if(!q){
     r.innerHTML='<div class="spinner"></div>';
     try{
-      const{data:posts}=await sb.from('posts').select('*').not('video_url','is',null).order('created_at',{ascending:false}).limit(30);
-      if(!posts||!posts.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No reels yet</h3></div>';return}
+      const{data:posts}=await sb.from('posts').select('*').not('video_url','is',null).order('created_at',{ascending:false}).limit(50);
+      
+      if(!posts||!posts.length) { r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No reels yet</h3></div>'; return; }
+      
       const uids=[...new Set(posts.map(p=>p.user_id))];
       const{data:profs}=await sb.from('profiles').select('id,is_private').in('id',uids);
       const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
-      
-      // STRICT FILTER: Only public accounts (or my own) in Explore
+
+      // STRICT FILTER
       const vis=posts.filter(p=>{
         if(p.user_id===currentUser.id)return true;
         const pr=pm[p.user_id];
-        return pr && pr.is_private === false; 
+        return pr && (pr.is_private === false || pr.is_private === 0);
       });
-      
-      if(!vis.length) { r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels</h3></div>'; return; }
+
+      if(!vis.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels</h3></div>';return}
       r.innerHTML=`<div class="explore-grid">${vis.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}</div>`;
-    }catch(e){r.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">Error</div>'}
+    }catch(e){r.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">Error loading</div>'}
     return;
   }
   r.innerHTML='<div class="spinner"></div>';
@@ -1105,6 +1125,9 @@ async function openChatRoom(id,isGroup){
   if(!isGroup){const o=activeMembers.find(m=>m.user_id!==currentUser.id);if(o){name=o.username;const{data:pp}=await sb.from('profiles').select('avatar_url').eq('id',o.user_id).single();if(pp?.avatar_url)av=pp.avatar_url}}
   else if(room.avatar_url)av=room.avatar_url;
   
+  // Mark as read
+  await sb.from('room_members').update({ last_read_at: new Date().toISOString() }).eq('room_id', id).eq('user_id', currentUser.id);
+
   el.innerHTML=`<div class="chat-room">
     <div class="chat-room-head">
       <button class="back" onclick="renderChat()">←</button>
@@ -1140,17 +1163,29 @@ async function loadMessages(){
   const{data}=await sb.from('chat_messages').select('*').eq('room_id',activeRoomId).order('created_at');
   const box=$('chatMsgs');
   if(!data||!data.length){box.innerHTML='<div style="text-align:center;color:var(--text-3);font-size:14px;padding:20px">Say hi! 👋</div>';return}
+  
+  // Get other member's last read
+  const otherMembers = activeMembers.filter(m => m.user_id !== currentUser.id);
+  let otherLastRead = new Date(0);
+  if(otherMembers.length > 0) {
+      otherLastRead = new Date(Math.max(...otherMembers.map(m => new Date(m.last_read_at || 0).getTime())));
+  }
+
   box.innerHTML=data.map(m=>{
     const s=m.user_id===currentUser.id;
+    const isSeen = s && new Date(m.created_at) <= otherLastRead;
     let content='';
     if(m.media_url){
-      if(m.media_type==='video')content=`<video src="${m.media_url}" controls style="max-width:260px;border-radius:14px;display:block"></video>`;
-      else content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block" onclick="viewImageFull('${m.media_url}')">`;
+      if(m.media_type==='video')content=`<video src="${m.media_url}" onclick="viewMediaFull('${m.media_url}', true)" style="max-width:260px;border-radius:14px;display:block;cursor:pointer"></video>`;
+      else content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}')">`;
+      
       if(m.text&&m.text!=='📷 Photo'&&m.text!=='🎥 Video')content+=`<div style="margin-top:6px">${linkify(m.text)}</div>`;
     }else{content=linkify(m.text||'');}
+    
     return `<div class="msg ${s?'self':''}">
       ${s?`<div class="msg-delete" onclick="deleteMessage(${m.id})">✕</div>`:''}
       <div class="msg-bubble">${content}</div>
+      ${isSeen ? `<div class="seen-status">✓✓</div>` : ''}
     </div>`;
   }).join('');
   requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
@@ -1172,6 +1207,9 @@ function openChatSettings(roomId,isGroup,adminId){
   let html='';
   if(isGroup){
     html+=`<button class="btn-blue" style="background:var(--surface-2);color:var(--text);box-shadow:none;margin-bottom:10px" onclick="viewMembers(${roomId})">View Members</button>`;
+    if(isAdmin) {
+        html+=`<button class="btn-blue" style="background:var(--surface-2);color:var(--text);box-shadow:none;margin-bottom:10px" onclick="$('groupPfpInput').click()">Change Group Photo</button>`;
+    }
   }
   html+=`<button class="btn-blue" style="background:var(--danger);color:#fff;box-shadow:none;margin-bottom:10px" onclick="clearChat(${roomId})">Clear Chat History</button>`;
   if(isAdmin){
@@ -1179,6 +1217,22 @@ function openChatSettings(roomId,isGroup,adminId){
   }
   $('chatSettingsBody').innerHTML=html;
   $('chatSettingsModal').classList.add('active');
+}
+
+async function uploadGroupAvatar(e) {
+  const f = e.target.files[0]; if(!f || !activeRoomId) return;
+  toast('Uploading group photo...');
+  try {
+    const ext = f.name.split('.').pop();
+    const path = `groups/${activeRoomId}_${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from('posts').upload(path, f);
+    if(error) throw error;
+    const { data: { publicUrl } } = sb.storage.from('posts').getPublicUrl(path);
+    await sb.from('chat_rooms').update({ avatar_url: publicUrl }).eq('id', activeRoomId);
+    toast('Group photo updated!');
+    openChatRoom(activeRoomId, true);
+    $('chatSettingsModal').classList.remove('active');
+  } catch(e) { toast('Error: ' + e.message); }
 }
 
 async function clearChat(roomId){
@@ -1259,8 +1313,8 @@ function subChat(){
       const d=document.createElement('div');d.className='msg';
       let content='';
       if(m.media_url){
-        if(m.media_type==='video')content=`<video src="${m.media_url}" controls style="max-width:260px;border-radius:14px;display:block"></video>`;
-        else content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block" onclick="viewImageFull('${m.media_url}')">`;
+        if(m.media_type==='video')content=`<video src="${m.media_url}" onclick="viewMediaFull('${m.media_url}', true)" style="max-width:260px;border-radius:14px;display:block;cursor:pointer"></video>`;
+        else content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}')">`;
       }else{content=linkify(m.text||'')}
       d.innerHTML=`<div class="msg-bubble">${content}</div>`;
       box.appendChild(d);requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
@@ -1351,7 +1405,7 @@ async function openReels(startId){
     const vis=posts.filter(p=>{
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
-      return pr && pr.is_private === false;
+      return pr && (pr.is_private === false || pr.is_private === 0);
     });
     
     if(!vis.length){closeReels();return}

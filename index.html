@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-<title>Orbit — Your Place</title>
+<title>Your Place</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -32,13 +32,12 @@ input,textarea{font-family:inherit}
 /* TOP NAV */
 .top-nav{position:sticky;top:0;z-index:100;height:64px;padding:0 20px;background:rgba(10,14,26,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .nav-left,.nav-right{display:flex;align-items:center;gap:8px}
-.logo{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;letter-spacing:-0.5px}
-.back-btn{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);color:var(--text);transition:all .15s}
-.back-btn:hover{background:var(--surface-2);transform:translateX(-2px)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer;letter-spacing:-0.5px;white-space:nowrap}
+.back-btn{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);color:var(--text);transition:all .15s;flex-shrink:0}
+.back-btn:hover{background:var(--surface-2)}
 .back-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
-.page-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600}
-.icon-btn{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);color:var(--text);transition:all .15s;position:relative}
-.icon-btn:hover{background:var(--surface-2);border-color:var(--accent)}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;white-space:nowrap}
+.icon-btn{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);color:var(--text);transition:all .15s;position:relative;flex-shrink:0}
 .icon-btn:active{transform:scale(0.92)}
 .icon-btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .icon-btn .badge{position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 5px;background:var(--grad-2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;border:2px solid var(--bg)}
@@ -60,7 +59,6 @@ input,textarea{font-family:inherit}
 .stories::-webkit-scrollbar{display:none}
 .story{display:flex;flex-direction:column;align-items:center;gap:6px;flex-shrink:0;background:none;border:none}
 .story-ring{width:66px;height:66px;border-radius:50%;padding:2.5px;background:var(--grad);transition:transform .15s}
-.story:hover .story-ring{transform:scale(1.05)}
 .story-ring.add{background:var(--surface);border:2px dashed var(--accent);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:26px;font-weight:300;padding:0}
 .story-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg);background:var(--surface)}
 .story-name{font-size:11px;color:var(--text-2);max-width:66px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
@@ -78,21 +76,20 @@ input,textarea{font-family:inherit}
 .video-badge{position:absolute;top:12px;right:12px;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);color:#fff;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600}
 .post-actions{display:flex;padding:10px 12px 6px;gap:2px;align-items:center}
 .pa-btn{background:none;border:none;padding:8px;color:var(--text);display:flex;align-items:center;border-radius:10px;transition:all .15s}
-.pa-btn:hover{background:var(--surface-2)}
 .pa-btn:active{transform:scale(0.9)}
 .pa-btn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2}
 .pa-btn.liked svg{fill:var(--danger);stroke:var(--danger);animation:pop .3s}
 @keyframes pop{50%{transform:scale(1.3)}}
 .pa-btn.bookmark{margin-left:auto}
 .pa-btn.bookmark.saved svg{fill:var(--accent);stroke:var(--accent)}
-.post-likes{padding:4px 16px;font-weight:700;font-size:14px;color:var(--text)}
-.post-caption{padding:4px 16px;font-size:14px;line-height:1.5;color:var(--text)}
+.post-likes{padding:4px 16px;font-weight:700;font-size:14px}
+.post-caption{padding:4px 16px;font-size:14px;line-height:1.5}
 .post-caption strong{font-weight:700;margin-right:6px;cursor:pointer;color:var(--accent)}
 .post-comments-link{padding:6px 16px;font-size:13px;color:var(--text-3);cursor:pointer;font-weight:500}
 
 /* PROFILE */
 .profile-info{display:flex;padding:22px 20px 18px;gap:22px;align-items:center}
-.profile-av{width:88px;height:88px;border-radius:50%;padding:3px;background:var(--grad);flex-shrink:0;cursor:pointer}
+.profile-av{width:88px;height:88px;border-radius:50%;padding:3px;background:var(--grad);flex-shrink:0}
 .profile-av img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg);background:var(--surface)}
 .profile-stats{display:flex;flex:1;justify-content:space-around}
 .pstat{text-align:center;cursor:pointer;padding:6px;border-radius:10px;transition:background .15s}
@@ -154,14 +151,31 @@ input,textarea{font-family:inherit}
 .chat-room-head img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
 .chat-room-head h3{font-size:15px;font-weight:600}
 .chat-room-head .status{font-size:11px;color:var(--text-3);margin-top:1px}
-.chat-msgs{flex:1;overflow-y:auto;padding:16px;padding-bottom:90px;display:flex;flex-direction:column;gap:6px}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;padding-bottom:120px;display:flex;flex-direction:column;gap:6px}
 .msg{display:flex;max-width:78%}
 .msg.self{align-self:flex-end}
-.msg-bubble{padding:11px 16px;border-radius:18px;font-size:14px;background:var(--surface);color:var(--text);border:1px solid var(--border);word-wrap:break-word;line-height:1.4}
+.msg-bubble{padding:11px 16px;border-radius:18px;font-size:14px;background:var(--surface);color:var(--text);border:1px solid var(--border);word-wrap:break-word;line-height:1.4;overflow:hidden}
 .msg.self .msg-bubble{background:var(--grad);color:#fff;border:none}
-.chat-input-fixed{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:8px 8px 8px 16px;display:flex;gap:8px;align-items:center;z-index:99;box-shadow:var(--shadow)}
-.chat-input-fixed input{flex:1;padding:10px 0;border:none;background:transparent;outline:none;font-size:14px;color:var(--text)}
-.chat-input-fixed button{background:var(--grad);border-radius:12px;color:#fff;font-weight:600;padding:10px 18px;font-size:14px}
+.msg-bubble img{max-width:280px;border-radius:12px;display:block;margin-bottom:4px}
+.msg-bubble video{max-width:280px;border-radius:12px;display:block;margin-bottom:4px}
+
+/* CHAT INPUT WITH MEDIA */
+.chat-input-fixed{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:6px;display:flex;gap:4px;align-items:center;z-index:99;box-shadow:var(--shadow)}
+.chat-input-fixed input{flex:1;padding:11px 8px;border:none;background:transparent;outline:none;font-size:14px;color:var(--text);min-width:0}
+.chat-input-fixed input::placeholder{color:var(--text-3)}
+.chat-tool-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--accent);transition:all .15s;flex-shrink:0;background:transparent}
+.chat-tool-btn:hover{background:var(--surface-2)}
+.chat-tool-btn:active{transform:scale(0.9)}
+.chat-tool-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.chat-send-btn{width:40px;height:40px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.chat-send-btn:active{transform:scale(0.9)}
+.chat-send-btn svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2}
+
+/* EMOJI PICKER */
+.emoji-picker{position:fixed;bottom:88px;left:50%;transform:translateX(-50%);width:calc(100% - 32px);max-width:440px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:12px;display:none;grid-template-columns:repeat(8,1fr);gap:2px;z-index:101;box-shadow:var(--shadow);max-height:260px;overflow-y:auto}
+.emoji-picker.active{display:grid}
+.emoji-picker button{font-size:24px;padding:8px 0;border-radius:10px;transition:background .15s;line-height:1}
+.emoji-picker button:hover{background:var(--surface-2)}
 
 /* NOTIFICATIONS */
 .notif-item{display:flex;gap:14px;align-items:center;padding:14px 20px;cursor:pointer;transition:background .15s;border-bottom:1px solid var(--border-light)}
@@ -187,12 +201,11 @@ input,textarea{font-family:inherit}
 .up-header .up-btn{background:none;border:none;color:var(--text-2);font-size:15px;padding:6px 12px;border-radius:10px}
 .up-header .up-btn.primary{background:var(--grad);color:#fff;font-weight:600;padding:8px 18px;opacity:.4;pointer-events:none}
 .up-header .up-btn.primary.ready{opacity:1;pointer-events:auto}
-.up-body{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .up-select-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;gap:16px}
-.up-select-icon{font-size:80px;line-height:1;filter:drop-shadow(0 0 30px var(--accent))}
+.up-select-icon{font-size:80px;filter:drop-shadow(0 0 30px var(--accent))}
 .up-select-title{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .up-select-sub{font-size:14px;color:var(--text-2);margin-bottom:8px}
-.up-select-btn{background:var(--grad);color:#fff;border:none;padding:14px 36px;border-radius:14px;font-weight:600;font-size:15px;box-shadow:var(--glow)}
+.up-select-btn{background:var(--grad);color:#fff;padding:14px 36px;border-radius:14px;font-weight:600;font-size:15px;box-shadow:var(--glow)}
 .up-edit-body{flex:1;display:flex;flex-direction:column;background:#000;overflow:hidden}
 .up-edit-preview{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .up-edit-preview img,.up-edit-preview video{max-width:100%;max-height:100%;object-fit:contain;display:block}
@@ -200,7 +213,7 @@ input,textarea{font-family:inherit}
 .up-filter-row{display:flex;gap:12px;overflow-x:auto;padding:8px 20px;scrollbar-width:none}
 .up-filter-row::-webkit-scrollbar{display:none}
 .up-filter{flex-shrink:0;text-align:center;background:none;border:none;padding:0}
-.up-filter img{width:60px;height:60px;object-fit:cover;border-radius:12px;border:2px solid transparent;transition:border .15s}
+.up-filter img{width:60px;height:60px;object-fit:cover;border-radius:12px;border:2px solid transparent}
 .up-filter.active img{border-color:var(--accent);box-shadow:var(--glow)}
 .up-filter span{display:block;font-size:11px;color:var(--text-2);margin-top:6px}
 .up-filter.active span{color:var(--accent);font-weight:600}
@@ -210,8 +223,7 @@ input,textarea{font-family:inherit}
 .up-caption-wrap{flex:1}
 .up-caption{width:100%;border:none;outline:none;resize:none;font-size:14px;color:var(--text);min-height:80px;background:transparent;padding:4px 0;line-height:1.5}
 .up-char-count{font-size:11px;color:var(--text-3);text-align:right;padding:0 4px}
-.up-setting{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;border-bottom:1px solid var(--border-light);transition:background .15s}
-.up-setting:hover{background:var(--surface)}
+.up-setting{display:flex;align-items:center;gap:14px;padding:16px 20px;cursor:pointer;border-bottom:1px solid var(--border-light)}
 .up-setting svg{width:22px;height:22px;stroke:var(--accent);fill:none;stroke-width:2;flex-shrink:0}
 .up-setting-label{flex:1;font-size:14px;font-weight:500}
 .switch{position:relative;display:inline-block;width:44px;height:24px;flex-shrink:0}
@@ -222,10 +234,9 @@ input:checked + .slider{background:var(--grad);border:none}
 input:checked + .slider:before{transform:translateX(20px)}
 
 /* MODALS */
-.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
 .modal-ov.active{display:flex;animation:fadeIn .2s}
-.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:400px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);animation:modalIn .25s ease}
-@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;width:100%;max-width:400px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow)}
 .modal-body{padding:24px;overflow-y:auto}
 .modal-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;text-align:center;margin-bottom:20px}
 .form-input{width:100%;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:var(--bg);color:var(--text);outline:none;font-size:14px;margin-bottom:10px}
@@ -233,13 +244,17 @@ input:checked + .slider:before{transform:translateX(20px)}
 .btn-blue{width:100%;padding:14px;border-radius:12px;background:var(--grad);color:#fff;font-weight:600;font-size:14px;box-shadow:var(--glow)}
 .btn-text{width:100%;padding:12px;background:none;border:none;color:var(--text-3);font-weight:600;font-size:14px}
 
-/* VIEWER */
+/* POST VIEWER — Instagram-like fullscreen */
+#viewPostModal{padding:0}
 #viewPostModal .modal-card{max-width:100%;max-height:100vh;border-radius:0;height:100vh;background:#000;border:none}
 .viewer{position:relative;width:100%;height:100%;display:flex;flex-direction:column}
-@media(min-width:768px){#viewPostModal{padding:0}.viewer{flex-direction:row;background:var(--bg);margin:auto;max-width:1200px;max-height:calc(100vh - 40px);border-radius:20px;overflow:hidden}#viewPostModal .modal-card{max-width:1200px;max-height:calc(100vh - 40px);border-radius:20px;height:auto;background:var(--bg)}}
-.viewer-media{flex:1;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:400px}
-.viewer-media img,.viewer-media video{max-width:100%;max-height:100%;object-fit:contain;display:block}
-.viewer-side{width:360px;background:var(--surface);display:flex;flex-direction:column;border-left:1px solid var(--border);height:100%}
+@media(min-width:768px){
+  .viewer{flex-direction:row;background:var(--bg);margin:auto;max-width:1200px;max-height:calc(100vh - 40px);border-radius:20px;overflow:hidden}
+  #viewPostModal .modal-card{max-width:1200px;max-height:calc(100vh - 40px);border-radius:20px;height:auto;background:var(--bg);margin:auto}
+}
+.viewer-media{flex:1;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:400px;position:relative}
+.viewer-media img,.viewer-media video{max-width:100%;max-height:100vh;object-fit:contain;display:block}
+.viewer-side{width:380px;background:var(--surface);display:flex;flex-direction:column;border-left:1px solid var(--border);height:100%}
 @media(max-width:767px){.viewer-side{display:none}}
 .viewer-side-head{padding:16px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center}
 .viewer-side-head img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
@@ -253,8 +268,13 @@ input:checked + .slider:before{transform:translateX(20px)}
 .viewer-comment-row{display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--border)}
 .viewer-comment-row input{flex:1;border:none;outline:none;background:transparent;font-size:14px;color:var(--text)}
 .viewer-comment-row button{background:none;border:none;color:var(--accent);font-weight:600;font-size:14px}
-.viewer-close-mobile{position:absolute;top:16px;left:16px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);border:1px solid var(--border);color:#fff;width:40px;height:40px;border-radius:12px;font-size:18px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
+.viewer-close-mobile{position:absolute;top:16px;left:16px;background:rgba(0,0,0,0.6);backdrop-filter:blur(8px);border:1px solid var(--border);color:#fff;width:44px;height:44px;border-radius:14px;font-size:20px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
 @media(min-width:768px){.viewer-close-mobile{display:none}}
+
+/* IMAGE FULLSCREEN — click on any image */
+.img-fullscreen{position:fixed;inset:0;background:rgba(0,0,0,0.98);z-index:9900;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;animation:fadeIn .2s}
+.img-fullscreen img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.img-fullscreen-close{position:absolute;top:20px;right:20px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:44px;height:44px;border-radius:50%;font-size:24px;cursor:pointer;backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center}
 
 /* REELS */
 #reelsOverlay{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
@@ -263,18 +283,18 @@ input:checked + .slider:before{transform:translateX(20px)}
 .reels-scroll::-webkit-scrollbar{display:none}
 .reel{width:100%;height:100vh;scroll-snap-align:start;position:relative;display:flex;align-items:center;justify-content:center;background:#000}
 .reel video{width:100%;height:100%;object-fit:contain;cursor:pointer}
-.reel-overlay{position:absolute;bottom:0;left:0;right:0;padding:20px;padding-bottom:80px;background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.4) 50%,transparent 100%);display:flex;align-items:flex-end;justify-content:space-between;pointer-events:none}
+.reel-overlay{position:absolute;bottom:0;left:0;right:0;padding:20px;padding-bottom:80px;background:linear-gradient(to top,rgba(0,0,0,0.95),rgba(0,0,0,0.4) 50%,transparent);display:flex;align-items:flex-end;justify-content:space-between;pointer-events:none}
 .reel-overlay>*{pointer-events:auto}
 .reel-left{flex:1;max-width:70%}
 .reel-user{display:flex;align-items:center;gap:10px;color:#fff;cursor:pointer;margin-bottom:12px}
 .reel-user img{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
 .reel-user span{font-weight:700;font-size:14px}
-.reel-cap{color:#fff;font-size:13px;line-height:1.5;max-width:100%}
+.reel-cap{color:#fff;font-size:13px;line-height:1.5}
 .reel-actions{display:flex;flex-direction:column;gap:20px;align-items:center}
 .reel-action{background:none;border:none;color:#fff;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11px;font-weight:600}
 .reel-action svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2}
 .reel-action.liked svg{fill:var(--danger);stroke:var(--danger)}
-.reels-back{position:absolute;top:20px;left:20px;z-index:10;background:rgba(0,0,0,0.6);backdrop-filter:blur(12px);border:1px solid var(--border);color:#fff;padding:10px 18px;border-radius:14px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:6px}
+.reels-back{position:absolute;top:20px;left:20px;z-index:10;background:rgba(0,0,0,0.6);backdrop-filter:blur(12px);border:1px solid var(--border);color:#fff;padding:10px 18px;border-radius:14px;font-size:14px;font-weight:600}
 
 /* UTIL */
 .spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;margin:60px auto}
@@ -284,18 +304,18 @@ input:checked + .slider:before{transform:translateX(20px)}
 .empty-state .em{font-size:52px;margin-bottom:16px}
 .empty-state h3{font-family:'Space Grotesk',sans-serif;font-size:18px;color:var(--text);margin-bottom:6px}
 .empty-state p{font-size:14px;line-height:1.5}
-.empty-state button{margin-top:20px;background:var(--grad);color:#fff;border:none;padding:12px 28px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:var(--glow)}
+.empty-state button{margin-top:20px;background:var(--grad);color:#fff;padding:12px 28px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:var(--glow)}
 
 /* AUTH */
 #authOverlay{position:fixed;inset:0;background:var(--bg);z-index:10001;display:none;align-items:center;justify-content:center;padding:20px}
 #authOverlay.active{display:flex}
 .auth-wrap{width:100%;max-width:400px;display:flex;flex-direction:column;gap:12px}
 .auth-box{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:36px 28px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
-.auth-logo{font-family:'Space Grotesk',sans-serif;font-size:44px;font-weight:700;text-align:center;margin-bottom:12px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.auth-logo{font-family:'Space Grotesk',sans-serif;font-size:36px;font-weight:700;text-align:center;margin-bottom:12px;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .auth-sub{text-align:center;color:var(--text-3);font-size:13px;margin-bottom:12px;line-height:1.5}
 .auth-input{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:12px;font-size:14px;outline:none;color:var(--text)}
 .auth-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(139,92,246,0.15)}
-.auth-btn{background:var(--grad);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:600;font-size:15px;margin-top:8px;box-shadow:var(--glow)}
+.auth-btn{background:var(--grad);color:#fff;padding:14px;border-radius:12px;font-weight:600;font-size:15px;margin-top:8px;box-shadow:var(--glow)}
 .auth-btn:disabled{opacity:.5}
 .auth-error{color:var(--danger);font-size:13px;text-align:center;display:none;padding:12px;background:rgba(239,68,68,0.1);border-radius:10px;line-height:1.5}
 .auth-toggle{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:18px;text-align:center;font-size:14px;color:var(--text-2)}
@@ -308,9 +328,9 @@ input:checked + .slider:before{transform:translateX(20px)}
 
 <div class="app">
   <header class="top-nav" id="topNav">
-    <div class="nav-left" id="navLeft"><div class="logo" onclick="switchPanel('feed')">orbit</div></div>
+    <div class="nav-left" id="navLeft"><div class="logo" onclick="switchPanel('feed')">Your Place</div></div>
     <div class="nav-right">
-      <button class="icon-btn" onclick="openNotifications()" id="notifBtn" title="Notifications">
+      <button class="icon-btn" onclick="openNotifications()" title="Notifications">
         <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span class="badge" id="notifBadge" style="display:none">0</span>
       </button>
@@ -383,7 +403,7 @@ input:checked + .slider:before{transform:translateX(20px)}
 <div id="authOverlay">
   <div class="auth-wrap">
     <div class="auth-box">
-      <div class="auth-logo">orbit</div>
+      <div class="auth-logo">Your Place</div>
       <div class="auth-sub" id="authSub">Welcome back. Sign in to your universe.</div>
       <input class="auth-input" id="authEmail" type="email" placeholder="Email address" autocomplete="email">
       <input class="auth-input" id="authUsername" type="text" placeholder="Username" style="display:none">
@@ -447,6 +467,10 @@ input:checked + .slider:before{transform:translateX(20px)}
 
 <div class="modal-ov" id="viewPostModal"><div class="modal-card"><div id="viewerWrap"></div></div></div>
 
+<input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none" onchange="handleChatMedia(event)">
+
+<div class="emoji-picker" id="emojiPicker"></div>
+
 <div id="reelsOverlay">
   <button class="reels-back" onclick="closeReels()">← Back</button>
   <div class="reels-scroll" id="reelsScroll"></div>
@@ -460,10 +484,11 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const DPFP="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231C2440'/><circle cx='50' cy='35' r='18' fill='%238B5CF6'/><path d='M50 58 C28 58 18 72 18 100 L82 100 C82 72 72 58 50 58 Z' fill='%238B5CF6'/></svg>";
 const AUTH_LIMIT=3;
+const EMOJIS=['😀','😃','😄','😁','😆','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😋','😛','😜','🤪','🤨','🧐','🤓','😎','🥳','😏','😒','😞','😔','😟','😕','🙁','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','👍','👎','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','✋','🤚','🖐️','🖖','👋','🤝','🙏','💪','🦾','🔥','✨','⭐','🌟','💫','⚡','💥','💯','🎉','🎊','🎈','🎁','🎂','🍕','🍔','🍟','🌮','🍩','🍪','🎂','☕','🍺','🥂'];
 
 let currentUser=null,authMode='login',authBusy=false;
 let onlineUsers=new Map(),presenceCh=null,notifPollTimer=null;
-let activeRoomId=null,activeMembers=[],chatCh=null,activeAdmin=null,currentChatTab='primary';
+let activeRoomId=null,activeMembers=[],chatCh=null,currentChatTab='primary';
 let currentViewingUserId=null,vpPosts=[];
 let allChatsCache=[];
 let reelsObserver=null;
@@ -475,21 +500,27 @@ const linkify=t=>esc(t).replace(/(https?:\/\/[^\s]+)/g,u=>`<a href="${u}" target
 const timeAgo=d=>{const s=Math.floor((new Date()-new Date(d))/1000);if(s<60)return'now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d'};
 function toast(m){const t=$('toast');t.textContent=m;t.style.transform='translateX(-50%) translateY(0)';t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateX(-50%) translateY(100px)';t.style.opacity='0'},2800)}
 
-// ============ AUTH WITH 3/DAY LIMIT ============
+// FULLSCREEN IMAGE VIEWER (Instagram-like)
+function viewImageFull(url){
+  if(!url)return;
+  const div=document.createElement('div');
+  div.className='img-fullscreen';
+  div.innerHTML=`<button class="img-fullscreen-close" onclick="event.stopPropagation();this.parentElement.remove()">×</button><img src="${url}" onclick="event.stopPropagation()">`;
+  div.onclick=()=>div.remove();
+  document.body.appendChild(div);
+}
+
+// AUTH
 function showAuth(){$('authOverlay').classList.add('active')}
 function setAuthMode(m){
   authMode=m;const li=m==='login';
   $('authUsername').style.display=li?'none':'block';
-  $('authSub').textContent=li?'Welcome back. Sign in to your universe.':'Join orbit. Start your journey.';
+  $('authSub').textContent=li?'Welcome back. Sign in to your universe.':'Join Your Place. Start your journey.';
   $('authBtn').textContent=li?'Sign In':'Create Account';
   $('authToggle').innerHTML=li?`New here? <span onclick="toggleAuthMode()">Create account</span>`:`Have an account? <span onclick="toggleAuthMode()">Sign in</span>`;
   $('authError').style.display='none';$('authSuccess').style.display='none';
   let info=document.getElementById('authLimitInfo');
-  if(!info){
-    info=document.createElement('div');
-    info.id='authLimitInfo';
-    $('authBtn').parentElement.appendChild(info);
-  }
+  if(!info){info=document.createElement('div');info.id='authLimitInfo';$('authBtn').parentElement.appendChild(info);}
   info.innerHTML='🔒 Max <b>3 sign-in/sign-up attempts</b> per day per email<br><span style="opacity:.7">Posts, stories, and everything else are unlimited</span>';
 }
 function toggleAuthMode(){setAuthMode(authMode==='login'?'signup':'login')}
@@ -497,19 +528,14 @@ function toggleAuthMode(){setAuthMode(authMode==='login'?'signup':'login')}
 async function getAttemptsToday(email){
   try{
     const start=new Date();start.setHours(0,0,0,0);
-    const {count,error}=await sb.from('auth_attempts')
-      .select('*',{count:'exact',head:true})
-      .eq('email',email.toLowerCase())
-      .gte('created_at',start.toISOString());
-    if(error){console.error('check:',error);return 0;}
+    const {count,error}=await sb.from('auth_attempts').select('*',{count:'exact',head:true}).eq('email',email.toLowerCase()).gte('created_at',start.toISOString());
+    if(error)return 0;
     return count||0;
-  }catch(e){console.error(e);return 0;}
+  }catch(e){return 0;}
 }
 async function recordAttempt(email,action,success){
-  try{await sb.from('auth_attempts').insert([{email:email.toLowerCase(),action,success}])}
-  catch(e){console.error('record:',e)}
+  try{await sb.from('auth_attempts').insert([{email:email.toLowerCase(),action,success}])}catch(e){}
 }
-
 async function handleAuth(){
   if(authBusy)return;
   const email=$('authEmail').value.trim().toLowerCase();
@@ -517,8 +543,7 @@ async function handleAuth(){
   const user=$('authUsername').value.trim();
   if(!email||!pass)return toast('Fill all fields');
   if(authMode==='signup'&&!user)return toast('Username required');
-  authBusy=true;
-  const b=$('authBtn');b.disabled=true;b.textContent='Checking...';
+  authBusy=true;const b=$('authBtn');b.disabled=true;b.textContent='Checking...';
   $('authError').style.display='none';$('authSuccess').style.display='none';
   try{
     const used=await getAttemptsToday(email);
@@ -535,9 +560,7 @@ async function handleAuth(){
         await recordAttempt(email,'login',true);
         const {data:prof}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
         currentUser={id:data.user.id,username:prof?.username||email.split('@')[0],avatar_url:prof?.avatar_url};
-        $('authOverlay').classList.remove('active');
-        initApp();
-        return;
+        $('authOverlay').classList.remove('active');initApp();return;
       }else{
         const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{username:user}}});
         if(error)throw error;
@@ -545,12 +568,10 @@ async function handleAuth(){
         if(data.session){
           currentUser={id:data.user.id,username:user,avatar_url:null};
           await sb.from('profiles').insert([{id:data.user.id,username:user,is_private:false}]).catch(()=>{});
-          $('authOverlay').classList.remove('active');
-          initApp();toast('Welcome to orbit! ✨');
+          $('authOverlay').classList.remove('active');initApp();toast('Welcome! ✨');
         }else{
           $('authSuccess').innerHTML=`✉️ <b>Check your email!</b><br>We sent a verification link to <b>${esc(email)}</b>.<br>Click the link to activate, then sign in.`;
-          $('authSuccess').style.display='block';
-          setAuthMode('login');
+          $('authSuccess').style.display='block';setAuthMode('login');
         }
         return;
       }
@@ -558,35 +579,24 @@ async function handleAuth(){
       await recordAttempt(email,authMode,false);
       let msg=err.message||'Error';
       if(msg.includes('Invalid login'))msg='Invalid email or password';
-      if(msg.includes('Email not confirmed'))msg='📧 Please verify your email first. Check your inbox.';
+      if(msg.includes('Email not confirmed'))msg='📧 Please verify your email first.';
       if(msg.includes('already registered'))msg='This email is already registered';
-      if(left>0){
-        msg+=`<br><small style="color:var(--warning);margin-top:8px;display:block;font-size:12px">⚠️ ${left} attempt${left===1?'':'s'} remaining today</small>`;
-      }else{
-        msg+=`<br><small style="color:var(--danger);margin-top:8px;display:block;font-size:12px">🚫 No attempts remaining today — try tomorrow</small>`;
-      }
-      $('authError').innerHTML=msg;
-      $('authError').style.display='block';
+      if(left>0)msg+=`<br><small style="color:var(--warning);margin-top:8px;display:block;font-size:12px">⚠️ ${left} attempt${left===1?'':'s'} remaining today</small>`;
+      else msg+=`<br><small style="color:var(--danger);margin-top:8px;display:block;font-size:12px">🚫 No attempts remaining today</small>`;
+      $('authError').innerHTML=msg;$('authError').style.display='block';
     }
-  }catch(ex){
-    console.error(ex);
-    $('authError').textContent=ex.message||'Error';
-    $('authError').style.display='block';
-  }finally{
-    authBusy=false;b.disabled=false;
-    b.textContent=authMode==='login'?'Sign In':'Create Account';
-  }
+  }catch(ex){$('authError').textContent=ex.message;$('authError').style.display='block';}
+  finally{authBusy=false;b.disabled=false;b.textContent=authMode==='login'?'Sign In':'Create Account';}
 }
 
 async function init(){
-  setAuthMode('login');showAuth();
+  setAuthMode('login');showAuth();buildEmojiPicker();
   try{
     const {data}=await sb.auth.getSession();
     if(!data?.session)return;
     const {data:prof}=await sb.from('profiles').select('*').eq('id',data.session.user.id).maybeSingle();
     currentUser={id:data.session.user.id,username:prof?.username||'User',avatar_url:prof?.avatar_url};
-    $('authOverlay').classList.remove('active');
-    initApp();
+    $('authOverlay').classList.remove('active');initApp();
   }catch(e){}
 }
 async function initApp(){
@@ -604,17 +614,15 @@ function subscribePresence(){
 
 function updateTopNav(name){
   const nav=$('navLeft');
-  if(name==='feed'){
-    nav.innerHTML=`<div class="logo" onclick="switchPanel('feed')">orbit</div>`;
-  }else{
+  if(name==='feed'){nav.innerHTML=`<div class="logo" onclick="switchPanel('feed')">Your Place</div>`;}
+  else{
     const titles={search:'Explore',profile:'Profile',chat:'Messages',notifications:'Notifications'};
     nav.innerHTML=`<button class="back-btn" onclick="switchPanel('feed')"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><div class="page-title">${titles[name]||''}</div>`;
   }
   $('topNav').style.display='flex';
 }
-
 function switchPanel(name){
-  closeReels();
+  closeReels();hideEmojiPicker();
   if(name!=='chat'){stopChatPoll();}
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.panel===name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -627,7 +635,7 @@ function switchPanel(name){
   if(name==='notifications')renderNotifications();
 }
 
-// ============ FOLLOWS ============
+// FOLLOWS
 async function getStats(uid){try{const[a,b]=await Promise.all([sb.from('follows').select('*',{count:'exact',head:true}).eq('following_id',uid).eq('status','accepted'),sb.from('follows').select('*',{count:'exact',head:true}).eq('follower_id',uid).eq('status','accepted')]);return{followers:a.count||0,following:b.count||0}}catch(e){return{followers:0,following:0}}}
 async function isFollowing(a,b){try{const{data}=await sb.from('follows').select('id').eq('follower_id',a).eq('following_id',b).eq('status','accepted').maybeSingle();return!!data}catch(e){return false}}
 async function isPending(a,b){try{const{data}=await sb.from('follows').select('id').eq('follower_id',a).eq('following_id',b).eq('status','pending').maybeSingle();return!!data}catch(e){return false}}
@@ -642,8 +650,7 @@ async function toggleFollow(target,isPriv){
   }catch(e){toast('Error: '+e.message);return null}
 }
 async function followBtnClick(target,btn,isPriv){
-  btn.disabled=true;
-  const r=await toggleFollow(target,isPriv);
+  btn.disabled=true;const r=await toggleFollow(target,isPriv);
   if(r==='following'){btn.textContent='Following';btn.className='follow-btn following'}
   else if(r==='unfollowed'){btn.textContent='Follow';btn.className='follow-btn'}
   else if(r==='requested'){btn.textContent='Requested';btn.className='follow-btn requested'}
@@ -658,11 +665,10 @@ async function followFromProfile(){
   else if(r==='unfollowed'){b.textContent='Follow';b.className='profile-btn primary'}
   else if(r==='requested'){b.textContent='Requested';b.className='profile-btn'}
   const s=await getStats(currentViewingUserId);
-  $('vpFollowersCount').textContent=s.followers;$('vpFollowingCount').textContent=s.following;
-  b.disabled=false;
+  $('vpFollowersCount').textContent=s.followers;$('vpFollowingCount').textContent=s.following;b.disabled=false;
 }
 
-// ============ FEED ============
+// FEED
 async function renderFeed(){
   const el=$('panel-feed');el.innerHTML='<div class="spinner"></div>';
   try{
@@ -705,7 +711,7 @@ async function renderFeed(){
           <div style="flex:1"><div class="post-name">${esc(pr.username)} ${pr.is_private?'🔒':''}</div><div class="post-loc">${timeAgo(p.created_at)} ago</div></div>
           <button class="post-more" onclick="event.stopPropagation();postMenu(${p.id},${p.user_id===currentUser.id})">⋯</button>
         </div>
-        <div class="post-media" onclick="${isVid?`openReels(${p.id})`:`openPostViewer(${p.id})`}" ondblclick="toggleLike(${p.id},this.closest('.post').querySelector('.pa-btn'))">
+        <div class="post-media" onclick="openPostViewer(${p.id})" ondblclick="toggleLike(${p.id},this.closest('.post').querySelector('.pa-btn'))">
           ${isVid?`<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="video-badge">▶ Reel</div>`:`<img src="${p.image_url}" onerror="this.src='${DPFP}'">`}
         </div>
         <div class="post-actions">
@@ -728,11 +734,9 @@ async function deletePost(id){
     if($('panel-profile').classList.contains('active'))renderProfile(currentUser.id);
   }catch(e){toast('Error')}
 }
-
 async function toggleLike(pid,btn){
   if(!btn)return;
-  const liked=btn.classList.contains('liked');
-  btn.classList.toggle('liked');
+  const liked=btn.classList.contains('liked');btn.classList.toggle('liked');
   const el=$('likes-'+pid);
   if(el){let n=parseInt(el.textContent)||0;const v=liked?Math.max(0,n-1):n+1;el.textContent=`${v} ${v===1?'like':'likes'}`}
   try{
@@ -740,15 +744,12 @@ async function toggleLike(pid,btn){
     else{
       await sb.from('likes').insert([{post_id:pid,user_id:currentUser.id}]);
       const{data:p}=await sb.from('posts').select('user_id').eq('id',pid).single();
-      if(p&&p.user_id!==currentUser.id){
-        await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'like',post_id:pid}]).catch(()=>{});
-      }
+      if(p&&p.user_id!==currentUser.id){await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'like',post_id:pid}]).catch(()=>{});}
     }
   }catch(e){btn.classList.toggle('liked');toast('Error')}
 }
 async function toggleBookmark(pid,btn){
-  const saved=btn.classList.contains('saved');
-  btn.classList.toggle('saved');
+  const saved=btn.classList.contains('saved');btn.classList.toggle('saved');
   try{
     if(saved)await sb.from('bookmarks').delete().eq('post_id',pid).eq('user_id',currentUser.id);
     else await sb.from('bookmarks').insert([{post_id:pid,user_id:currentUser.id}]);
@@ -756,7 +757,7 @@ async function toggleBookmark(pid,btn){
   }catch(e){btn.classList.toggle('saved');toast('Error')}
 }
 
-// ============ POST VIEWER ============
+// POST VIEWER (Instagram-like)
 async function openPostViewer(pid){
   const w=$('viewerWrap');w.innerHTML='<div class="spinner"></div>';
   $('viewPostModal').classList.add('active');
@@ -773,32 +774,28 @@ async function openPostViewer(pid){
     const actions=`<div class="viewer-side-actions"><div class="row1"><button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button></div><div class="viewer-likes" id="likes-${p.id}">${(likes||[]).length} ${(likes||[]).length===1?'like':'likes'}</div><div style="font-size:14px;line-height:1.4"><strong style="color:var(--accent)">${esc(prof?.username||p.username)}</strong> ${linkify(p.caption||'')}</div></div>`;
     const commentList=(comments||[]).map(c=>`<div class="viewer-side-comment"><strong>${esc(c.username)}</strong>${linkify(c.text)}</div>`).join('');
     const commentRow=`<div class="viewer-comment-row"><input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})"><button onclick="addViewerComment(${p.id})">Post</button></div>`;
-    w.innerHTML=`<div class="viewer"><button class="viewer-close-mobile" onclick="closePostViewer()">←</button><div class="viewer-media">${media}</div><div class="viewer-side">${header}<div class="viewer-side-comments">${commentList||'<div style="text-align:center;color:var(--text-3);font-size:14px;padding:20px">No comments yet.</div>'}</div>${actions}${commentRow}</div></div>`;
+    w.innerHTML=`<div class="viewer"><button class="viewer-close-mobile" onclick="closePostViewer()">×</button><div class="viewer-media">${media}</div><div class="viewer-side">${header}<div class="viewer-side-comments">${commentList||'<div style="text-align:center;color:var(--text-3);font-size:14px;padding:20px">No comments yet.</div>'}</div>${actions}${commentRow}</div></div>`;
   }catch(ex){w.innerHTML=`<div style="color:#fff;padding:40px;text-align:center">Error</div>`}
 }
 function closePostViewer(){const v=document.querySelector('#viewerWrap video');if(v)v.pause();$('viewPostModal').classList.remove('active');$('viewerWrap').innerHTML=''}
 async function addViewerComment(pid){
   const inp=$('vcInput-'+pid);if(!inp)return;
-  const t=inp.value.trim();if(!t)return;
-  inp.value='';
+  const t=inp.value.trim();if(!t)return;inp.value='';
   try{
     await sb.from('comments').insert([{post_id:pid,user_id:currentUser.id,username:currentUser.username,text:t}]);
     const{data:p}=await sb.from('posts').select('user_id').eq('id',pid).single();
-    if(p&&p.user_id!==currentUser.id){
-      await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'comment',post_id:pid,text:t.substring(0,80)}]).catch(()=>{});
-    }
+    if(p&&p.user_id!==currentUser.id){await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'comment',post_id:pid,text:t.substring(0,80)}]).catch(()=>{});}
     openPostViewer(pid);
   }catch(e){toast('Error')}
 }
 
-// ============ SEARCH ============
+// SEARCH
 async function renderSearch(){
   $('panel-search').innerHTML=`<div class="search-bar"><div class="search-input"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" placeholder="Search users..." oninput="doSearch()"></div></div><div id="searchResults"></div>`;
   doSearch();
 }
 async function doSearch(){
-  const q=$('searchInput').value.trim().toLowerCase();
-  const r=$('searchResults');
+  const q=$('searchInput').value.trim().toLowerCase();const r=$('searchResults');
   if(!q){
     r.innerHTML='<div class="spinner"></div>';
     try{
@@ -827,7 +824,7 @@ async function doSearch(){
   }catch(e){r.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">Search error</div>'}
 }
 
-// ============ PROFILE ============
+// PROFILE
 async function renderProfile(uid){
   const el=$('panel-profile');el.innerHTML='<div class="spinner"></div>';
   const{data:prof}=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();
@@ -856,10 +853,8 @@ async function renderProfile(uid){
       <button class="ptab" onclick="switchOwnTab('reels',this)"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
     </div>
     <div class="grid" id="ownGrid"></div>`;
-  vpPosts=posts||[];
-  renderOwnGrid('posts');
-  $('editUsername').value=pr.username;$('editBio').value=pr.bio||'';$('editPrivate').checked=pr.is_private===true;
-  $('editPfpPreview').src=pr.avatar_url||DPFP;
+  vpPosts=posts||[];renderOwnGrid('posts');
+  $('editUsername').value=pr.username;$('editBio').value=pr.bio||'';$('editPrivate').checked=pr.is_private===true;$('editPfpPreview').src=pr.avatar_url||DPFP;
 }
 function switchOwnTab(t,el){document.querySelectorAll('#panel-profile .ptab').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderOwnGrid(t)}
 function renderOwnGrid(t){
@@ -868,7 +863,7 @@ function renderOwnGrid(t){
   else{const l=vpPosts.filter(p=>p.video_url);if(!l.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">🎬</div><h3>No reels yet</h3></div>';return}g.innerHTML=l.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}
 }
 
-// ============ VIEW OTHER PROFILE ============
+// VIEW OTHER PROFILE
 async function viewUserProfile(uid){
   if(uid===currentUser.id){switchPanel('profile');return}
   currentViewingUserId=uid;
@@ -907,23 +902,19 @@ function renderVpGrid(t){
   else{const l=vpPosts.filter(p=>p.video_url);if(!l.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">🎬</div><h3>No reels</h3></div>';return}g.innerHTML=l.map(p=>`<div class="grid-item" onclick="$('vpOverlay').remove();openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}
 }
 
-// ============ EDIT PROFILE ============
+// EDIT PROFILE
 function openEditProfile(){$('editProfileModal').classList.add('active')}
 async function uploadAvatar(e){
   const f=e.target.files[0];if(!f)return;
   const btn=$('saveProfileBtn');btn.disabled=true;btn.textContent='Uploading...';
   try{
-    const ext=f.name.split('.').pop();
-    const path=`${currentUser.id}/avatar_${Date.now()}.${ext}`;
-    const{error}=await sb.storage.from('avatars').upload(path,f,{upsert:true});
-    if(error)throw error;
+    const ext=f.name.split('.').pop();const path=`${currentUser.id}/avatar_${Date.now()}.${ext}`;
+    const{error}=await sb.storage.from('avatars').upload(path,f,{upsert:true});if(error)throw error;
     const{data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path);
     const url=publicUrl+'?v='+Date.now();
     await sb.from('profiles').update({avatar_url:url}).eq('id',currentUser.id);
-    currentUser.avatar_url=url;$('navPfp').src=url;$('editPfpPreview').src=url;
-    toast('Photo updated');
-  }catch(e){toast('Error: '+e.message)}
-  finally{btn.disabled=false;btn.textContent='Save'}
+    currentUser.avatar_url=url;$('navPfp').src=url;$('editPfpPreview').src=url;toast('Updated');
+  }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Save'}
 }
 async function saveProfile(){
   const u=$('editUsername').value.trim(),b=$('editBio').value.trim(),p=$('editPrivate').checked;
@@ -931,19 +922,15 @@ async function saveProfile(){
   const btn=$('saveProfileBtn');btn.disabled=true;btn.textContent='Saving...';
   try{
     await sb.from('profiles').update({username:u,bio:b,is_private:p}).eq('id',currentUser.id);
-    currentUser.username=u;
-    await sb.from('posts').update({username:u}).eq('user_id',currentUser.id);
-    $('editProfileModal').classList.remove('active');
-    toast('Saved');renderProfile(currentUser.id);
+    currentUser.username=u;await sb.from('posts').update({username:u}).eq('user_id',currentUser.id);
+    $('editProfileModal').classList.remove('active');toast('Saved');renderProfile(currentUser.id);
     if($('panel-feed').classList.contains('active'))renderFeed();
-  }catch(e){toast('Error: '+e.message)}
-  finally{btn.disabled=false;btn.textContent='Save'}
+  }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Save'}
 }
 
-// ============ CONNECTIONS ============
+// CONNECTIONS
 async function openConnections(type,uid){
-  $('connectionsModal').classList.add('active');
-  $('connectionsTitle').textContent=type==='followers'?'Followers':'Following';
+  $('connectionsModal').classList.add('active');$('connectionsTitle').textContent=type==='followers'?'Followers':'Following';
   const l=$('connectionsList');l.innerHTML='<div class="spinner"></div>';
   try{
     let q=sb.from('follows').select('follower_id,following_id').eq('status','accepted');
@@ -958,7 +945,7 @@ async function openConnections(type,uid){
 async function removeFollower(id){if(!confirm('Remove?'))return;await sb.from('follows').delete().eq('follower_id',id).eq('following_id',currentUser.id);toast('Removed');openConnections('followers',currentUser.id)}
 async function unfollowUser(id){if(!confirm('Unfollow?'))return;await sb.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',id);toast('Unfollowed');openConnections('following',currentUser.id)}
 
-// ============ FOLLOW REQUESTS ============
+// FOLLOW REQUESTS
 async function openFollowRequests(){
   $('followRequestsModal').classList.add('active');
   const l=$('followRequestsList');l.innerHTML='<div class="spinner"></div>';
@@ -972,7 +959,7 @@ async function openFollowRequests(){
 async function acceptReq(id){await sb.from('follows').update({status:'accepted'}).eq('follower_id',id).eq('following_id',currentUser.id);toast('Accepted');openFollowRequests()}
 async function declineReq(id){await sb.from('follows').delete().eq('follower_id',id).eq('following_id',currentUser.id);toast('Declined');openFollowRequests()}
 
-// ============ NOTIFICATIONS ============
+// NOTIFICATIONS
 async function pollNotifications(){
   if(notifPollTimer)clearInterval(notifPollTimer);
   const check=async()=>{
@@ -984,8 +971,7 @@ async function pollNotifications(){
       else badge.style.display='none';
     }catch(e){}
   };
-  check();
-  notifPollTimer=setInterval(check,20000);
+  check();notifPollTimer=setInterval(check,20000);
 }
 async function renderNotifications(){
   const el=$('panel-notifications');el.innerHTML='<div class="spinner"></div>';
@@ -1008,7 +994,7 @@ async function renderNotifications(){
 }
 async function openNotifications(){switchPanel('notifications')}
 
-// ============ CHAT ============
+// CHAT
 async function renderChat(){
   const el=$('panel-chat');el.innerHTML='<div class="spinner"></div>';
   try{
@@ -1025,10 +1011,11 @@ async function renderChat(){
       const other=!r.is_group?mm.find(m=>m.room_id===r.id&&m.user_id!==currentUser.id):null;
       const online=other&&onlineUsers.has(other.user_id);
       const last=mg.find(m=>m.room_id===r.id);
-      return{id:r.id,isGroup:r.is_group,name:r.is_group?(r.name||'Group'):(other?.username||'Chat'),preview:last?.text||'No messages',avatar:r.is_group?(r.avatar_url||DPFP):(am[other?.user_id]||DPFP),online,otherUid:other?.user_id};
+      let preview=last?.text||'No messages';
+      if(last?.media_url)preview=last.media_type==='video'?'🎥 Video':'📷 Photo';
+      return{id:r.id,isGroup:r.is_group,name:r.is_group?(r.name||'Group'):(other?.username||'Chat'),preview,avatar:r.is_group?(r.avatar_url||DPFP):(am[other?.user_id]||DPFP),online,otherUid:other?.user_id};
     });
-    el.innerHTML=head+'<div id="chatListBox"></div>';
-    switchChatTab('primary');
+    el.innerHTML=head+'<div id="chatListBox"></div>';switchChatTab('primary');
   }catch(e){el.innerHTML='<div class="empty-state"><div class="em">⚠️</div><h3>Error</h3></div>'}
 }
 function switchChatTab(t,q=''){
@@ -1044,20 +1031,42 @@ async function openChatRoom(id,isGroup){
   activeRoomId=id;
   const el=$('panel-chat');el.innerHTML='<div class="spinner"></div>';
   const{data:room}=await sb.from('chat_rooms').select('*').eq('id',id).single();
-  activeAdmin=room.admin_id;
   const{data:mem}=await sb.from('room_members').select('*').eq('room_id',id);
   activeMembers=mem||[];
   let name=room.name||'Chat';let av=DPFP;
   if(!isGroup){const o=activeMembers.find(m=>m.user_id!==currentUser.id);if(o){name=o.username;const{data:pp}=await sb.from('profiles').select('avatar_url').eq('id',o.user_id).single();if(pp?.avatar_url)av=pp.avatar_url}}
   else if(room.avatar_url)av=room.avatar_url;
-  el.innerHTML=`<div class="chat-room"><div class="chat-room-head"><button class="back" onclick="renderChat()">←</button><img src="${av}"><div style="flex:1"><h3>${esc(name)}</h3><div class="status">${isGroup?'Group':'Online'}</div></div></div><div class="chat-msgs" id="chatMsgs"></div><div class="chat-input-fixed"><input id="chatInput" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChat()"><button onclick="sendChat()">Send</button></div></div>`;
+  el.innerHTML=`<div class="chat-room"><div class="chat-room-head"><button class="back" onclick="renderChat()">←</button><img src="${av}"><div style="flex:1"><h3>${esc(name)}</h3><div class="status">${isGroup?'Group':'Online'}</div></div></div><div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-input-fixed">
+    <button class="chat-tool-btn" onclick="$('chatMediaInput').click()" title="Photo / Video">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+    </button>
+    <input id="chatInput" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button class="chat-tool-btn" onclick="toggleEmojiPicker()" title="Emoji">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+    </button>
+    <button class="chat-send-btn" onclick="sendChat()">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div></div>`;
   loadMessages();subChat();
 }
 async function loadMessages(){
   const{data}=await sb.from('chat_messages').select('*').eq('room_id',activeRoomId).order('created_at');
   const box=$('chatMsgs');
   if(!data||!data.length){box.innerHTML='<div style="text-align:center;color:var(--text-3);font-size:13px;padding:20px">Say hi! 👋</div>';return}
-  box.innerHTML=data.map(m=>{const s=m.user_id===currentUser.id;return`<div class="msg ${s?'self':''}"><div class="msg-bubble">${linkify(m.text||'')}</div></div>`}).join('');
+  box.innerHTML=data.map(m=>{
+    const s=m.user_id===currentUser.id;
+    let content='';
+    if(m.media_url){
+      if(m.media_type==='video')content=`<video src="${m.media_url}" controls style="max-width:280px;border-radius:12px;display:block"></video>`;
+      else content=`<img src="${m.media_url}" style="max-width:280px;border-radius:12px;display:block" onclick="viewImageFull('${m.media_url}')">`;
+      if(m.text&&m.text!=='📷 Photo'&&m.text!=='🎥 Video')content+=`<div style="margin-top:6px">${linkify(m.text)}</div>`;
+    }else{
+      content=linkify(m.text||'');
+    }
+    return `<div class="msg ${s?'self':''}"><div class="msg-bubble">${content}</div></div>`;
+  }).join('');
   requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
 }
 async function sendChat(){
@@ -1065,14 +1074,60 @@ async function sendChat(){
   i.value='';
   await sb.from('chat_messages').insert([{room_id:activeRoomId,user_id:currentUser.id,username:currentUser.username,text:t}]);
 }
+async function handleChatMedia(e){
+  const f=e.target.files[0];if(!f||!activeRoomId)return;
+  e.target.value='';
+  if(f.size>50*1024*1024){toast('Max 50MB');return}
+  toast('Uploading...');
+  try{
+    const isVideo=f.type.startsWith('video');
+    const bucket=isVideo?'videos':'posts';
+    const ext=f.name.split('.').pop()||(isVideo?'mp4':'jpg');
+    const path=`chat/${currentUser.id}/${Date.now()}.${ext}`;
+    const{error}=await sb.storage.from(bucket).upload(path,f);
+    if(error)throw error;
+    const{data:{publicUrl}}=sb.storage.from(bucket).getPublicUrl(path);
+    await sb.from('chat_messages').insert([{
+      room_id:activeRoomId,user_id:currentUser.id,username:currentUser.username,
+      text:isVideo?'🎥 Video':'📷 Photo',media_url:publicUrl,media_type:isVideo?'video':'image'
+    }]);
+  }catch(e){console.error(e);toast('Upload failed: '+e.message)}
+}
 function stopChatPoll(){if(chatCh){sb.removeChannel(chatCh);chatCh=null}}
 function subChat(){
   stopChatPoll();
   chatCh=sb.channel('c-'+activeRoomId).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:`room_id=eq.${activeRoomId}`},p=>{
     const m=p.new;const box=$('chatMsgs');
-    if(box&&m.user_id!==currentUser.id){const d=document.createElement('div');d.className='msg';d.innerHTML=`<div class="msg-bubble">${linkify(m.text||'')}</div>`;box.appendChild(d);requestAnimationFrame(()=>box.scrollTop=box.scrollHeight)}
+    if(box&&m.user_id!==currentUser.id){
+      const d=document.createElement('div');d.className='msg';
+      let content='';
+      if(m.media_url){
+        if(m.media_type==='video')content=`<video src="${m.media_url}" controls style="max-width:280px;border-radius:12px;display:block"></video>`;
+        else content=`<img src="${m.media_url}" style="max-width:280px;border-radius:12px;display:block" onclick="viewImageFull('${m.media_url}')">`;
+      }else{content=linkify(m.text||'')}
+      d.innerHTML=`<div class="msg-bubble">${content}</div>`;
+      box.appendChild(d);requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
+    }
   }).subscribe();
 }
+
+// EMOJI
+function buildEmojiPicker(){
+  const p=$('emojiPicker');
+  if(!p||p.children.length)return;
+  p.innerHTML=EMOJIS.map(e=>`<button onclick="insertEmoji('${e}')">${e}</button>`).join('');
+}
+function toggleEmojiPicker(){
+  const p=$('emojiPicker');
+  p.classList.toggle('active');
+}
+function hideEmojiPicker(){$('emojiPicker').classList.remove('active')}
+function insertEmoji(e){
+  const inp=$('chatInput');if(!inp)return;
+  inp.value+=e;
+  inp.focus();
+}
+
 async function openNewChatModal(){
   $('newChatModal').classList.add('active');
   const l=$('newChatList');l.innerHTML='<div class="spinner"></div>';
@@ -1110,11 +1165,10 @@ async function createGroup(){
     cbs.forEach(cb=>mem.push({room_id:room.id,user_id:cb.value,username:cb.parentElement.querySelector('span').textContent}));
     await sb.from('room_members').insert(mem);
     toast('Group created');$('newGroupModal').classList.remove('active');renderChat();openChatRoom(room.id,true);
-  }catch(e){toast('Error')}
-  finally{b.disabled=false;b.textContent='Create'}
+  }catch(e){toast('Error')}finally{b.disabled=false;b.textContent='Create'}
 }
 
-// ============ STORY VIEWER ============
+// STORY VIEWER
 function viewStory(url,type){
   if(!url)return;
   const ov=document.createElement('div');
@@ -1122,14 +1176,14 @@ function viewStory(url,type){
   ov.innerHTML=`
     <div style="position:absolute;top:20px;left:20px;right:20px;height:3px;background:rgba(255,255,255,0.2);border-radius:3px;overflow:hidden"><div style="height:100%;background:linear-gradient(90deg,#8B5CF6,#06B6D4);width:0;animation:storyProg 5s linear forwards"></div></div>
     <style>@keyframes storyProg{to{width:100%}}</style>
-    <button onclick="this.parentElement.remove()" style="position:absolute;top:20px;right:20px;color:#fff;font-size:28px;background:rgba(0,0,0,0.4);border:none;width:40px;height:40px;border-radius:50%;cursor:pointer">×</button>
+    <button onclick="this.parentElement.remove()" style="position:absolute;top:20px;right:20px;color:#fff;font-size:28px;background:rgba(0,0,0,0.4);border:none;width:44px;height:44px;border-radius:50%;cursor:pointer">×</button>
     ${type==='video'?`<video src="${url}" autoplay controls playsinline style="max-width:100%;max-height:100%"></video>`:`<img src="${url}" style="max-width:100%;max-height:100%">`}
   `;
   document.body.appendChild(ov);
   setTimeout(()=>{if(ov.parentElement)ov.remove()},5000);
 }
 
-// ============ REELS ============
+// REELS
 async function openReels(startId){
   $('reelsOverlay').classList.add('active');
   $('reelsScroll').innerHTML='<div class="spinner" style="margin-top:40vh;border-color:rgba(255,255,255,0.2);border-top-color:#fff"></div>';
@@ -1154,19 +1208,10 @@ async function openReels(startId){
       return `<div class="reel" data-id="${p.id}">
         <video src="${p.video_url}" loop playsinline preload="metadata" muted onclick="this.paused?this.play():this.pause()"></video>
         <div class="reel-overlay">
-          <div class="reel-left">
-            <div class="reel-user" onclick="closeReels();viewUserProfile('${p.user_id}')"><img src="${pr.avatar_url||DPFP}"><span>${esc(pr.username)}</span></div>
-            <div class="reel-cap">${linkify(p.caption||'')}</div>
-          </div>
+          <div class="reel-left"><div class="reel-user" onclick="closeReels();viewUserProfile('${p.user_id}')"><img src="${pr.avatar_url||DPFP}"><span>${esc(pr.username)}</span></div><div class="reel-cap">${linkify(p.caption||'')}</div></div>
           <div class="reel-actions">
-            <button class="reel-action ${liked?'liked':''}" onclick="toggleLikeReel(${p.id},this,${pl.length})">
-              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              <span class="rl-count">${pl.length}</span>
-            </button>
-            <button class="reel-action" onclick="closeReels();openPostViewer(${p.id})">
-              <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-              <span>${pc.length}</span>
-            </button>
+            <button class="reel-action ${liked?'liked':''}" onclick="toggleLikeReel(${p.id},this,${pl.length})"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="rl-count">${pl.length}</span></button>
+            <button class="reel-action" onclick="closeReels();openPostViewer(${p.id})"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>${pc.length}</span></button>
           </div>
         </div>
       </div>`;
@@ -1180,8 +1225,7 @@ async function openReels(startId){
   }catch(e){closeReels()}
 }
 async function toggleLikeReel(pid,btn,currentCount){
-  const liked=btn.classList.contains('liked');
-  btn.classList.toggle('liked');
+  const liked=btn.classList.contains('liked');btn.classList.toggle('liked');
   const cnt=btn.querySelector('.rl-count');
   if(cnt){const n=liked?Math.max(0,currentCount-1):currentCount+1;cnt.textContent=n}
   try{
@@ -1189,9 +1233,7 @@ async function toggleLikeReel(pid,btn,currentCount){
     else{
       await sb.from('likes').insert([{post_id:pid,user_id:currentUser.id}]);
       const{data:p}=await sb.from('posts').select('user_id').eq('id',pid).single();
-      if(p&&p.user_id!==currentUser.id){
-        await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'like',post_id:pid}]).catch(()=>{});
-      }
+      if(p&&p.user_id!==currentUser.id){await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'like',post_id:pid}]).catch(()=>{});}
     }
   }catch(e){toast('Error')}
 }
@@ -1201,26 +1243,21 @@ function closeReels(){
   $('reelsScroll').innerHTML='';$('reelsOverlay').classList.remove('active');
 }
 
-// ============ UPLOAD (UNLIMITED) ============
+// UPLOAD (UNLIMITED)
 function openUpload(){
   upAsStory=false;resetUpload();
-  $('upTitle').textContent='New post';
-  $('upSub').textContent='Pick a photo or video from your device';
-  $('uploadOverlay').classList.add('active');
-  goStep(1);
+  $('upTitle').textContent='New post';$('upSub').textContent='Pick a photo or video';
+  $('uploadOverlay').classList.add('active');goStep(1);
 }
 function openUploadStory(){
   upAsStory=true;resetUpload();
-  $('upTitle').textContent='Add to story';
-  $('upSub').textContent='Will disappear after 24 hours';
-  $('uploadOverlay').classList.add('active');
-  goStep(1);
+  $('upTitle').textContent='Add to story';$('upSub').textContent='Will disappear after 24 hours';
+  $('uploadOverlay').classList.add('active');goStep(1);
 }
 function resetUpload(){
   upFile=null;upType=null;upFilter='none';
   if(upObjUrl){URL.revokeObjectURL(upObjUrl);upObjUrl=null}
-  $('mediaInput').value='';
-  $('shareCaption').value='';$('capCount').textContent='0';$('shareTrial').checked=false;
+  $('mediaInput').value='';$('shareCaption').value='';$('capCount').textContent='0';$('shareTrial').checked=false;
 }
 function closeUpload(){
   if(upFile&&!confirm('Discard?'))return;
@@ -1253,8 +1290,7 @@ async function sharePost(){
   const isTrial=$('shareTrial').checked;
   const btn=$('shareBtn');btn.textContent='Sharing...';btn.disabled=true;
   try{
-    const isVideo=upType==='video';
-    const bucket=isVideo?'videos':'posts';
+    const isVideo=upType==='video';const bucket=isVideo?'videos':'posts';
     let finalFile=upFile;
     if(!isVideo&&upFilter!=='none'){
       const img=new Image();img.src=upObjUrl;
@@ -1269,25 +1305,27 @@ async function sharePost(){
     const{error:upErr}=await sb.storage.from(bucket).upload(path,finalFile,{contentType:isVideo?'video/mp4':'image/jpeg'});
     if(upErr)throw upErr;
     const{data:{publicUrl}}=sb.storage.from(bucket).getPublicUrl(path);
-
     if(upAsStory){
       const{error:dbErr}=await sb.from('stories').insert([{user_id:currentUser.id,username:currentUser.username,media_url:publicUrl,media_type:isVideo?'video':'image'}]);
-      if(dbErr)throw dbErr;
-      toast('Story posted — 24hr ✨');
+      if(dbErr)throw dbErr;toast('Story posted — 24hr ✨');
     }else{
       const{error:dbErr}=await sb.from('posts').insert([{user_id:currentUser.id,username:currentUser.username,caption,image_url:isVideo?null:publicUrl,video_url:isVideo?publicUrl:null,is_trial:isTrial}]);
-      if(dbErr)throw dbErr;
-      toast('Posted!');
+      if(dbErr)throw dbErr;toast('Posted!');
     }
     resetUpload();$('uploadOverlay').classList.remove('active');
-    switchPanel('feed');
-    setTimeout(()=>renderFeed(),300);
+    switchPanel('feed');setTimeout(()=>renderFeed(),300);
   }catch(e){console.error(e);toast('Error: '+(e.message||'Upload failed'))}
   finally{btn.textContent='Share';btn.disabled=false}
 }
 
 init();
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReels();closePostViewer();document.querySelectorAll('.modal-ov').forEach(m=>m.classList.remove('active'))}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeReels();closePostViewer();hideEmojiPicker();document.querySelectorAll('.modal-ov').forEach(m=>m.classList.remove('active'))}});
+document.addEventListener('click',e=>{
+  const picker=$('emojiPicker');
+  if(picker.classList.contains('active')&&!picker.contains(e.target)&&!e.target.closest('[onclick*="toggleEmojiPicker"]')){
+    hideEmojiPicker();
+  }
+});
 </script>
 </body>
 </html>

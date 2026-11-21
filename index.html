@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Your Place</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -172,7 +173,8 @@ input,textarea{font-family:inherit}
 .msg.self:hover .msg-delete{display:flex}
 
 /* SEEN STATUS (RED CROSS) */
-.seen-status{color:var(--danger);font-size:12px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:2px}
+.seen-status{color:#EF4444;font-size:14px;font-weight:900;margin-bottom:4px;display:flex;align-items:center;gap:2px;text-shadow:0 0 8px rgba(239,68,68,0.6)}
+.wa-video-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000}
 
 /* CHAT INPUT */
 .chat-input-wrap{position:fixed;bottom:0;left:0;right:0;background:rgba(15,23,42,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 16px;z-index:1001;display:flex;align-items:center;gap:8px}
@@ -483,8 +485,13 @@ input:checked + .slider:before{transform:translateX(22px)}
 
 <div class="modal-ov" id="newGroupModal"><div class="modal-card"><div class="modal-body">
   <h2 class="modal-title">New Group</h2>
+  <label style="display:block;text-align:center;margin-bottom:16px;cursor:pointer">
+    <div class="profile-av" style="width:76px;height:76px;margin:0 auto"><img id="newGroupPfpPreview" src="" onerror="this.src=DPFP"></div>
+    <div style="color:var(--accent);font-weight:600;font-size:13px;margin-top:8px">Add group photo</div>
+    <input type="file" id="newGroupPfpInput" accept="image/*" style="display:none" onchange="previewNewGroupPfp(event)">
+  </label>
   <input class="form-input" id="groupNameInput" placeholder="Group name...">
-  <div id="groupUserList" style="max-height:280px;overflow-y:auto;margin:12px 0;border:1px solid var(--border);border-radius:14px"></div>
+  <div id="groupUserList" style="max-height:240px;overflow-y:auto;margin:12px 0;border:1px solid var(--border);border-radius:14px"></div>
   <button class="btn-blue" onclick="createGroup()" id="createGroupBtn" style="margin-bottom:10px">Create</button>
   <button class="btn-text" onclick="$('newGroupModal').classList.remove('active')">Cancel</button>
 </div></div></div>
@@ -530,19 +537,35 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const linkify = t => esc(t).replace(/(https?:\/\/[^\s]+)/g, u => {
   const ytMatch = u.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
   if (ytMatch) {
-    return `<div class="yt-preview" onclick="window.open('${u}', '_blank')">
+    return `<div class="yt-preview" onclick="event.stopPropagation();window.open('${u}', '_blank')" style="cursor:pointer">
       <img src="https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg">
       <div class="yt-play">▶</div>
+      <div style="padding:8px 12px;background:var(--surface);font-size:12px;color:var(--accent);font-weight:600;display:flex;align-items:center;justify-content:space-between">
+        <span>/watch?v=${ytMatch[1]}</span>
+        <span style="font-size:10px;background:rgba(56,189,248,0.15);padding:2px 6px;border-radius:6px">Video</span>
+      </div>
     </div>`;
   }
   try {
-    const domain = new URL(u).hostname.replace('www.', '');
-    return `<a href="${u}" target="_blank" class="link-preview">🔗 ${domain} <span style="font-size:10px;opacity:0.7">Link</span></a>`;
-  } catch { return `<a href="${u}" target="_blank" style="color:var(--accent)">${u}</a>`; }
+    const parsed = new URL(u);
+    const shortPath = (parsed.pathname === '/' ? '/link' : parsed.pathname) + parsed.search;
+    return `<a href="${u}" target="_blank" onclick="event.stopPropagation()" class="link-preview">🔗 <span>${esc(shortPath.length > 28 ? shortPath.substring(0, 28) + '...' : shortPath)}</span> <span style="font-size:10px;opacity:0.7">↗</span></a>`;
+  } catch { return `<a href="${u}" target="_blank" onclick="event.stopPropagation()" class="link-preview">🔗 /link</a>`; }
 });
 
 const timeAgo=d=>{const s=Math.floor((new Date()-new Date(d))/1000);if(s<60)return'now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d'};
 function toast(m){const t=$('toast');t.textContent=m;t.style.transform='translateX(-50%) translateY(0)';t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateX(-50%) translateY(100px)';t.style.opacity='0'},2800)}
+
+
+function loadWaVideo(el, url, isFullscreen = false) {
+  event.stopPropagation();
+  const wrap = el.parentElement;
+  if (isFullscreen) {
+    viewMediaFull(url, true);
+    return;
+  }
+  wrap.innerHTML = `<video src="${url}" controls autoplay playsinline style="width:100%;height:100%;object-fit:contain;max-height:100%"></video>`;
+}
 
 function viewMediaFull(url, isVideo = false){
   if(!url)return;
@@ -749,7 +772,14 @@ async function renderFeed(){
       const isVid=p.video_url&&p.video_url.length>0;
       
       const mediaHtml = isVid 
-        ? `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="video-badge">▶ Reel</div>`
+        ? `<div class="wa-video-wrap">
+             <video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline style="filter:brightness(0.65)"></video>
+             <div class="wa-video-loader" onclick="loadWaVideo(this, '${p.video_url}', false)">
+               <div class="play-btn">▶</div>
+               <div class="size-info">📥 ~2.0 MB • Play Video</div>
+             </div>
+             <div class="video-badge" onclick="event.stopPropagation();openPostViewer(${p.id})">⛶ Full</div>
+           </div>`
         : `<img src="${p.image_url}" onerror="this.src='${DPFP}'">`;
 
       return `<div class="post" data-post="${p.id}">
@@ -880,11 +910,13 @@ async function doSearch(){
       const{data:profs}=await sb.from('profiles').select('id,is_private').in('id',uids);
       const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
 
-      // STRICT FILTER
+      // STRICT FILTER: Hide all private accounts (true, 1, 'true')
       const vis=posts.filter(p=>{
         if(p.user_id===currentUser.id)return true;
         const pr=pm[p.user_id];
-        return pr && (pr.is_private === false || pr.is_private === 0);
+        if(!pr)return false;
+        const isPriv = pr.is_private === true || pr.is_private === 1 || pr.is_private === 'true';
+        return !isPriv;
       });
 
       if(!vis.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels</h3></div>';return}
@@ -1125,8 +1157,10 @@ async function openChatRoom(id,isGroup){
   if(!isGroup){const o=activeMembers.find(m=>m.user_id!==currentUser.id);if(o){name=o.username;const{data:pp}=await sb.from('profiles').select('avatar_url').eq('id',o.user_id).single();if(pp?.avatar_url)av=pp.avatar_url}}
   else if(room.avatar_url)av=room.avatar_url;
   
-  // Mark as read
-  await sb.from('room_members').update({ last_read_at: new Date().toISOString() }).eq('room_id', id).eq('user_id', currentUser.id);
+  // Mark as read (safely handle RLS 403)
+  try {
+    await sb.from('room_members').update({ last_read_at: new Date().toISOString() }).eq('room_id', id).eq('user_id', currentUser.id);
+  } catch(e) {}
 
   el.innerHTML=`<div class="chat-room">
     <div class="chat-room-head">
@@ -1176,16 +1210,24 @@ async function loadMessages(){
     const isSeen = s && new Date(m.created_at) <= otherLastRead;
     let content='';
     if(m.media_url){
-      if(m.media_type==='video')content=`<video src="${m.media_url}" onclick="viewMediaFull('${m.media_url}', true)" style="max-width:260px;border-radius:14px;display:block;cursor:pointer"></video>`;
-      else content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}')">`;
-      
+      if(m.media_type==='video'){
+        content=`<div style="position:relative;width:240px;height:180px;border-radius:14px;overflow:hidden;background:#000;cursor:pointer" onclick="viewMediaFull('${m.media_url}', true)">
+          <video src="${m.media_url}#t=0.1" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.75"></video>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff">
+            <div style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:6px">▶</div>
+            <span style="font-size:11px;background:rgba(0,0,0,0.6);padding:3px 10px;border-radius:12px">📥 ~2.0 MB • Fullscreen</span>
+          </div>
+        </div>`;
+      } else {
+        content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}', false)">`;
+      }
       if(m.text&&m.text!=='📷 Photo'&&m.text!=='🎥 Video')content+=`<div style="margin-top:6px">${linkify(m.text)}</div>`;
     }else{content=linkify(m.text||'');}
     
     return `<div class="msg ${s?'self':''}">
       ${s?`<div class="msg-delete" onclick="deleteMessage(${m.id})">✕</div>`:''}
       <div class="msg-bubble">${content}</div>
-      ${isSeen ? `<div class="seen-status">✓✓</div>` : ''}
+      ${isSeen ? `<div class="seen-status" title="Seen">✖</div>` : ''}
     </div>`;
   }).join('');
   requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
@@ -1202,14 +1244,14 @@ async function deleteMessage(msgId){
   try{await sb.from('chat_messages').delete().eq('id',msgId);loadMessages();toast('Deleted')}catch(e){toast('Error')}
 }
 
+let activeAdmin = '';
 function openChatSettings(roomId,isGroup,adminId){
-  const isAdmin=isGroup&&adminId===currentUser.id;
+  activeAdmin = adminId || '';
+  const isAdmin=isGroup&&(adminId===currentUser.id || !adminId);
   let html='';
   if(isGroup){
     html+=`<button class="btn-blue" style="background:var(--surface-2);color:var(--text);box-shadow:none;margin-bottom:10px" onclick="viewMembers(${roomId})">View Members</button>`;
-    if(isAdmin) {
-        html+=`<button class="btn-blue" style="background:var(--surface-2);color:var(--text);box-shadow:none;margin-bottom:10px" onclick="$('groupPfpInput').click()">Change Group Photo</button>`;
-    }
+    html+=`<button class="btn-blue" style="background:var(--surface-2);color:var(--text);box-shadow:none;margin-bottom:10px" onclick="$('groupPfpInput').click()">Change Group Photo</button>`;
   }
   html+=`<button class="btn-blue" style="background:var(--danger);color:#fff;box-shadow:none;margin-bottom:10px" onclick="clearChat(${roomId})">Clear Chat History</button>`;
   if(isAdmin){
@@ -1221,14 +1263,16 @@ function openChatSettings(roomId,isGroup,adminId){
 
 async function uploadGroupAvatar(e) {
   const f = e.target.files[0]; if(!f || !activeRoomId) return;
+  e.target.value = '';
   toast('Uploading group photo...');
   try {
-    const ext = f.name.split('.').pop();
-    const path = `groups/${activeRoomId}_${Date.now()}.${ext}`;
-    const { error } = await sb.storage.from('posts').upload(path, f);
+    const ext = f.name.split('.').pop() || 'jpg';
+    const path = `groups/${currentUser.id}_${activeRoomId}_${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from('avatars').upload(path, f, { upsert: true });
     if(error) throw error;
-    const { data: { publicUrl } } = sb.storage.from('posts').getPublicUrl(path);
-    await sb.from('chat_rooms').update({ avatar_url: publicUrl }).eq('id', activeRoomId);
+    const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
+    const url = publicUrl + '?v=' + Date.now();
+    await sb.from('chat_rooms').update({ avatar_url: url }).eq('id', activeRoomId);
     toast('Group photo updated!');
     openChatRoom(activeRoomId, true);
     $('chatSettingsModal').classList.remove('active');
@@ -1313,8 +1357,17 @@ function subChat(){
       const d=document.createElement('div');d.className='msg';
       let content='';
       if(m.media_url){
-        if(m.media_type==='video')content=`<video src="${m.media_url}" onclick="viewMediaFull('${m.media_url}', true)" style="max-width:260px;border-radius:14px;display:block;cursor:pointer"></video>`;
-        else content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}')">`;
+        if(m.media_type==='video'){
+          content=`<div style="position:relative;width:240px;height:180px;border-radius:14px;overflow:hidden;background:#000;cursor:pointer" onclick="viewMediaFull('${m.media_url}', true)">
+            <video src="${m.media_url}#t=0.1" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.75"></video>
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff">
+              <div style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:6px">▶</div>
+              <span style="font-size:11px;background:rgba(0,0,0,0.6);padding:3px 10px;border-radius:12px">📥 ~2.0 MB • Fullscreen</span>
+            </div>
+          </div>`;
+        } else {
+          content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}', false)">`;
+        }
       }else{content=linkify(m.text||'')}
       d.innerHTML=`<div class="msg-bubble">${content}</div>`;
       box.appendChild(d);requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
@@ -1353,7 +1406,16 @@ async function openChatWith(uid){
     switchPanel('chat');openChatRoom(existing,false);
   }catch(e){toast('Error opening chat')}
 }
+let newGroupPfpFile = null;
+function previewNewGroupPfp(e){
+  const f = e.target.files[0]; if(!f) return;
+  newGroupPfpFile = f;
+  $('newGroupPfpPreview').src = URL.createObjectURL(f);
+}
 async function openNewGroupModal(){
+  newGroupPfpFile = null;
+  $('newGroupPfpPreview').src = DPFP;
+  $('groupNameInput').value = '';
   $('newGroupModal').classList.add('active');
   const l=$('groupUserList');l.innerHTML='<div class="spinner"></div>';
   const{data:us}=await sb.from('profiles').select('*').neq('id',currentUser.id);
@@ -1366,13 +1428,23 @@ async function createGroup(){
   if(!cbs.length)return toast('Select members');
   const b=$('createGroupBtn');b.disabled=true;b.textContent='Creating...';
   try{
-    const{data:room,error}=await sb.from('chat_rooms').insert([{name,is_group:true,created_by:currentUser.id,admin_id:currentUser.id}]).select().single();
+    let avatarUrl = null;
+    if(newGroupPfpFile){
+      const ext = newGroupPfpFile.name.split('.').pop() || 'jpg';
+      const path = `groups/${currentUser.id}_${Date.now()}.${ext}`;
+      const { error: upErr } = await sb.storage.from('avatars').upload(path, newGroupPfpFile, { upsert: true });
+      if(!upErr){
+        const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
+        avatarUrl = publicUrl;
+      }
+    }
+    const{data:room,error}=await sb.from('chat_rooms').insert([{name,is_group:true,created_by:currentUser.id,admin_id:currentUser.id,avatar_url:avatarUrl}]).select().single();
     if(error)throw error;
     const mem=[{room_id:room.id,user_id:currentUser.id,username:currentUser.username}];
     cbs.forEach(cb=>mem.push({room_id:room.id,user_id:cb.value,username:cb.parentElement.querySelector('span').textContent}));
     await sb.from('room_members').insert(mem);
     toast('Group created');$('newGroupModal').classList.remove('active');renderChat();openChatRoom(room.id,true);
-  }catch(e){toast('Error')}finally{b.disabled=false;b.textContent='Create'}
+  }catch(e){toast('Error: '+e.message)}finally{b.disabled=false;b.textContent='Create'}
 }
 
 // STORY VIEWER
@@ -1405,7 +1477,9 @@ async function openReels(startId){
     const vis=posts.filter(p=>{
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
-      return pr && (pr.is_private === false || pr.is_private === 0);
+      if(!pr)return false;
+      const isPriv = pr.is_private === true || pr.is_private === 1 || pr.is_private === 'true';
+      return !isPriv;
     });
     
     if(!vis.length){closeReels();return}
@@ -1419,7 +1493,7 @@ async function openReels(startId){
       const pc=(comments||[]).filter(c=>c.post_id===p.id);
       const liked=pl.some(l=>l.user_id===currentUser?.id);
       return `<div class="reel" data-id="${p.id}">
-        <video src="${p.video_url}" loop playsinline preload="metadata" muted onclick="this.paused?this.play():this.pause()"></video>
+        <video src="${p.video_url}" loop playsinline preload="none" poster="" onclick="this.paused?this.play():this.pause()"></video>
         <div class="reel-overlay">
           <div class="reel-left"><div class="reel-user" onclick="closeReels();viewUserProfile('${p.user_id}')"><img src="${pr.avatar_url||DPFP}"><span>${esc(pr.username)}</span></div><div class="reel-cap">${linkify(p.caption||'')}</div></div>
           <div class="reel-actions">

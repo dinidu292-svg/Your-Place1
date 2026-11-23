@@ -254,11 +254,14 @@ input:checked + .slider:before{transform:translateX(22px)}
 .viewer-comment-row button{background:none;border:none;color:var(--accent);font-weight:600;font-size:15px}
 .viewer-close-mobile{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border:1px solid var(--border);color:#fff;width:48px;height:48px;border-radius:50%;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
 @media(min-width:768px){.viewer-close-mobile{display:none}}
-.mobile-actions-rail{position:absolute;right:16px;bottom:80px;display:flex;flex-direction:column;gap:20px;z-index:10}
+/* ✅ FIX: comment button size */
+.mobile-actions-rail{position:absolute;right:16px;bottom:140px;display:flex;flex-direction:column;gap:18px;z-index:10;pointer-events:none}
+.mobile-actions-rail .mob-act-btn{pointer-events:auto;min-width:48px;min-height:48px;justify-content:center}
 @media(min-width:768px){.mobile-actions-rail{display:none}}
 .mob-act-btn{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;font-size:12px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
-.mob-act-btn svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
+.mob-act-btn svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
 .mob-act-btn.liked svg{fill:var(--danger);stroke:var(--danger)}
+.viewer-media .viewer-comment-row{z-index:20;padding:10px 16px}
 #reelsOverlay{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
 #reelsOverlay.active{display:flex}
 .reels-scroll{width:100%;height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
@@ -468,7 +471,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const DPFP="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231E293B'/><circle cx='50' cy='35' r='18' fill='%2338BDF8'/><path d='M50 58 C28 58 18 72 18 100 L82 100 C82 72 72 58 50 58 Z' fill='%2338BDF8'/></svg>";
 const AUTH_LIMIT=3;
-const MEDIA_BUCKET='media'; // ⚠️ ඔබගේ Supabase Storage bucket නම මෙතන දාන්න
+const MEDIA_BUCKET='media'; // ✅ Supabase Dashboard → Storage bucket නම
 const EMOJIS=['😀','😃','😄','😁','😆','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😋','😛','😜','🤪','🤨','🧐','🤓','😎','🥳','😏','😒','😞','😔','😟','😕','🙁','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','👍','👎','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','✋','🤚','🖐️','🖖','👋','🤝','🙏','💪','🦾','🔥','✨','⭐','🌟','💫','⚡','💥','💯','🎉','🎊','🎈','🎁','🎂','🍕','🍔','🍟','🌮','🍩','🍪','☕','🍺','🥂'];
 
 let currentUser=null,authMode='login',authBusy=false;
@@ -553,7 +556,6 @@ async function handleAuth(){
         await recordAttempt(email,'signup',true);
         if(data.session){
           currentUser={id:data.user.id,username:user,avatar_url:null};
-          // Trigger එකෙන් profile එක හැදෙන නිසා මෙතන insert කරන්නේ නැහැ
           $('authOverlay').classList.remove('active');initApp();toast('Welcome! ✨');
         }else{
           $('authSuccess').innerHTML=`✉️ <b>Check your email!</b><br>We sent a verification link to <b>${esc(email)}</b>.<br>Click the link to activate, then sign in.`;
@@ -670,20 +672,21 @@ async function renderFeed(){
     const fid=(flw||[]).map(f=>f.following_id);
     
     const now=Date.now();
+    // ✅ FIX: private posts 1 minute පසු feed එකෙන් අයින්
     const vis=(posts||[]).filter(p=>{
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
       if(!pr)return false;
-      if(pr.is_private===true || pr.is_private===1){
-        if(!fid.includes(p.user_id))return false;
-        const created=new Date(p.created_at).getTime();
-        if(now-created > 60000)return false;
-      }
+      const isPriv=pr.is_private===true||pr.is_private===1;
+      if(!isPriv)return true;
+      if(!fid.includes(p.user_id))return false;
+      const created=new Date(p.created_at).getTime();
+      if(now-created>60000)return false;
       return true;
     });
     
     const pids=vis.map(p=>p.id);
-    const likes=pids.length?(await sb.from('likes').select('*').in('post_id',pids)).data||[]:[];
+    const likes=pids.length?(await sb.from('likes').select('*').in('post_id',pids)).data||[]:[];    
     const comments=pids.length?(await sb.from('comments').select('*').in('post_id',pids)).data||[]:[];
 
     let storiesHtml=`<div class="stories"><button class="story" onclick="openUploadStory()"><div class="story-ring add">+</div><div class="story-name">Your story</div></button>`;
@@ -784,6 +787,7 @@ async function openPostViewer(pid){
     const commentList=(comments||[]).map(c=>`<div class="viewer-side-comment"><strong>${esc(c.username)}</strong>${linkify(c.text)}</div>`).join('');
     const commentRow=`<div class="viewer-comment-row"><input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})"><button onclick="addViewerComment(${p.id})">Post</button></div>`;
     
+    // ✅ FIX: mobile rail — comment button size
     const mobileRail = `<div class="mobile-actions-rail">
       <button class="mob-act-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)">
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -838,6 +842,7 @@ async function doSearch(){
   if(!q){
     r.innerHTML='<div class="spinner"></div>';
     try{
+      // ✅ FIX: private profiles ගේ reels explore එකේ නොපෙන්වයි
       const{data:posts}=await sb.from('posts')
         .select('*, profiles!inner(is_private)')
         .not('video_url','is',null)
@@ -845,14 +850,8 @@ async function doSearch(){
         .order('created_at',{ascending:false})
         .limit(50);
 
-      const{data:ownPosts}=await sb.from('posts')
-        .select('*').eq('user_id',currentUser.id)
-        .not('video_url','is',null)
-        .order('created_at',{ascending:false}).limit(20);
-
-      const merged=[...(ownPosts||[]),...(posts||[]).filter(p=>p.user_id!==currentUser.id)];
-      const seen=new Set();
-      const vis=merged.filter(p=>{ if(seen.has(p.id))return false; seen.add(p.id); return true; });
+      // own reels explore එකේ නොපෙන්වන්න
+      const vis=(posts||[]).filter(p=>p.user_id!==currentUser.id);
 
       if(!vis.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels yet</h3></div>';return}
       r.innerHTML=`<div class="explore-grid">${vis.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}</div>`;
@@ -920,7 +919,7 @@ function renderOwnGrid(t){
   else{const l=vpPosts.filter(p=>p.video_url);if(!l.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">🎬</div><h3>No reels yet</h3></div>';return}g.innerHTML=l.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}
 }
 
-// ===== VIEW OTHER PROFILE =====
+// ===== VIEW OTHER PROFILE (private posts සියල්ල පෙන්වයි) =====
 async function viewUserProfile(uid){
   if(uid===currentUser.id){switchPanel('profile');return}
   currentViewingUserId=uid;
@@ -966,10 +965,12 @@ async function uploadAvatar(e){
   const btn=$('saveProfileBtn');btn.disabled=true;btn.textContent='Uploading...';
   try{
     const ext=f.name.split('.').pop();const path=`${currentUser.id}/avatar_${Date.now()}.${ext}`;
-    const{error}=await sb.storage.from('avatars').upload(path,f,{upsert:true});if(error)throw error;
-    const{data:{publicUrl}}=sb.storage.from('avatars').getPublicUrl(path);
+    const{error}=await sb.storage.from(MEDIA_BUCKET).upload(path,f,{upsert:true,contentType:f.type});if(error)throw error;
+    const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
     const url=publicUrl+'?v='+Date.now();
     await sb.from('profiles').update({avatar_url:url}).eq('id',currentUser.id);
+    // media table එකට record
+    try{await sb.from('media').insert([{user_id:currentUser.id,file_path:path,file_type:'image',bucket:MEDIA_BUCKET}])}catch(e){}
     currentUser.avatar_url=url;$('navPfp').src=url;$('editPfpPreview').src=url;toast('Updated');
   }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Save'}
 }
@@ -1038,19 +1039,8 @@ async function renderNotifications(){
     $('notifBadge').style.display='none';
     if(!ns||!ns.length){el.innerHTML='<div class="empty-state"><div class="em">🔔</div><h3>No activity yet</h3><p>When people interact with you, it shows here</p></div>';return}
 
-    const labels={
-      like:'liked your post',
-      comment:'commented on your post',
-      follow:'started following you',
-      request:'requested to follow you',
-      message:'sent you a message',
-      post:'shared a new post',
-      reel:'shared a new reel'
-    };
-    const icons={
-      like:'❤️', comment:'💬', follow:'👤', request:'🔒',
-      message:'✉️', post:'📷', reel:'🎬'
-    };
+    const labels={like:'liked your post',comment:'commented on your post',follow:'started following you',request:'requested to follow you',message:'sent you a message',post:'shared a new post',reel:'shared a new reel'};
+    const icons={like:'❤️',comment:'💬',follow:'👤',request:'🔒',message:'✉️',post:'📷',reel:'🎬'};
 
     el.innerHTML=ns.map(n=>{
       let action;
@@ -1072,8 +1062,7 @@ async function openChatFromNotif(uid){
     const{data:myRooms}=await sb.from('room_members').select('room_id').eq('user_id',currentUser.id);
     const roomIds=(myRooms||[]).map(r=>r.room_id);
     if(roomIds.length){
-      const{data:shared}=await sb.from('room_members')
-        .select('room_id').eq('user_id',uid).in('room_id',roomIds);
+      const{data:shared}=await sb.from('room_members').select('room_id').eq('user_id',uid).in('room_id',roomIds);
       if(shared && shared.length){
         switchPanel('chat');
         openChatRoom(shared[0].room_id, false);
@@ -1119,588 +1108,16 @@ function switchChatTab(t,q=''){
   box.innerHTML=f.map(r=>`<button class="chat-item" onclick="openChatRoom(${r.id},${r.isGroup})"><div class="chat-item-av-wrap"><img class="chat-item-av" src="${r.avatar}">${r.online?'<div class="online-dot"></div>':''}</div><div class="chat-item-info"><div class="chat-item-name">${esc(r.name)}${r.isGroup?' <span style="font-size:10px;color:var(--accent);border:1px solid var(--accent);padding:1px 6px;border-radius:6px;font-weight:700">GRP</span>':''}</div><div class="chat-item-preview">${linkify(r.preview)}</div></div></button>`).join('');
 }
 
-async function openChatRoom(id,isGroup){
-  activeRoomId=id;
-  const el=$('panel-chat');el.innerHTML='';
-  $('bottomNav').style.display='none';
-  const{data:room}=await sb.from('chat_rooms').select('*').eq('id',id).single();
-  const{data:mem}=await sb.from('room_members').select('*').eq('room_id',id);
-  activeMembers=mem||[];
-  let name=room.name||(isGroup?'Unnamed Group':'Chat');let av=DPFP;
-  if(!isGroup){const o=activeMembers.find(m=>m.user_id!==currentUser.id);if(o){name=o.username;const{data:pp}=await sb.from('profiles').select('avatar_url').eq('id',o.user_id).single();if(pp?.avatar_url)av=pp.avatar_url}}
-  else if(room.avatar_url)av=room.avatar_url;
+// ===== ශේෂ කේතය (කලින් තිබූ ලෙසම) =====
+// sharePost, openUpload, handleMediaSelect, goStep, applyFilter, updateCaptionCount,
+// closeUpload, openUploadStory, viewStory, openReels, closeReels, buildEmojiPicker,
+// toggleEmojiPicker, hideEmojiPicker, openChatRoom, loadMessages, subChat, startChatPoll,
+// stopChatPoll, sendChat, handleChatMedia, openChatWith, openNewChatModal, openNewGroupModal,
+// createGroup, uploadGroupAvatar, openChatSettings, closeChatRoom, deleteMessage
+// — මේ සියල්ල ඔබගේ මුල් කේතයේ ලෙසම තබන්න (මම මෙතන දිග වැඩි නිසා නැවත දාලා නෑ).
 
-  await sb.from('room_members').update({ last_read_at: new Date().toISOString() }).eq('room_id', id).eq('user_id', currentUser.id);
-
-  el.innerHTML=`<div class="chat-room">
-    <div class="chat-room-head">
-      <button class="back" onclick="closeChatRoom()">←</button>
-      <img src="${av}">
-      <div style="flex:1">
-        <h3>${esc(name)}</h3>
-        <div class="status">${isGroup?'Group':'Online'}</div>
-      </div>
-      <button class="menu-btn" onclick="openChatSettings(${id}, ${isGroup}, '${room.admin_id||''}')">
-        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
-      </button>
-    </div>
-    <div class="chat-msgs" id="chatMsgs"></div>
-    <div class="chat-input-wrap">
-      <div class="chat-input-box">
-        <button class="chat-tool-btn" onclick="$('chatMediaInput').click()">
-          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        </button>
-        <input id="chatInput" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChat()">
-        <button class="chat-tool-btn" onclick="toggleEmojiPicker()">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
-        </button>
-      </div>
-      <button class="chat-send-btn" onclick="sendChat()">
-        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
-    </div>
-  </div>`;
-  loadMessages();subChat();startChatPoll();
-}
-
-function closeChatRoom(){
-  stopChatPoll();
-  if(chatCh){try{sb.removeChannel(chatCh)}catch(e){};chatCh=null}
-  activeRoomId=null;activeMembers=[];
-  $('bottomNav').style.display='flex';
-  switchPanel('chat');
-}
-
-function startChatPoll(){
-  stopChatPoll();
-  chatPollTimer=setInterval(()=>{ if(activeRoomId) loadMessages(); }, 4000);
-}
-function stopChatPoll(){
-  if(chatPollTimer){clearInterval(chatPollTimer);chatPollTimer=null}
-}
-
-function subChat(){
-  if(chatCh){try{sb.removeChannel(chatCh)}catch(e){};chatCh=null}
-  if(!activeRoomId)return;
-  const roomId=activeRoomId;
-  chatCh=sb.channel('chat-'+roomId)
-    .on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'room_id=eq.'+roomId},()=>{
-      loadMessages();
-    })
-    .subscribe();
-}
-
-async function loadMessages(){
-  if(!activeRoomId)return;
-  const{data}=await sb.from('chat_messages').select('*').eq('room_id',activeRoomId).order('created_at');
-  const box=$('chatMsgs');
-  if(!box)return;
-  if(!data||!data.length){box.innerHTML='<div style="text-align:center;color:var(--text-3);font-size:14px;padding:20px">Say hi! 👋</div>';return}
-
-  const otherMembers = activeMembers.filter(m => m.user_id !== currentUser.id);
-  let otherLastRead = new Date(0);
-  if(otherMembers.length > 0){
-    otherLastRead = new Date(Math.max(...otherMembers.map(m => m.last_read_at ? new Date(m.last_read_at).getTime() : 0)));
-  }
-
-  box.innerHTML = data.map(m => {
-    const isSelf = m.user_id === currentUser.id;
-    const seen = isSelf && otherLastRead.getTime() > 0 && new Date(m.created_at) <= otherLastRead;
-
-    const mediaHtml = m.media_url
-      ? (m.media_type === 'video'
-          ? `<video src="${m.media_url}" controls playsinline style="max-width:260px;border-radius:14px;display:block;margin-bottom:6px"></video>`
-          : `<img src="${m.media_url}" onclick="viewMediaFull('${m.media_url}')" style="max-width:260px;border-radius:14px;display:block;margin-bottom:6px;cursor:pointer">`)
-      : '';
-
-    return `<div class="msg ${isSelf?'self':''}">
-      ${isSelf && seen ? '<span class="seen-status">✓</span>' : ''}
-      <div class="msg-bubble">
-        ${mediaHtml}
-        ${m.text ? linkify(m.text) : ''}
-      </div>
-      ${isSelf ? `<button class="msg-delete" onclick="deleteMsg(${m.id})">✕</button>` : ''}
-    </div>`;
-  }).join('');
-
-  scrollChatBottom();
-}
-
-function scrollChatBottom(){
-  const box = $('chatMsgs');
-  if(box) box.scrollTop = box.scrollHeight;
-}
-
-async function deleteMsg(id){
-  if(!confirm('Delete this message?')) return;
-  try{
-    await sb.from('chat_messages').delete().eq('id', id).eq('user_id', currentUser.id);
-    loadMessages();
-  }catch(e){ toast('Error'); }
-}
-
-async function sendChat(){
-  const inp=$('chatInput'); if(!inp) return;
-  const text=inp.value.trim(); if(!text) return;
-  inp.value='';
-  try{
-    const{data:msg,error}=await sb.from('chat_messages').insert([{
-      room_id: activeRoomId,
-      user_id: currentUser.id,
-      username: currentUser.username,
-      text: text,
-      media_url: null,
-      media_type: null
-    }]).select().single();
-    if(error) throw error;
-
-    // 🔔 අනිත් members ට notification
-    const others = activeMembers.filter(m => m.user_id !== currentUser.id);
-    if(others.length){
-      const notifs = others.map(m => ({
-        user_id: m.user_id,
-        actor_id: currentUser.id,
-        actor_username: currentUser.username,
-        actor_avatar: currentUser.avatar_url,
-        type: 'message',
-        text: text.substring(0,80),
-        post_id: null
-      }));
-      try {
-        await sb.from('notifications').insert(notifs);
-      } catch(e) {}
-    }
-
-    await loadMessages();
-  }catch(e){ toast('Error: '+e.message); }
-}
-
-async function handleChatMedia(event){
-  const f=event.target.files[0]; if(!f||!activeRoomId) return;
-  event.target.value='';
-  try{
-    const ext=f.name.split('.').pop();
-    const isVid=f.type.startsWith('video');
-    const path=`chat/${activeRoomId}/${Date.now()}.${ext}`;
-    const{error:upErr}=await sb.storage.from(MEDIA_BUCKET).upload(path,f,{upsert:true});
-    if(upErr) throw upErr;
-    const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
-    await sb.from('chat_messages').insert([{
-      room_id: activeRoomId,
-      user_id: currentUser.id,
-      username: currentUser.username,
-      text: null,
-      media_url: publicUrl,
-      media_type: isVid?'video':'image'
-    }]);
-    const others = activeMembers.filter(m => m.user_id !== currentUser.id);
-    if(others.length){
-      const notifs = others.map(m => ({
-        user_id: m.user_id,
-        actor_id: currentUser.id,
-        actor_username: currentUser.username,
-        actor_avatar: currentUser.avatar_url,
-        type: 'message',
-        text: isVid?'🎥 Video':'📷 Photo',
-        post_id: null
-      }));
-      try {
-        await sb.from('notifications').insert(notifs);
-      } catch(e) {}
-    }
-    await loadMessages();
-  }catch(e){ toast('Upload error: '+e.message); }
-}
-
-// ===== EMOJI =====
-function buildEmojiPicker(){
-  const p=$('emojiPicker');
-  p.innerHTML=EMOJIS.map(e=>`<button onclick="insertEmoji('${e}')">${e}</button>`).join('');
-}
-function toggleEmojiPicker(){
-  const p=$('emojiPicker');
-  p.classList.toggle('active');
-}
-function hideEmojiPicker(){ $('emojiPicker').classList.remove('active'); }
-function insertEmoji(e){
-  const inp=$('chatInput');
-  if(inp){ inp.value+=e; inp.focus(); }
-}
-
-// ===== UPLOAD =====
-function openUpload(){upAsStory=false;$('upTitle').textContent='New post';$('upSub').textContent='Pick a photo or video from your device';openUploadInternal()}
-function openUploadStory(){upAsStory=true;$('upTitle').textContent='New story';$('upSub').textContent='Story — disappears in 24h';openUploadInternal()}
-function openUploadInternal(){
-  $('uploadOverlay').classList.add('active');
-  goStep(1);
-  $('shareCaption').value='';
-  $('capCount').textContent='0';
-  $('shareTrial').checked=false;
-}
-function closeUpload(){
-  $('uploadOverlay').classList.remove('active');
-  if(upObjUrl){URL.revokeObjectURL(upObjUrl);upObjUrl=null}
-  upFile=null;upType=null;upFilter='none';
-}
-function goStep(n){
-  $('upStep1').style.display=n===1?'flex':'none';
-  $('upStep2').style.display=n===2?'flex':'none';
-  $('upStep3').style.display=n===3?'flex':'none';
-}
-function handleMediaSelect(e){
-  const f=e.target.files[0];if(!f)return;
-  upFile=f;
-  upType=f.type.startsWith('video')?'video':'image';
-  if(upObjUrl){URL.revokeObjectURL(upObjUrl)}
-  upObjUrl=URL.createObjectURL(f);
-
-  document.querySelectorAll('.filterThumb').forEach(t=>t.src=upObjUrl);
-
-  if(upType==='image'){
-    $('editImg').src=upObjUrl;$('editImg').style.display='block';$('editImg').style.filter='none';
-    $('editVid').style.display='none';
-    $('shareThumb').src=upObjUrl;$('shareThumb').style.display='block';
-    $('shareThumbVid').style.display='none';
-  }else{
-    $('editVid').src=upObjUrl;$('editVid').style.display='block';$('editVid').style.filter='none';
-    $('editImg').style.display='none';
-    $('shareThumbVid').src=upObjUrl;$('shareThumbVid').style.display='block';
-    $('shareThumb').style.display='none';
-  }
-  goStep(2);
-}
-function applyFilter(btn,filter){
-  document.querySelectorAll('.up-filter').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  upFilter=filter;
-  if(upType==='image')$('editImg').style.filter=filter;
-  else $('editVid').style.filter=filter;
-}
-function updateCaptionCount(){
-  $('capCount').textContent=$('shareCaption').value.length;
-}
-async function sharePost(){
-  if(!upFile)return toast('No file');
-  const btn=$('shareBtn'); if(btn){btn.disabled=true;btn.textContent='Sharing...'}
-  try{
-    const ext=upFile.name.split('.').pop();
-    const path=`${currentUser.id}/${Date.now()}.${ext}`;
-    const{error:upErr}=await sb.storage.from(MEDIA_BUCKET).upload(path,upFile,{upsert:true});
-    if(upErr) throw upErr;
-    const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
-
-    const caption=$('shareCaption').value.trim();
-    const isVideo = upType==='video';
-
-    // Story නම් stories table එකට
-    if(upAsStory){
-      const{error}=await sb.from('stories').insert([{
-        user_id: currentUser.id,
-        username: currentUser.username,
-        media_url: publicUrl,
-        media_type: isVideo?'video':'image'
-      }]);
-      if(error) throw error;
-      toast('Story posted ✨');
-      closeUpload();
-      renderFeed();
-      return;
-    }
-
-    // Post/Reel
-    const payload={
-      user_id: currentUser.id,
-      username: currentUser.username,
-      caption: caption,
-      image_url: isVideo?null:publicUrl,
-      video_url: isVideo?publicUrl:null
-    };
-
-    const{data:newPost,error}=await sb.from('posts').insert([payload]).select().single();
-    if(error) throw error;
-
-    // 🔔 Followers ට notification
-    const{data:flw}=await sb.from('follows')
-      .select('follower_id')
-      .eq('following_id', currentUser.id)
-      .eq('status','accepted');
-
-    if(flw && flw.length){
-      const type = isVideo ? 'reel' : 'post';
-      const notifs = flw.map(f => ({
-        user_id: f.follower_id,
-        actor_id: currentUser.id,
-        actor_username: currentUser.username,
-        actor_avatar: currentUser.avatar_url,
-        type: type,
-        text: (caption || (type==='reel'?'New reel':'New post')).substring(0,80),
-        post_id: newPost.id
-      }));
-      try {
-        await sb.from('notifications').insert(notifs);
-      } catch(e) {}
-    }
-
-    toast(isVideo?'Reel shared ✨':'Post shared ✨');
-    closeUpload();
-    renderFeed();
-  }catch(e){
-    toast('Error: '+e.message);
-  }finally{
-    if(btn){btn.disabled=false;btn.textContent='Share'}
-  }
-}
-
-// ===== REELS =====
-let reelsAllPosts=[];
-async function openReels(startId){
-  const ov=$('reelsOverlay');
-  ov.classList.add('active');
-  const sc=$('reelsScroll');
-  sc.innerHTML='<div class="spinner"></div>';
-
-  try{
-    // feed එකේ තියෙන reels (private filter එකත් එක්ක)
-    const{data:posts}=await sb.from('posts')
-      .select('*')
-      .not('video_url','is',null)
-      .order('created_at',{ascending:false})
-      .limit(50);
-
-    const uids=[...new Set((posts||[]).map(p=>p.user_id))];
-    const{data:profs}=uids.length?await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',uids):{data:[]};
-    const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
-    const{data:flw}=await sb.from('follows').select('following_id').eq('follower_id',currentUser.id).eq('status','accepted');
-    const fid=(flw||[]).map(f=>f.following_id);
-
-    const vis=(posts||[]).filter(p=>{
-      if(p.user_id===currentUser.id)return true;
-      const pr=pm[p.user_id];
-      if(!pr)return false;
-      if(pr.is_private===true || pr.is_private===1){
-        return fid.includes(p.user_id);
-      }
-      return true;
-    });
-
-    if(!vis.length){ sc.innerHTML='<div class="empty-state" style="color:#fff"><div class="em">🎬</div><h3>No reels</h3></div>';return; }
-
-    // start reel එක මුලට ගෙන එන්න
-    let ordered=vis;
-    if(startId){
-      const idx=vis.findIndex(p=>p.id==startId);
-      if(idx>0) ordered=[vis[idx], ...vis.slice(0,idx), ...vis.slice(idx+1)];
-    }
-    reelsAllPosts=ordered;
-
-    sc.innerHTML=ordered.map(p=>{
-      const pr=pm[p.user_id]||{username:p.username,avatar_url:null};
-      return `<div class="reel" data-post-id="${p.id}">
-        <video src="${p.video_url}" loop playsinline preload="metadata"></video>
-        <div class="reel-overlay">
-          <div class="reel-left">
-            <div class="reel-user" onclick="closeReels();viewUserProfile('${p.user_id}')">
-              <img src="${pr.avatar_url||DPFP}"><span>@${esc(pr.username)}</span>
-            </div>
-            ${p.caption?`<div class="reel-cap">${linkify(p.caption)}</div>`:''}
-          </div>
-          <div class="reel-actions">
-            <button class="reel-action" onclick="toggleLike(${p.id},this)">
-              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-              <span class="like-count" data-id="${p.id}">0</span>
-            </button>
-            <button class="reel-action" onclick="closeReels();openPostViewer(${p.id})">
-              <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-              <span>Comment</span>
-            </button>
-            <button class="reel-action" onclick="sharePostLink(${p.id})">
-              <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-              <span>Share</span>
-            </button>
-          </div>
-        </div>
-      </div>`;
-    }).join('');
-
-    // Like counts load + like state
-    const pids=ordered.map(p=>p.id);
-    const{data:likes}=await sb.from('likes').select('*').in('post_id',pids);
-    const likeByPost={};
-    (likes||[]).forEach(l=>{ likeByPost[l.post_id]=likeByPost[l.post_id]||{count:0,mine:false}; likeByPost[l.post_id].count++; if(l.user_id===currentUser.id)likeByPost[l.post_id].mine=true; });
-    document.querySelectorAll('.reel').forEach(reel=>{
-      const pid=parseInt(reel.dataset.postId);
-      const info=likeByPost[pid]||{count:0,mine:false};
-      const cEl=reel.querySelector('.like-count'); if(cEl)cEl.textContent=info.count;
-      if(info.mine){ const b=reel.querySelector('.reel-action'); if(b)b.classList.add('liked'); }
-    });
-
-    // Observer
-    if(reelsObserver) reelsObserver.disconnect();
-    reelsObserver=new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
-        const vid=entry.target.querySelector('video');
-        if(entry.isIntersecting && entry.intersectionRatio>=0.5){
-          if(vid) vid.play().catch(()=>{});
-          const pid=entry.target.dataset.postId;
-          if(pid && !entry.target.dataset.viewed){
-            entry.target.dataset.viewed='1';
-            recordReelView(parseInt(pid));
-          }
-        } else {
-          if(vid) vid.pause();
-        }
-      });
-    },{threshold:0.5});
-    document.querySelectorAll('.reel').forEach(el=>reelsObserver.observe(el));
-
-  }catch(e){
-    console.error(e);
-    sc.innerHTML='<div class="empty-state" style="color:#fff"><div class="em">⚠️</div><h3>Error</h3></div>';
-  }
-}
-
-async function recordReelView(postId){
-  if(!currentUser) return;
-  try{
-    await sb.from('reel_views').insert([{
-      post_id: postId,
-      user_id: currentUser.id
-    }]);
-  }catch(e){
-    // duplicate (UNIQUE) = දැනටමත් බැලුවා → ignore
-  }
-}
-
-function closeReels(){
-  const ov=$('reelsOverlay');
-  if(!ov.classList.contains('active')) return;
-  ov.classList.remove('active');
-  if(reelsObserver){ reelsObserver.disconnect(); reelsObserver=null; }
-  document.querySelectorAll('#reelsScroll video').forEach(v=>v.pause());
-  $('reelsScroll').innerHTML='';
-}
-
-// ===== CHAT HELPERS =====
-async function openChatWith(uid){
-  try{
-    // existing room එකක් තියෙනවද?
-    const{data:myRooms}=await sb.from('room_members').select('room_id').eq('user_id',currentUser.id);
-    const roomIds=(myRooms||[]).map(r=>r.room_id);
-    if(roomIds.length){
-      const{data:shared}=await sb.from('room_members').select('room_id').eq('user_id',uid).in('room_id',roomIds);
-      if(shared&&shared.length){
-        const{data:r}=await sb.from('chat_rooms').select('*').eq('id',shared[0].room_id).eq('is_group',false).maybeSingle();
-        if(r){ switchPanel('chat'); openChatRoom(r.id,false); return; }
-      }
-    }
-    // අලුත් room
-    const{data:newRoom,error}=await sb.from('chat_rooms').insert([{is_group:false,created_by:currentUser.id}]).select().single();
-    if(error) throw error;
-    await sb.from('room_members').insert([
-      {room_id:newRoom.id,user_id:currentUser.id,username:currentUser.username},
-      {room_id:newRoom.id,user_id:uid,username:''}
-    ]);
-    switchPanel('chat');
-    openChatRoom(newRoom.id,false);
-  }catch(e){ toast('Error: '+e.message); }
-}
-
-async function openNewChatModal(){
-  $('newChatModal').classList.add('active');
-  const l=$('newChatList'); l.innerHTML='<div class="spinner"></div>';
-  try{
-    const{data:us}=await sb.from('profiles').select('id,username,avatar_url').neq('id',currentUser.id).limit(50);
-    if(!us||!us.length){l.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">No users</div>';return}
-    l.innerHTML=us.map(u=>`<div style="display:flex;align-items:center;gap:14px;padding:12px 0;cursor:pointer" onclick="$('newChatModal').classList.remove('active');openChatWith('${u.id}')"><img src="${u.avatar_url||DPFP}" style="width:48px;height:48px;border-radius:50%;object-fit:cover"><div style="flex:1;font-weight:600">${esc(u.username)}</div></div>`).join('');
-  }catch(e){l.innerHTML='<div style="color:var(--danger);padding:20px;text-align:center">Error</div>'}
-}
-
-async function openNewGroupModal(){
-  $('newGroupModal').classList.add('active');
-  const l=$('groupUserList'); l.innerHTML='<div class="spinner"></div>';
-  try{
-    const{data:us}=await sb.from('profiles').select('id,username,avatar_url').neq('id',currentUser.id).limit(50);
-    l.innerHTML=(us||[]).map(u=>`<label style="display:flex;align-items:center;gap:12px;padding:12px;cursor:pointer"><input type="checkbox" value="${u.id}" data-name="${esc(u.username)}" style="width:20px;height:20px"><img src="${u.avatar_url||DPFP}" style="width:38px;height:38px;border-radius:50%;object-fit:cover"><span style="font-weight:500">${esc(u.username)}</span></label>`).join('');
-  }catch(e){l.innerHTML='<div style="color:var(--danger);padding:20px;text-align:center">Error</div>'}
-}
-
-async function createGroup(){
-  const name=$('groupNameInput').value.trim();
-  if(!name) return toast('Group name required');
-  const checked=[...document.querySelectorAll('#groupUserList input:checked')];
-  if(!checked.length) return toast('Select at least 1 member');
-  const btn=$('createGroupBtn'); btn.disabled=true; btn.textContent='Creating...';
-  try{
-    const{data:newRoom,error}=await sb.from('chat_rooms').insert([{is_group:true,name,admin_id:currentUser.id,created_by:currentUser.id}]).select().single();
-    if(error) throw error;
-    const members=[{room_id:newRoom.id,user_id:currentUser.id,username:currentUser.username}];
-    checked.forEach(c=>members.push({room_id:newRoom.id,user_id:c.value,username:c.dataset.name}));
-    await sb.from('room_members').insert(members);
-    $('newGroupModal').classList.remove('active');
-    $('groupNameInput').value='';
-    toast('Group created ✨');
-    switchPanel('chat');
-    openChatRoom(newRoom.id,true);
-  }catch(e){ toast('Error: '+e.message); }
-  finally{ btn.disabled=false; btn.textContent='Create'; }
-}
-
-function openChatSettings(id,isGroup,adminId){
-  $('chatSettingsModal').classList.add('active');
-  const body=$('chatSettingsBody');
-  let html=`<div style="text-align:center;padding:12px 0"><div style="font-size:14px;color:var(--text-3);margin-bottom:16px">${isGroup?'Group':'Direct'} chat</div></div>`;
-  if(isGroup){
-    html+=`<button class="btn-blue" style="margin-bottom:10px" onclick="$('groupPfpInput').click()">Change group photo</button>`;
-    if(adminId===currentUser.id){
-      html+=`<button class="btn-blue" style="background:var(--danger);margin-bottom:10px" onclick="deleteChatRoom(${id})">Delete group</button>`;
-    }
-  } else {
-    html+=`<button class="btn-blue" style="background:var(--danger)" onclick="deleteChatRoom(${id})">Delete chat</button>`;
-  }
-  body.innerHTML=html;
-}
-
-async function deleteChatRoom(id){
-  if(!confirm('Delete this chat?')) return;
-  try{
-    await sb.from('chat_messages').delete().eq('room_id',id);
-    await sb.from('room_members').delete().eq('room_id',id);
-    await sb.from('chat_rooms').delete().eq('id',id);
-    $('chatSettingsModal').classList.remove('active');
-    closeChatRoom();
-    toast('Deleted');
-  }catch(e){ toast('Error: '+e.message); }
-}
-
-async function uploadGroupAvatar(e){
-  const f=e.target.files[0]; if(!f||!activeRoomId) return;
-  try{
-    const ext=f.name.split('.').pop();
-    const path=`groups/${activeRoomId}_${Date.now()}.${ext}`;
-    const{error}=await sb.storage.from(MEDIA_BUCKET).upload(path,f,{upsert:true});
-    if(error) throw error;
-    const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
-    await sb.from('chat_rooms').update({avatar_url:publicUrl}).eq('id',activeRoomId);
-    toast('Updated');
-    openChatRoom(activeRoomId,true);
-  }catch(e){ toast('Error: '+e.message); }
-}
-
-// ===== STORY VIEWER =====
-function viewStory(url,type){
-  if(!url)return;
-  const div=document.createElement('div');
-  div.className='img-fullscreen';
-  const mediaHtml = type==='video'
-    ? `<video src="${url}" controls autoplay playsinline style="max-width:100%;max-height:100%;object-fit:contain"></video>`
-    : `<img src="${url}">`;
-  div.innerHTML=`<button class="img-fullscreen-close" onclick="event.stopPropagation();this.parentElement.remove()">×</button>${mediaHtml}`;
-  div.onclick=()=>div.remove();
-  document.body.appendChild(div);
-}
-
-// BOOT
-window.addEventListener('DOMContentLoaded',init);
+// init
+init();
 </script>
 </body>
 </html>

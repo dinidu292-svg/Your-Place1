@@ -523,9 +523,19 @@ input:checked + .slider:before{transform:translateX(22px)}
 <div id="toast"></div>
 
 <script>
+// අලුත් Publishable Key එක සහ URL එක
 const SB_URL='https://ujbepvlzrdvcmxpmdsez.supabase.co';
-const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYmVwdmx6cmR2Y21QbWRzZXoiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTY5MjQxNDA2NSwiZXhwIjoyMTA3OTkwMDY1fQ.-XzEMlr2W_4uOi0QDKaR4KmrPRJGPmXoDz6SlOjfqvE';
-const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const SB_KEY='sb_publishable_3YnIQrNHuX74aWrZo1JuKQ_45Igy7u-';
+
+// Supabase Client එක හදන කොට අලුත් options දාන්න
+const sb = window.supabase.createClient(SB_URL, SB_KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
+
 const DPFP="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231E293B'/><circle cx='50' cy='35' r='18' fill='%2338BDF8'/><path d='M50 58 C28 58 18 72 18 100 L82 100 C82 72 72 58 50 58 Z' fill='%2338BDF8'/></svg>";
 const MEDIA_BUCKET='media';
 const EMOJIS=['😀','😃','😄','😁','😆','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😋','😛','😜','🤪','🤨','🧐','🤓','😎','🥳','😏','😒','😞','😔','😟','😕','🙁','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','👍','👎','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','✋','🤚','🖐️','🖖','👋','🤝','🙏','💪','🦾','🔥','✨','⭐','🌟','💫','⚡','💥','💯','🎉','🎊','🎈','🎁','🎂','🍕','🍔','🍟','🌮','🍩','🍪','☕','🍺','🥂'];

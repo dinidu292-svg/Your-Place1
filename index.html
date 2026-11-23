@@ -254,7 +254,6 @@ input:checked + .slider:before{transform:translateX(22px)}
 .viewer-comment-row button{background:none;border:none;color:var(--accent);font-weight:600;font-size:15px}
 .viewer-close-mobile{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border:1px solid var(--border);color:#fff;width:48px;height:48px;border-radius:50%;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
 @media(min-width:768px){.viewer-close-mobile{display:none}}
-/* ✅ FIX: comment button size */
 .mobile-actions-rail{position:absolute;right:16px;bottom:140px;display:flex;flex-direction:column;gap:18px;z-index:10;pointer-events:none}
 .mobile-actions-rail .mob-act-btn{pointer-events:auto;min-width:48px;min-height:48px;justify-content:center}
 @media(min-width:768px){.mobile-actions-rail{display:none}}
@@ -471,7 +470,7 @@ const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZ
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const DPFP="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231E293B'/><circle cx='50' cy='35' r='18' fill='%2338BDF8'/><path d='M50 58 C28 58 18 72 18 100 L82 100 C82 72 72 58 50 58 Z' fill='%2338BDF8'/></svg>";
 const AUTH_LIMIT=3;
-const MEDIA_BUCKET='media'; // ✅ Supabase Dashboard → Storage bucket නම
+const MEDIA_BUCKET='media';
 const EMOJIS=['😀','😃','😄','😁','😆','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😋','😛','😜','🤪','🤨','🧐','🤓','😎','🥳','😏','😒','😞','😔','😟','😕','🙁','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','👍','👎','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','✋','🤚','🖐️','🖖','👋','🤝','🙏','💪','🦾','🔥','✨','⭐','🌟','💫','⚡','💥','💯','🎉','🎊','🎈','🎁','🎂','🍕','🍔','🍟','🌮','🍩','🍪','☕','🍺','🥂'];
 
 let currentUser=null,authMode='login',authBusy=false;
@@ -482,6 +481,7 @@ let allChatsCache=[];
 let reelsObserver=null;
 let upFile=null,upType=null,upFilter='none',upObjUrl=null,upAsStory=false;
 let chatPollTimer=null;
+let viewingReelsList=[];
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -584,7 +584,6 @@ async function init(){
     const {data:prof}=await sb.from('profiles').select('*').eq('id',data.session.user.id).maybeSingle();
     currentUser={id:data.session.user.id,username:prof?.username||'User',avatar_url:prof?.avatar_url};
     $('authOverlay').classList.remove('active');initApp();
-    
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('post');
     if (postId) { setTimeout(() => openPostViewer(postId), 1000); }
@@ -611,7 +610,9 @@ function updateTopNav(name){
   $('topNav').style.display='flex';
 }
 function switchPanel(name){
-  closeReels();hideEmojiPicker();stopChatPoll();
+  try{closeReels()}catch(e){}
+  try{hideEmojiPicker()}catch(e){}
+  try{stopChatPoll()}catch(e){}
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.panel===name));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   const el=$('panel-'+name);if(el)el.classList.add('active');
@@ -634,9 +635,7 @@ async function toggleFollow(target,isPriv){
     if(f||p){await sb.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',target);return'unfollowed'}
     const status=isPriv?'pending':'accepted';
     await sb.from('follows').insert([{follower_id:currentUser.id,following_id:target,status}]);
-    try {
-      await sb.from('notifications').insert([{user_id:target,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:isPriv?'request':'follow'}]);
-    } catch(e) {}
+    try {await sb.from('notifications').insert([{user_id:target,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:isPriv?'request':'follow'}]);} catch(e) {}
     return status==='pending'?'requested':'following';
   }catch(e){toast('Error: '+e.message);return null}
 }
@@ -670,9 +669,7 @@ async function renderFeed(){
     const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
     const{data:flw}=await sb.from('follows').select('following_id').eq('follower_id',currentUser.id).eq('status','accepted');
     const fid=(flw||[]).map(f=>f.following_id);
-    
     const now=Date.now();
-    // ✅ FIX: private posts 1 minute පසු feed එකෙන් අයින්
     const vis=(posts||[]).filter(p=>{
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
@@ -684,9 +681,8 @@ async function renderFeed(){
       if(now-created>60000)return false;
       return true;
     });
-    
     const pids=vis.map(p=>p.id);
-    const likes=pids.length?(await sb.from('likes').select('*').in('post_id',pids)).data||[]:[];    
+    const likes=pids.length?(await sb.from('likes').select('*').in('post_id',pids)).data||[]:[];
     const comments=pids.length?(await sb.from('comments').select('*').in('post_id',pids)).data||[]:[];
 
     let storiesHtml=`<div class="stories"><button class="story" onclick="openUploadStory()"><div class="story-ring add">+</div><div class="story-name">Your story</div></button>`;
@@ -708,11 +704,9 @@ async function renderFeed(){
       const pl=likes.filter(l=>l.post_id===p.id),pc=comments.filter(c=>c.post_id===p.id);
       const liked=pl.some(l=>l.user_id===currentUser?.id);
       const isVid=p.video_url&&p.video_url.length>0;
-      
       const mediaHtml = isVid 
         ? `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="video-badge">▶ Reel</div>`
         : `<img src="${p.image_url}" onerror="this.src='${DPFP}'">`;
-
       return `<div class="post" data-post="${p.id}">
         <div class="post-head" onclick="viewUserProfile('${p.user_id}')">
           <div class="post-avatar"><img src="${pr.avatar_url||DPFP}"></div>
@@ -753,9 +747,7 @@ async function toggleLike(pid,btn){
       await sb.from('likes').insert([{post_id:pid,user_id:currentUser.id}]);
       const{data:p}=await sb.from('posts').select('user_id').eq('id',pid).single();
       if(p&&p.user_id!==currentUser.id){
-        try {
-          await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'like',post_id:pid}]);
-        } catch(e) {}
+        try {await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'like',post_id:pid}]);} catch(e) {}
       }
     }
   }catch(e){btn.classList.toggle('liked');toast('Error')}
@@ -778,16 +770,11 @@ async function openPostViewer(pid){
     const liked=(likes||[]).some(l=>l.user_id===currentUser?.id);
     const isV=p.video_url&&p.video_url.length>0;
     const isOwn=p.user_id===currentUser.id;
-    
     const header=`<div class="viewer-side-head"><button class="back-btn" onclick="closePostViewer()" style="width:38px;height:38px"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><img src="${prof?.avatar_url||DPFP}" onclick="closePostViewer();viewUserProfile('${p.user_id}')" style="cursor:pointer;margin-left:4px"><div style="flex:1"><div class="un">${esc(prof?.username||p.username)}</div></div>${isOwn?`<button onclick="deletePost(${p.id});closePostViewer()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-3)">🗑️</button>`:''}</div>`;
     const media=isV?`<video src="${p.video_url}" controls autoplay playsinline></video>`:`<img src="${p.image_url}" onerror="this.src='${DPFP}'" onclick="viewMediaFull('${p.image_url}')">`;
-    
     const actions=`<div class="viewer-side-actions"><div class="row1"><button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button><button class="pa-btn" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div><div class="viewer-likes" id="likes-${p.id}">${(likes||[]).length} ${(likes||[]).length===1?'like':'likes'}</div><div style="font-size:15px;line-height:1.4"><strong style="color:var(--accent)">${esc(prof?.username||p.username)}</strong> ${linkify(p.caption||'')}</div></div>`;
-    
     const commentList=(comments||[]).map(c=>`<div class="viewer-side-comment"><strong>${esc(c.username)}</strong>${linkify(c.text)}</div>`).join('');
     const commentRow=`<div class="viewer-comment-row"><input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})"><button onclick="addViewerComment(${p.id})">Post</button></div>`;
-    
-    // ✅ FIX: mobile rail — comment button size
     const mobileRail = `<div class="mobile-actions-rail">
       <button class="mob-act-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)">
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -801,7 +788,6 @@ async function openPostViewer(pid){
         <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
     </div>`;
-
     w.innerHTML=`<div class="viewer">
       <button class="viewer-close-mobile" onclick="closePostViewer()">×</button>
       <div class="viewer-media">
@@ -823,11 +809,7 @@ async function addViewerComment(pid){
   try{
     await sb.from('comments').insert([{post_id:pid,user_id:currentUser.id,username:currentUser.username,text:t}]);
     const{data:p}=await sb.from('posts').select('user_id').eq('id',pid).single();
-    if(p&&p.user_id!==currentUser.id){
-      try {
-        await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'comment',post_id:pid,text:t.substring(0,80)}]);
-      } catch(e) {}
-    }
+    if(p&&p.user_id!==currentUser.id){try {await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'comment',post_id:pid,text:t.substring(0,80)}]);} catch(e) {}}
     openPostViewer(pid);
   }catch(e){toast('Error')}
 }
@@ -842,23 +824,11 @@ async function doSearch(){
   if(!q){
     r.innerHTML='<div class="spinner"></div>';
     try{
-      // ✅ FIX: private profiles ගේ reels explore එකේ නොපෙන්වයි
-      const{data:posts}=await sb.from('posts')
-        .select('*, profiles!inner(is_private)')
-        .not('video_url','is',null)
-        .eq('profiles.is_private', false)
-        .order('created_at',{ascending:false})
-        .limit(50);
-
-      // own reels explore එකේ නොපෙන්වන්න
+      const{data:posts}=await sb.from('posts').select('*, profiles!inner(is_private)').not('video_url','is',null).eq('profiles.is_private', false).order('created_at',{ascending:false}).limit(50);
       const vis=(posts||[]).filter(p=>p.user_id!==currentUser.id);
-
       if(!vis.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels yet</h3></div>';return}
       r.innerHTML=`<div class="explore-grid">${vis.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}</div>`;
-    }catch(e){
-      console.error(e);
-      r.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">Error loading</div>';
-    }
+    }catch(e){console.error(e);r.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">Error loading</div>';}
     return;
   }
   r.innerHTML='<div class="spinner"></div>';
@@ -969,7 +939,6 @@ async function uploadAvatar(e){
     const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
     const url=publicUrl+'?v='+Date.now();
     await sb.from('profiles').update({avatar_url:url}).eq('id',currentUser.id);
-    // media table එකට record
     try{await sb.from('media').insert([{user_id:currentUser.id,file_path:path,file_type:'image',bucket:MEDIA_BUCKET}])}catch(e){}
     currentUser.avatar_url=url;$('navPfp').src=url;$('editPfpPreview').src=url;toast('Updated');
   }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Save'}
@@ -1038,16 +1007,13 @@ async function renderNotifications(){
     await sb.from('notifications').update({is_read:true}).eq('user_id',currentUser.id).eq('is_read',false);
     $('notifBadge').style.display='none';
     if(!ns||!ns.length){el.innerHTML='<div class="empty-state"><div class="em">🔔</div><h3>No activity yet</h3><p>When people interact with you, it shows here</p></div>';return}
-
     const labels={like:'liked your post',comment:'commented on your post',follow:'started following you',request:'requested to follow you',message:'sent you a message',post:'shared a new post',reel:'shared a new reel'};
     const icons={like:'❤️',comment:'💬',follow:'👤',request:'🔒',message:'✉️',post:'📷',reel:'🎬'};
-
     el.innerHTML=ns.map(n=>{
       let action;
       if(n.type==='message') action=`openChatFromNotif('${n.actor_id}')`;
       else if(n.post_id) action=`openPostViewer(${n.post_id})`;
       else action=`viewUserProfile('${n.actor_id}')`;
-
       return `<div class="notif-item ${n.is_read?'':'unread'}" onclick="${action}">
         <div style="position:relative"><img src="${n.actor_avatar||DPFP}"><div class="notif-icon ${n.type}">${icons[n.type]||'•'}</div></div>
         <div class="info"><div class="txt"><b>${esc(n.actor_username||'Someone')}</b> ${labels[n.type]||n.type}${n.text?`<br><span style="color:var(--text-3);font-size:14px">"${esc(n.text)}"</span>`:''}</div><div class="time">${timeAgo(n.created_at)} ago</div></div>
@@ -1063,14 +1029,9 @@ async function openChatFromNotif(uid){
     const roomIds=(myRooms||[]).map(r=>r.room_id);
     if(roomIds.length){
       const{data:shared}=await sb.from('room_members').select('room_id').eq('user_id',uid).in('room_id',roomIds);
-      if(shared && shared.length){
-        switchPanel('chat');
-        openChatRoom(shared[0].room_id, false);
-        return;
-      }
+      if(shared && shared.length){switchPanel('chat');openChatRoom(shared[0].room_id, false);return;}
     }
-    switchPanel('chat');
-    openChatWith(uid);
+    switchPanel('chat');openChatWith(uid);
   }catch(e){ toast('Error opening chat'); }
 }
 
@@ -1108,15 +1069,296 @@ function switchChatTab(t,q=''){
   box.innerHTML=f.map(r=>`<button class="chat-item" onclick="openChatRoom(${r.id},${r.isGroup})"><div class="chat-item-av-wrap"><img class="chat-item-av" src="${r.avatar}">${r.online?'<div class="online-dot"></div>':''}</div><div class="chat-item-info"><div class="chat-item-name">${esc(r.name)}${r.isGroup?' <span style="font-size:10px;color:var(--accent);border:1px solid var(--accent);padding:1px 6px;border-radius:6px;font-weight:700">GRP</span>':''}</div><div class="chat-item-preview">${linkify(r.preview)}</div></div></button>`).join('');
 }
 
-// ===== ශේෂ කේතය (කලින් තිබූ ලෙසම) =====
-// sharePost, openUpload, handleMediaSelect, goStep, applyFilter, updateCaptionCount,
-// closeUpload, openUploadStory, viewStory, openReels, closeReels, buildEmojiPicker,
-// toggleEmojiPicker, hideEmojiPicker, openChatRoom, loadMessages, subChat, startChatPoll,
-// stopChatPoll, sendChat, handleChatMedia, openChatWith, openNewChatModal, openNewGroupModal,
-// createGroup, uploadGroupAvatar, openChatSettings, closeChatRoom, deleteMessage
-// — මේ සියල්ල ඔබගේ මුල් කේතයේ ලෙසම තබන්න (මම මෙතන දිග වැඩි නිසා නැවත දාලා නෑ).
+async function openChatRoom(id,isGroup){
+  activeRoomId=id;
+  const el=$('panel-chat');el.innerHTML='';
+  $('bottomNav').style.display='none';
+  const{data:room}=await sb.from('chat_rooms').select('*').eq('id',id).single();
+  const{data:mem}=await sb.from('room_members').select('*').eq('room_id',id);
+  activeMembers=mem||[];
+  let name=room.name||(isGroup?'Unnamed Group':'Chat');let av=DPFP;
+  if(!isGroup){const o=activeMembers.find(m=>m.user_id!==currentUser.id);if(o){name=o.username;const{data:pp}=await sb.from('profiles').select('avatar_url').eq('id',o.user_id).single();if(pp?.avatar_url)av=pp.avatar_url}}
+  else if(room.avatar_url)av=room.avatar_url;
+  await sb.from('room_members').update({last_read_at:new Date().toISOString()}).eq('room_id',id).eq('user_id',currentUser.id);
+  el.innerHTML=`<div class="chat-room">
+    <div class="chat-room-head">
+      <button class="back" onclick="closeChatRoom()">←</button>
+      <img src="${av}">
+      <div style="flex:1"><h3>${esc(name)}</h3><div class="status">${isGroup?'Group':'Online'}</div></div>
+      <button class="menu-btn" onclick="openChatSettings(${id}, ${isGroup}, '${room.admin_id||''}')">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" fill="none" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+      </button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-input-wrap">
+      <div class="chat-input-box">
+        <button class="chat-tool-btn" onclick="$('chatMediaInput').click()"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></button>
+        <input id="chatInput" placeholder="Message..." onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="chat-tool-btn" onclick="toggleEmojiPicker()"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg></button>
+      </div>
+      <button class="chat-send-btn" onclick="sendChat()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    </div>
+  </div>`;
+  loadMessages();subChat();startChatPoll();
+}
 
-// init
+function closeChatRoom(){activeRoomId=null;if(chatCh){sb.removeChannel(chatCh);chatCh=null}stopChatPoll();hideEmojiPicker();switchPanel('chat')}
+
+async function loadMessages(){
+  if(!activeRoomId)return;
+  const box=$('chatMsgs');if(!box)return;
+  const{data:msgs}=await sb.from('chat_messages').select('*').eq('room_id',activeRoomId).order('created_at');
+  const{data:mem}=await sb.from('room_members').select('last_read_at').eq('room_id',activeRoomId).eq('user_id',currentUser.id).maybeSingle();
+  const myLastRead=mem?.last_read_at?new Date(mem.last_read_at).getTime():0;
+  const otherLastReads=activeMembers.filter(m=>m.user_id!==currentUser.id).map(m=>m.last_read_at?new Date(m.last_read_at).getTime():0);
+  const otherLastRead=Math.max(0,...otherLastReads);
+  box.innerHTML=(msgs||[]).map(m=>{
+    const self=m.user_id===currentUser.id;
+    const isSeen=self&&otherLastRead>=new Date(m.created_at).getTime();
+    let mediaHtml='';
+    if(m.media_url){mediaHtml=m.media_type==='video'?`<video src="${m.media_url}" controls></video>`:`<img src="${m.media_url}" onclick="viewMediaFull('${m.media_url}')">`}
+    return `<div class="msg ${self?'self':''}" data-id="${m.id}">
+      ${self&&isSeen?'<div class="seen-status">✓</div>':''}
+      <div class="msg-bubble">${mediaHtml}${m.text?linkify(m.text):''}</div>
+      ${self?`<div class="msg-delete" onclick="deleteMessage(${m.id})">×</div>`:''}
+    </div>`;
+  }).join('');
+  box.scrollTop=box.scrollHeight;
+  await sb.from('room_members').update({last_read_at:new Date().toISOString()}).eq('room_id',activeRoomId).eq('user_id',currentUser.id);
+}
+
+function subChat(){
+  if(!activeRoomId)return;
+  if(chatCh)sb.removeChannel(chatCh);
+  chatCh=sb.channel('room-'+activeRoomId).on('postgres_changes',{event:'*',schema:'public',table:'chat_messages',filter:`room_id=eq.${activeRoomId}`},()=>loadMessages()).subscribe();
+}
+function startChatPoll(){stopChatPoll();chatPollTimer=setInterval(()=>loadMessages(),8000)}
+function stopChatPoll(){if(chatPollTimer){clearInterval(chatPollTimer);chatPollTimer=null}}
+
+async function sendChat(){
+  const inp=$('chatInput');if(!inp)return;const t=inp.value.trim();if(!t||!activeRoomId)return;inp.value='';
+  try{
+    await sb.from('chat_messages').insert([{room_id:activeRoomId,user_id:currentUser.id,username:currentUser.username,text:t}]);
+    loadMessages();
+  }catch(e){toast('Error')}
+}
+async function handleChatMedia(e){
+  const f=e.target.files[0];if(!f||!activeRoomId)return;
+  try{
+    const ext=f.name.split('.').pop();const path=`chat/${activeRoomId}/${Date.now()}.${ext}`;
+    const{error}=await sb.storage.from(MEDIA_BUCKET).upload(path,f,{upsert:true,contentType:f.type});if(error)throw error;
+    const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
+    const isVideo=f.type.startsWith('video');
+    await sb.from('chat_messages').insert([{room_id:activeRoomId,user_id:currentUser.id,username:currentUser.username,media_url:publicUrl,media_type:isVideo?'video':'image'}]);
+    loadMessages();
+  }catch(e){toast('Error: '+e.message)}
+  e.target.value='';
+}
+async function deleteMessage(id){
+  if(!confirm('Delete message?'))return;
+  try{await sb.from('chat_messages').delete().eq('id',id);loadMessages();}catch(e){toast('Error')}
+}
+
+// ===== NEW CHAT =====
+function openNewChatModal(){
+  $('newChatModal').classList.add('active');
+  const l=$('newChatList');l.innerHTML='<div class="spinner"></div>';
+  sb.from('profiles').select('id,username,avatar_url').neq('id',currentUser.id).limit(50).then(({data})=>{
+    if(!data||!data.length){l.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">No users yet.</div>';return}
+    l.innerHTML=data.map(u=>`<div class="user-row" onclick="$('newChatModal').classList.remove('active');openChatWith('${u.id}')"><img class="user-row-av" src="${u.avatar_url||DPFP}"><div class="user-row-info"><div class="user-row-name">${esc(u.username)}</div></div></div>`).join('');
+  });
+}
+async function openChatWith(uid){
+  try{
+    const{data:myRooms}=await sb.from('room_members').select('room_id').eq('user_id',currentUser.id);
+    const roomIds=(myRooms||[]).map(r=>r.room_id);
+    if(roomIds.length){
+      const{data:shared}=await sb.from('room_members').select('room_id').eq('user_id',uid).in('room_id',roomIds);
+      if(shared && shared.length){
+        const{data:room}=await sb.from('chat_rooms').select('is_group').eq('id',shared[0].room_id).single();
+        if(room&&!room.is_group){switchPanel('chat');openChatRoom(shared[0].room_id,false);return;}
+      }
+    }
+    const{data:prof}=await sb.from('profiles').select('username').eq('id',uid).single();
+    const{data:newRoom}=await sb.from('chat_rooms').insert([{is_group:false}]).select().single();
+    await sb.from('room_members').insert([
+      {room_id:newRoom.id,user_id:currentUser.id,username:currentUser.username},
+      {room_id:newRoom.id,user_id:uid,username:prof?.username||'User'}
+    ]);
+    switchPanel('chat');openChatRoom(newRoom.id,false);
+  }catch(e){toast('Error: '+e.message)}
+}
+
+// ===== NEW GROUP =====
+function openNewGroupModal(){
+  $('newGroupModal').classList.add('active');$('groupNameInput').value='';
+  const l=$('groupUserList');l.innerHTML='<div class="spinner"></div>';
+  sb.from('profiles').select('id,username,avatar_url').neq('id',currentUser.id).limit(50).then(({data})=>{
+    if(!data||!data.length){l.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">No users yet.</div>';return}
+    l.innerHTML=data.map(u=>`<label style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;border-bottom:1px solid var(--border-light)"><input type="checkbox" class="groupUserCheck" value="${u.id}" data-username="${esc(u.username)}"><img src="${u.avatar_url||DPFP}" style="width:40px;height:40px;border-radius:50%;object-fit:cover"><div style="flex:1;font-weight:600;font-size:14px">${esc(u.username)}</div></label>`).join('');
+  });
+}
+async function createGroup(){
+  const name=$('groupNameInput').value.trim();
+  if(!name)return toast('Group name required');
+  const checks=[...document.querySelectorAll('.groupUserCheck:checked')];
+  if(!checks.length)return toast('Select at least one member');
+  const btn=$('createGroupBtn');btn.disabled=true;btn.textContent='Creating...';
+  try{
+    const{data:room}=await sb.from('chat_rooms').insert([{name,is_group:true,admin_id:currentUser.id}]).select().single();
+    const members=[{room_id:room.id,user_id:currentUser.id,username:currentUser.username}];
+    checks.forEach(c=>members.push({room_id:room.id,user_id:c.value,username:c.dataset.username}));
+    await sb.from('room_members').insert(members);
+    $('newGroupModal').classList.remove('active');
+    toast('Group created');switchPanel('chat');
+  }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Create'}
+}
+async function uploadGroupAvatar(e){toast('Upload in settings not ready yet');}
+
+// ===== CHAT SETTINGS =====
+async function openChatSettings(roomId,isGroup,adminId){
+  $('chatSettingsModal').classList.add('active');
+  const b=$('chatSettingsBody');
+  let html='';
+  if(isGroup){
+    html+=`<label style="display:block;text-align:center;margin-bottom:16px;cursor:pointer"><div class="profile-av" style="width:80px;height:80px;margin:0 auto"><img id="grpPfp" src="${DPFP}"></div><div style="color:var(--accent);font-weight:600;font-size:13px;margin-top:10px">Change group photo</div><input type="file" accept="image/*" style="display:none" onchange="uploadGroupAvatar(event)"></label>`;
+    const{data:mem}=await sb.from('room_members').select('*').eq('room_id',roomId);
+    html+=`<div style="font-weight:600;margin-bottom:10px">Members (${(mem||[]).length})</div>`;
+    html+=(mem||[]).map(m=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 0"><div style="flex:1;font-size:14px">${esc(m.username)} ${m.user_id===adminId?'<span style="color:var(--warning);font-size:11px;font-weight:700">ADMIN</span>':''}</div></div>`).join('');
+  }else{
+    html+=`<div style="text-align:center;padding:20px;color:var(--text-3)">Direct chat settings</div>`;
+  }
+  html+=`<button class="btn-blue" style="margin-top:16px;background:var(--danger);box-shadow:none" onclick="leaveRoom(${roomId})">${isGroup?'Leave group':'Delete chat'}</button>`;
+  b.innerHTML=html;
+}
+async function leaveRoom(roomId){
+  if(!confirm('Are you sure?'))return;
+  await sb.from('room_members').delete().eq('room_id',roomId).eq('user_id',currentUser.id);
+  $('chatSettingsModal').classList.remove('active');closeChatRoom();
+}
+
+// ===== UPLOAD =====
+function openUpload(){$('uploadOverlay').classList.add('active');goStep(1);upFile=null;upType=null;upFilter='none';$('mediaInput').value='';$('shareCaption').value='';$('capCount').textContent='0'}
+function openUploadStory(){upAsStory=true;openUpload();$('upTitle').textContent='New story'}
+function closeUpload(){$('uploadOverlay').classList.remove('active');$('upTitle').textContent='New post'}
+function goStep(n){
+  ['upStep1','upStep2','upStep3'].forEach((id,i)=>$(id).style.display=(i+1)===n?'flex':'none');
+}
+function handleMediaSelect(e){
+  const f=e.target.files[0];if(!f)return;
+  upFile=f;upType=f.type.startsWith('video')?'video':'image';
+  const url=URL.createObjectURL(f);
+  const img=$('editImg'),vid=$('editVid');
+  if(upType==='image'){img.src=url;img.style.display='block';vid.style.display='none'}
+  else{vid.src=url;vid.style.display='block';img.style.display='none'}
+  document.querySelectorAll('.filterThumb').forEach(t=>t.src=url);
+  const st=$('shareThumb'),sv=$('shareThumbVid');
+  if(upType==='image'){st.src=url;st.style.display='block';sv.style.display='none'}
+  else{sv.src=url;sv.style.display='block';st.style.display='none'}
+  goStep(2);
+}
+function applyFilter(el,filter){
+  document.querySelectorAll('.up-filter').forEach(x=>x.classList.remove('active'));el.classList.add('active');
+  upFilter=filter;
+  ['editImg','editVid','shareThumb','shareThumbVid'].forEach(id=>{const e=$(id);if(e)e.style.filter=filter==='none'?'':filter});
+}
+function updateCaptionCount(){const v=$('shareCaption').value.length;$('capCount').textContent=v}
+async function sharePost(){
+  if(!upFile)return toast('No file');
+  const btn=$('shareBtn');btn.disabled=true;btn.textContent='Posting...';
+  try{
+    const ext=upFile.name.split('.').pop();
+    const folder=upAsStory?'stories':'posts';
+    const path=`${currentUser.id}/${folder}_${Date.now()}.${ext}`;
+    const{error:upErr}=await sb.storage.from(MEDIA_BUCKET).upload(path,upFile,{upsert:true,contentType:upFile.type});
+    if(upErr)throw upErr;
+    const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
+    try{await sb.from('media').insert([{user_id:currentUser.id,file_path:path,file_type:upType,bucket:MEDIA_BUCKET}])}catch(e){}
+    if(upAsStory){
+      await sb.from('stories').insert([{user_id:currentUser.id,username:currentUser.username,media_url:publicUrl,media_type:upType}]);
+      upAsStory=false;
+    }else{
+      await sb.from('posts').insert([{user_id:currentUser.id,username:currentUser.username,image_url:upType==='image'?publicUrl:null,video_url:upType==='video'?publicUrl:null,caption:$('shareCaption').value.trim(),is_trial_reel:$('shareTrial').checked}]);
+    }
+    toast('Posted! ✨');closeUpload();
+    if($('panel-feed').classList.contains('active'))renderFeed();
+    if($('panel-profile').classList.contains('active'))renderProfile(currentUser.id);
+  }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Share'}
+}
+
+async function viewStory(url,type){
+  if(!url)return;
+  viewMediaFull(url,type==='video');
+}
+
+// ===== REELS =====
+async function openReels(postId){
+  const ov=$('reelsOverlay');ov.classList.add('active');
+  const sc=$('reelsScroll');sc.innerHTML='<div class="spinner"></div>';
+  try{
+    let list=[];
+    if(postId){
+      const{data:p}=await sb.from('posts').select('*').eq('id',postId).single();
+      const{data:all}=await sb.from('posts').select('*').not('video_url','is',null).order('created_at',{ascending:false}).limit(30);
+      list=[p,...(all||[]).filter(x=>x.id!==p.id)];
+    }else{
+      const{data:all}=await sb.from('posts').select('*').not('video_url','is',null).order('created_at',{ascending:false}).limit(30);
+      list=all||[];
+    }
+    viewingReelsList=list;
+    if(!list.length){sc.innerHTML='<div style="color:#fff;text-align:center;padding:80px 20px">No reels yet</div>';return}
+    const uids=[...new Set(list.map(p=>p.user_id))];
+    const{data:profs}=await sb.from('profiles').select('id,username,avatar_url').in('id',uids);
+    const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
+    sc.innerHTML=list.map((p,i)=>{
+      const pr=pm[p.user_id]||{username:p.username,avatar_url:null};
+      return `<div class="reel" data-idx="${i}">
+        <video src="${p.video_url}" loop playsinline muted preload="metadata" onclick="this.paused?this.play():this.pause()"></video>
+        <div class="reel-overlay">
+          <div class="reel-left">
+            <div class="reel-user" onclick="closeReels();viewUserProfile('${p.user_id}')"><img src="${pr.avatar_url||DPFP}"><span>${esc(pr.username)}</span></div>
+            <div class="reel-cap">${linkify(p.caption||'')}</div>
+          </div>
+          <div class="reel-actions">
+            <button class="reel-action" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+            <button class="reel-action" onclick="closeReels();openPostViewer(${p.id})"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
+            <button class="reel-action" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    if(reelsObserver)reelsObserver.disconnect();
+    reelsObserver=new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        const v=en.target.querySelector('video');
+        if(!v)return;
+        if(en.isIntersecting){v.play().catch(()=>{});}else{v.pause();}
+      });
+    },{threshold:0.6});
+    sc.querySelectorAll('.reel').forEach(r=>reelsObserver.observe(r));
+    if(postId){const el=sc.querySelector('.reel');if(el)el.scrollIntoView();}
+  }catch(e){sc.innerHTML='<div style="color:#fff;text-align:center;padding:80px 20px">Error</div>'}
+}
+function closeReels(){
+  const ov=$('reelsOverlay');if(!ov)return;
+  ov.classList.remove('active');
+  const sc=$('reelsScroll');if(sc)sc.querySelectorAll('video').forEach(v=>v.pause());
+  if(reelsObserver){reelsObserver.disconnect();reelsObserver=null;}
+}
+
+// ===== EMOJI =====
+function buildEmojiPicker(){
+  const p=$('emojiPicker');if(!p)return;
+  p.innerHTML=EMOJIS.map(e=>`<button onclick="insertEmoji('${e}')">${e}</button>`).join('');
+}
+function toggleEmojiPicker(){const p=$('emojiPicker');if(!p)return;p.classList.toggle('active')}
+function hideEmojiPicker(){const p=$('emojiPicker');if(p)p.classList.remove('active')}
+function insertEmoji(e){
+  const inp=$('chatInput');if(!inp)return;
+  inp.value+=e;inp.focus();
+}
+
+// start
 init();
 </script>
 </body>

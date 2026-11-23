@@ -230,12 +230,12 @@ input:checked + .slider:before{transform:translateX(22px)}
 .img-fullscreen video{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
 .img-fullscreen-close{position:absolute;top:24px;right:24px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:28px;cursor:pointer;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center}
 
-/* ===== FULLSCREEN POST VIEWER (INSTAGRAM STYLE) ===== */
+/* ===== FIXED FULLSCREEN POST VIEWER (Instagram Style) ===== */
 #viewPostModal{position:fixed;inset:0;background:#000;z-index:9000;display:none;align-items:center;justify-content:center;padding:0}
 #viewPostModal.active{display:flex}
 #viewPostModal .modal-card{width:100%;height:100%;max-width:100%;max-height:100%;border-radius:0;background:#000;border:none;overflow:hidden}
 
-.viewer{position:relative;width:100%;height:100%;display:flex;flex-direction:column;background:#000}
+.viewer{position:relative;width:100%;height:100%;display:flex;flex-direction:column;background:#000;overflow:hidden}
 
 .viewer-media{
   position:relative;
@@ -316,12 +316,13 @@ input:checked + .slider:before{transform:translateX(22px)}
 }
 @media(min-width:768px){.viewer-close-mobile{display:none}}
 
-.mobile-actions-rail{position:absolute;right:14px;bottom:150px;display:flex;flex-direction:column;gap:18px;z-index:100;pointer-events:none}
+.mobile-actions-rail{position:absolute;right:14px;bottom:80px;display:flex;flex-direction:column;gap:18px;z-index:100;pointer-events:none}
 .mobile-actions-rail .mob-act-btn{pointer-events:auto;min-width:48px;min-height:48px;justify-content:center}
 @media(min-width:768px){.mobile-actions-rail{display:none}}
 .mob-act-btn{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;font-size:12px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.8);background:rgba(0,0,0,0.4);border-radius:50%;padding:8px;width:48px;height:48px;justify-content:center}
 .mob-act-btn svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
 .mob-act-btn.liked svg{fill:var(--danger);stroke:var(--danger)}
+
 .mobile-comment-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);display:flex;padding:10px 14px;gap:10px;z-index:100;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
 .mobile-comment-bar input{flex:1;border:none;outline:none;background:transparent;color:#fff;font-size:14px;min-width:0}
 .mobile-comment-bar button{background:none;border:none;color:var(--accent);font-weight:600;font-size:14px;flex-shrink:0}
@@ -659,7 +660,6 @@ async function init(){
 async function initApp(){
   $('navPfp').src=currentUser.avatar_url||DPFP;
   renderFeed();subscribePresence();pollNotifications();
-  // ✅ Auto-refresh feed every 30s so 1-min private posts disappear
   if(feedRefreshTimer)clearInterval(feedRefreshTimer);
   feedRefreshTimer=setInterval(()=>{
     if($('panel-feed').classList.contains('active'))renderFeed();
@@ -742,7 +742,6 @@ async function renderFeed(){
     const{data:flw}=await sb.from('follows').select('following_id').eq('follower_id',currentUser.id).eq('status','accepted');
     const fid=(flw||[]).map(f=>f.following_id);
     const now=Date.now();
-    // ✅ Instagram style: private user posts → 1 minute only in home feed
     const vis=(posts||[]).filter(p=>{
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
@@ -831,7 +830,7 @@ function sharePostLink(pid) {
   else { navigator.clipboard.writeText(url).then(() => toast('Link copied!')).catch(() => prompt('Copy:', url)); }
 }
 
-// ===== FULLSCREEN POST VIEWER =====
+// ===== FULLSCREEN POST VIEWER (Fixed) =====
 async function openPostViewer(pid){
   const w=$('viewerWrap');w.innerHTML='<div class="spinner"></div>';
   $('viewPostModal').classList.add('active');
@@ -867,27 +866,25 @@ async function openPostViewer(pid){
     const commentList=(comments||[]).map(c=>`<div class="viewer-side-comment"><strong>${esc(c.username)}</strong>${linkify(c.text)}</div>`).join('');
     const commentRow=`<div class="viewer-comment-row"><input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})"><button onclick="addViewerComment(${p.id})">Post</button></div>`;
 
-    const mobileRail = `<div class="mobile-actions-rail">
-      <button class="mob-act-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)">
-        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      </button>
-      <button class="mob-act-btn" onclick="document.getElementById('mci-${p.id}').focus()">
-        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-      </button>
-      <button class="mob-act-btn" onclick="sharePostLink(${p.id})">
-        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      </button>
-    </div>`;
-
     w.innerHTML=`<div class="viewer">
       <button class="viewer-close-mobile" onclick="closePostViewer()">×</button>
       <div class="viewer-media">
         ${mediaTag}
-        ${mobileRail}
-        <div class="mobile-comment-bar">
-          <input type="text" id="mci-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})">
-          <button onclick="addViewerComment(${p.id})">Post</button>
-        </div>
+      </div>
+      <div class="mobile-actions-rail">
+        <button class="mob-act-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)">
+          <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </button>
+        <button class="mob-act-btn" onclick="document.getElementById('mci-${p.id}').focus()">
+          <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </button>
+        <button class="mob-act-btn" onclick="sharePostLink(${p.id})">
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="mobile-comment-bar">
+        <input type="text" id="mci-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})">
+        <button onclick="addViewerComment(${p.id})">Post</button>
       </div>
       <div class="viewer-side">
         ${header}
@@ -1366,7 +1363,6 @@ async function sharePost(){
   if(!upFile)return toast('No file');
   const btn=$('shareBtn');btn.disabled=true;btn.textContent='Posting...';
   try{
-    // 1) Upload to Storage
     const ext=upFile.name.split('.').pop();
     const folder=upAsStory?'stories':'posts';
     const path=`${currentUser.id}/${folder}_${Date.now()}.${ext}`;
@@ -1374,14 +1370,12 @@ async function sharePost(){
     if(upErr) throw new Error('Storage: '+upErr.message);
     const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
 
-    // 2) Insert media (optional — if it fails, still post)
     let mediaId=null;
     try{
       const{data:m,error:mErr}=await sb.from('media').insert([{user_id:currentUser.id,file_path:path,file_type:upType,bucket:MEDIA_BUCKET}]).select().single();
       if(!mErr) mediaId=m.id;
     }catch(e){}
 
-    // 3) Insert post / story
     if(upAsStory){
       const{error:sErr}=await sb.from('stories').insert([{user_id:currentUser.id,username:currentUser.username,media_url:publicUrl,media_type:upType}]);
       if(sErr) throw new Error('Story: '+sErr.message);

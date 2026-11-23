@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Your Place</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -169,12 +168,16 @@ input,textarea{font-family:inherit}
 .msg:not(.self) .msg-bubble{border-bottom-left-radius:4px}
 .msg-bubble img{max-width:260px;border-radius:14px;display:block;margin-bottom:6px;cursor:pointer}
 .msg-bubble video{max-width:260px;border-radius:14px;display:block;margin-bottom:6px}
-.msg-delete{position:absolute;top:-8px;right:-8px;background:var(--danger);color:#fff;width:24px;height:24px;border-radius:50%;font-size:12px;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer}
+.msg-delete{position:absolute;top:-8px;right:-8px;background:var(--danger);color:#fff;width:24px;height:24px;border-radius:50%;font-size:12px;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer;z-index:10}
 .msg.self:hover .msg-delete{display:flex}
 
-/* SEEN STATUS (RED CROSS) */
-.seen-status{color:#EF4444;font-size:14px;font-weight:900;margin-bottom:4px;display:flex;align-items:center;gap:2px;text-shadow:0 0 8px rgba(239,68,68,0.6)}
-.wa-video-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#000}
+/* RED SEEN CROSS */
+.seen-status{color:var(--danger);font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:2px}
+
+/* WHATSAPP STYLE VIDEO LOADER */
+.wa-video-loader{position:relative;width:260px;height:150px;background:#000;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index:5;color:#fff;overflow:hidden;border:1px solid var(--border)}
+.wa-video-loader .play-btn{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:8px;backdrop-filter:blur(5px)}
+.wa-video-loader .size-info{font-size:12px;font-weight:600;background:rgba(0,0,0,0.6);padding:3px 10px;border-radius:20px}
 
 /* CHAT INPUT */
 .chat-input-wrap{position:fixed;bottom:0;left:0;right:0;background:rgba(15,23,42,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 16px;z-index:1001;display:flex;align-items:center;gap:8px}
@@ -297,11 +300,6 @@ input:checked + .slider:before{transform:translateX(22px)}
 .mob-act-btn svg{width:32px;height:32px;stroke:#fff;fill:none;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
 .mob-act-btn.liked svg{fill:var(--danger);stroke:var(--danger)}
 
-/* WHATSAPP STYLE VIDEO LOADER */
-.wa-video-loader{position:absolute;inset:0;background:rgba(0,0,0,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index:5;color:#fff}
-.wa-video-loader .play-btn{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:10px;backdrop-filter:blur(5px)}
-.wa-video-loader .size-info{font-size:14px;font-weight:600;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:20px}
-
 /* REELS */
 #reelsOverlay{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
 #reelsOverlay.active{display:flex}
@@ -348,22 +346,6 @@ input:checked + .slider:before{transform:translateX(22px)}
 .auth-toggle span{color:var(--accent);font-weight:600;cursor:pointer}
 .auth-success{background:rgba(16,185,129,0.15);border:1px solid var(--success);color:var(--success);padding:16px;border-radius:14px;text-align:center;font-size:14px;line-height:1.5}
 #authLimitInfo{font-size:13px;color:var(--text-3);text-align:center;margin-top:12px;line-height:1.5}
-
-/* DOUBLE TAP HEART BURST */
-.heart-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:84px;pointer-events:none;z-index:20;filter:drop-shadow(0 6px 24px rgba(244,63,94,0.7));animation:heartBurst .75s cubic-bezier(.17,.89,.32,1.49) forwards}
-@keyframes heartBurst{0%{transform:translate(-50%,-50%) scale(0);opacity:0}25%{transform:translate(-50%,-50%) scale(1.25);opacity:1}60%{transform:translate(-50%,-50%) scale(0.95);opacity:1}100%{transform:translate(-50%,-50%) scale(1.4);opacity:0}}
-
-/* REEL MUTE & CONTROLS */
-.reel-mute-btn{position:absolute;top:24px;right:24px;z-index:10;background:rgba(15,23,42,0.65);backdrop-filter:blur(12px);border:1px solid var(--border);color:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
-.reel-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.2);z-index:12}
-.reel-progress-bar{height:100%;width:0%;background:var(--grad);transition:width .1s linear}
-
-/* SHARE TO DM LIST */
-.share-dm-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-light)}
-.share-dm-row img{width:44px;height:44px;border-radius:50%;object-fit:cover}
-.share-dm-btn{padding:8px 16px;border-radius:12px;background:var(--grad);color:#fff;font-weight:600;font-size:13px}
-.share-dm-btn.sent{background:var(--surface-2);color:var(--text-3)}
-
 </style>
 </head>
 <body>
@@ -467,7 +449,6 @@ input:checked + .slider:before{transform:translateX(22px)}
   </label>
   <input class="form-input" id="editUsername" placeholder="Username">
   <input class="form-input" id="editBio" placeholder="Bio">
-  <input class="form-input" id="editWebsite" placeholder="Website / Link (e.g. https://...)">
   <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 4px;border-top:1px solid var(--border);margin-top:12px">
     <div><div style="font-weight:600;font-size:15px">Private account</div><div style="font-size:13px;color:var(--text-3);margin-top:2px">Only followers can see</div></div>
     <label class="switch"><input type="checkbox" id="editPrivate"><span class="slider"></span></label>
@@ -502,13 +483,8 @@ input:checked + .slider:before{transform:translateX(22px)}
 
 <div class="modal-ov" id="newGroupModal"><div class="modal-card"><div class="modal-body">
   <h2 class="modal-title">New Group</h2>
-  <label style="display:block;text-align:center;margin-bottom:16px;cursor:pointer">
-    <div class="profile-av" style="width:76px;height:76px;margin:0 auto"><img id="newGroupPfpPreview" src="" onerror="this.src=DPFP"></div>
-    <div style="color:var(--accent);font-weight:600;font-size:13px;margin-top:8px">Add group photo</div>
-    <input type="file" id="newGroupPfpInput" accept="image/*" style="display:none" onchange="previewNewGroupPfp(event)">
-  </label>
   <input class="form-input" id="groupNameInput" placeholder="Group name...">
-  <div id="groupUserList" style="max-height:240px;overflow-y:auto;margin:12px 0;border:1px solid var(--border);border-radius:14px"></div>
+  <div id="groupUserList" style="max-height:280px;overflow-y:auto;margin:12px 0;border:1px solid var(--border);border-radius:14px"></div>
   <button class="btn-blue" onclick="createGroup()" id="createGroupBtn" style="margin-bottom:10px">Create</button>
   <button class="btn-text" onclick="$('newGroupModal').classList.remove('active')">Cancel</button>
 </div></div></div>
@@ -517,13 +493,6 @@ input:checked + .slider:before{transform:translateX(22px)}
   <h2 class="modal-title">Chat Settings</h2>
   <div id="chatSettingsBody"></div>
   <button class="btn-text" style="margin-top:12px" onclick="$('chatSettingsModal').classList.remove('active')">Close</button>
-</div></div></div>
-
-
-<div class="modal-ov" id="shareDmModal"><div class="modal-card"><div class="modal-body">
-  <h2 class="modal-title">Send Post to Chat</h2>
-  <div id="shareDmList" style="max-height:320px;overflow-y:auto;margin-bottom:16px"></div>
-  <button class="btn-text" onclick="$('shareDmModal').classList.remove('active')">Close</button>
 </div></div></div>
 
 <div class="modal-ov" id="viewPostModal"><div class="modal-card"><div id="viewerWrap"></div></div></div>
@@ -561,35 +530,19 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const linkify = t => esc(t).replace(/(https?:\/\/[^\s]+)/g, u => {
   const ytMatch = u.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
   if (ytMatch) {
-    return `<div class="yt-preview" onclick="event.stopPropagation();window.open('${u}', '_blank')" style="cursor:pointer">
+    return `<div class="yt-preview" onclick="window.open('${u}', '_blank')">
       <img src="https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg">
       <div class="yt-play">▶</div>
-      <div style="padding:8px 12px;background:var(--surface);font-size:12px;color:var(--accent);font-weight:600;display:flex;align-items:center;justify-content:space-between">
-        <span>/watch?v=${ytMatch[1]}</span>
-        <span style="font-size:10px;background:rgba(56,189,248,0.15);padding:2px 6px;border-radius:6px">Video</span>
-      </div>
     </div>`;
   }
   try {
-    const parsed = new URL(u);
-    const shortPath = (parsed.pathname === '/' ? '/link' : parsed.pathname) + parsed.search;
-    return `<a href="${u}" target="_blank" onclick="event.stopPropagation()" class="link-preview">🔗 <span>${esc(shortPath.length > 28 ? shortPath.substring(0, 28) + '...' : shortPath)}</span> <span style="font-size:10px;opacity:0.7">↗</span></a>`;
-  } catch { return `<a href="${u}" target="_blank" onclick="event.stopPropagation()" class="link-preview">🔗 /link</a>`; }
+    const domain = new URL(u).hostname.replace('www.', '');
+    return `<a href="${u}" target="_blank" class="link-preview">🔗 ${domain} <span style="font-size:10px;opacity:0.7">Link</span></a>`;
+  } catch { return `<a href="${u}" target="_blank" style="color:var(--accent)">${u}</a>`; }
 });
 
 const timeAgo=d=>{const s=Math.floor((new Date()-new Date(d))/1000);if(s<60)return'now';if(s<3600)return Math.floor(s/60)+'m';if(s<86400)return Math.floor(s/3600)+'h';return Math.floor(s/86400)+'d'};
 function toast(m){const t=$('toast');t.textContent=m;t.style.transform='translateX(-50%) translateY(0)';t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>{t.style.transform='translateX(-50%) translateY(100px)';t.style.opacity='0'},2800)}
-
-
-function loadWaVideo(el, url, isFullscreen = false) {
-  event.stopPropagation();
-  const wrap = el.parentElement;
-  if (isFullscreen) {
-    viewMediaFull(url, true);
-    return;
-  }
-  wrap.innerHTML = `<video src="${url}" controls autoplay playsinline style="width:100%;height:100%;object-fit:contain;max-height:100%"></video>`;
-}
 
 function viewMediaFull(url, isVideo = false){
   if(!url)return;
@@ -601,6 +554,25 @@ function viewMediaFull(url, isVideo = false){
   div.innerHTML=`<button class="img-fullscreen-close" onclick="event.stopPropagation();this.parentElement.remove()">×</button>${mediaHtml}`;
   div.onclick=()=>div.remove();
   document.body.appendChild(div);
+}
+
+// WHATSAPP STYLE VIDEO SIZE
+async function loadVideoSize(url, elemId) {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    const size = res.headers.get('content-length');
+    if (size) {
+      const mb = (size / (1024 * 1024)).toFixed(1);
+      const el = document.getElementById(elemId);
+      if(el) el.innerText = mb + ' MB';
+    } else {
+      const el = document.getElementById(elemId);
+      if(el) el.innerText = 'Video';
+    }
+  } catch(e) {
+    const el = document.getElementById(elemId);
+    if(el) el.innerText = 'Video';
+  }
 }
 
 // AUTH
@@ -796,14 +768,7 @@ async function renderFeed(){
       const isVid=p.video_url&&p.video_url.length>0;
       
       const mediaHtml = isVid 
-        ? `<div class="wa-video-wrap">
-             <video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline style="filter:brightness(0.65)"></video>
-             <div class="wa-video-loader" onclick="loadWaVideo(this, '${p.video_url}', false)">
-               <div class="play-btn">▶</div>
-               <div class="size-info">📥 ~2.0 MB • Play Video</div>
-             </div>
-             <div class="video-badge" onclick="event.stopPropagation();openPostViewer(${p.id})">⛶ Full</div>
-           </div>`
+        ? `<video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="video-badge">▶ Reel</div>`
         : `<img src="${p.image_url}" onerror="this.src='${DPFP}'">`;
 
       return `<div class="post" data-post="${p.id}">
@@ -812,15 +777,13 @@ async function renderFeed(){
           <div style="flex:1"><div class="post-name">${esc(pr.username)} ${pr.is_private?'🔒':''}</div><div class="post-loc">${timeAgo(p.created_at)} ago</div></div>
           <button class="post-more" onclick="event.stopPropagation();postMenu(${p.id},${p.user_id===currentUser.id})">⋯</button>
         </div>
-        <div class="post-media" onclick="openPostViewer(${p.id})" ondblclick="event.stopPropagation();doubleTapLike(${p.id},this)">
+        <div class="post-media" onclick="openPostViewer(${p.id})" ondblclick="toggleLike(${p.id},this.closest('.post').querySelector('.pa-btn'))">
           ${mediaHtml}
         </div>
         <div class="post-actions">
           <button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
           <button class="pa-btn" onclick="openPostViewer(${p.id})"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></button>
-          <button class="pa-btn" onclick="openShareDm(${p.id})" title="Send to Chat"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-          <button class="pa-btn" onclick="sharePostLink(${p.id})" title="Copy Link"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
-          <button class="pa-btn bookmark ${getSavedIds().includes(p.id)?'saved':''}" onclick="toggleSavePost(${p.id},this)" title="Save"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+          <button class="pa-btn" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
         </div>
         <div class="post-likes" id="likes-${p.id}">${pl.length} ${pl.length===1?'like':'likes'}</div>
         ${p.caption?`<div class="post-caption"><strong onclick="viewUserProfile('${p.user_id}')">${esc(pr.username)}</strong>${linkify(p.caption)}</div>`:''}
@@ -851,59 +814,6 @@ async function toggleLike(pid,btn){
     }
   }catch(e){btn.classList.toggle('liked');toast('Error')}
 }
-
-function doubleTapLike(pid, container){
-  const h = document.createElement('div');
-  h.className = 'heart-burst';
-  h.textContent = '❤️';
-  container.appendChild(h);
-  setTimeout(()=>h.remove(), 800);
-  const btn = container.closest('.post')?.querySelector('.pa-btn');
-  if(btn && !btn.classList.contains('liked')) toggleLike(pid, btn);
-}
-
-async function openShareDm(pid){
-  $('shareDmModal').classList.add('active');
-  const list = $('shareDmList');
-  list.innerHTML = '<div class="spinner"></div>';
-  try{
-    const{data:us}=await sb.from('profiles').select('id,username,avatar_url').neq('id',currentUser.id).limit(30);
-    if(!us||!us.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--text-3)">No users found</div>';return}
-    list.innerHTML = us.map(u=>`<div class="share-dm-row">
-      <img src="${u.avatar_url||DPFP}">
-      <div style="flex:1;font-weight:600;font-size:15px">${esc(u.username)}</div>
-      <button class="share-dm-btn" onclick="sendPostToUser('${u.id}', ${pid}, this)">Send</button>
-    </div>`).join('');
-  }catch(e){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--danger)">Error</div>'}
-}
-
-async function sendPostToUser(uid, pid, btn){
-  btn.disabled = true; btn.textContent = 'Sending...';
-  try{
-    const{data:mr}=await sb.from('room_members').select('room_id').eq('user_id',currentUser.id);
-    const ids=(mr||[]).map(m=>m.room_id);
-    let existing=null;
-    if(ids.length){
-      const{data:tr}=await sb.from('room_members').select('room_id').eq('user_id',uid).in('room_id',ids);
-      for(const r of tr||[]){
-        const{data:room}=await sb.from('chat_rooms').select('*').eq('id',r.room_id).single();
-        if(room&&!room.is_group){existing=room.id;break}
-      }
-    }
-    if(!existing){
-      const{data:nr,error}=await sb.from('chat_rooms').insert([{is_group:false,created_by:currentUser.id}]).select().single();
-      if(error)throw error;
-      existing=nr.id;
-      const{data:op}=await sb.from('profiles').select('username').eq('id',uid).single();
-      await sb.from('room_members').insert([{room_id:existing,user_id:currentUser.id,username:currentUser.username},{room_id:existing,user_id:uid,username:op?.username||'User'}]);
-    }
-    const postUrl = window.location.origin + window.location.pathname + '?post=' + pid;
-    await sb.from('chat_messages').insert([{room_id:existing,user_id:currentUser.id,username:currentUser.username,text:'Shared a post: ' + postUrl}]);
-    btn.textContent = 'Sent ✓'; btn.classList.add('sent');
-    toast('Sent to chat!');
-  }catch(e){btn.disabled=false;btn.textContent='Send';toast('Error sending')}
-}
-
 function sharePostLink(pid) {
   const url = window.location.origin + window.location.pathname + '?post=' + pid;
   if (navigator.share) { navigator.share({ title: 'View this post on Your Place', url: url }).catch(() => {}); } 
@@ -981,20 +891,15 @@ async function doSearch(){
   if(!q){
     r.innerHTML='<div class="spinner"></div>';
     try{
-      const{data:posts}=await sb.from('posts').select('*').not('video_url','is',null).order('created_at',{ascending:false}).limit(50);
+      const{data:posts}=await sb.from('posts').select('*, profiles!inner(is_private)').not('video_url','is',null).order('created_at',{ascending:false}).limit(50);
       
       if(!posts||!posts.length) { r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No reels yet</h3></div>'; return; }
       
-      const uids=[...new Set(posts.map(p=>p.user_id))];
-      const{data:profs}=await sb.from('profiles').select('id,is_private').in('id',uids);
-      const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
-
-      // STRICT FILTER: Only strictly public accounts show in Explore Reels
+      // STRICT FILTER
       const vis=posts.filter(p=>{
         if(p.user_id===currentUser.id)return true;
-        const pr=pm[p.user_id];
-        if(!pr)return false;
-        return pr.is_private === false || pr.is_private === 0 || pr.is_private === 'false';
+        const isPriv = p.profiles.is_private === true || p.profiles.is_private === 1 || p.profiles.is_private === 'true';
+        return !isPriv;
       });
 
       if(!vis.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels</h3></div>';return}
@@ -1039,47 +944,25 @@ async function renderProfile(uid){
         <div class="pstat" onclick="openConnections('following',currentUser.id)"><div class="pstat-num">${stats.following}</div><div class="pstat-label">following</div></div>
       </div>
     </div>
-    <div class="profile-bio"><div class="bio-name">${esc(pr.username)} ${pr.is_private?'🔒':''}</div>${pr.bio?`<div>${linkify(pr.bio)}</div>`:''}${pr.website?`<div style="margin-top:4px">${linkify(pr.website)}</div>`:''}</div>
+    <div class="profile-bio"><div class="bio-name">${esc(pr.username)} ${pr.is_private?'🔒':''}</div>${pr.bio?`<div>${linkify(pr.bio)}</div>`:''}</div>
     <div class="profile-btns">
       <button class="profile-btn" onclick="openEditProfile()">Edit profile</button>
       <button class="profile-btn primary" onclick="openUpload()">+ New</button>
       ${pending>0?`<button class="profile-btn" style="flex:0.5" onclick="openFollowRequests()">${pending} req</button>`:''}
     </div>
     <div class="profile-tabs">
-      <button class="ptab active" onclick="switchOwnTab('posts',this)" title="Posts"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></button>
-      <button class="ptab" onclick="switchOwnTab('reels',this)" title="Reels"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
-      <button class="ptab" onclick="switchOwnTab('saved',this)" title="Saved"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+      <button class="ptab active" onclick="switchOwnTab('posts',this)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg></button>
+      <button class="ptab" onclick="switchOwnTab('reels',this)"><svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
     </div>
     <div class="grid" id="ownGrid"></div>`;
   vpPosts=posts||[];renderOwnGrid('posts');
-  $('editUsername').value=pr.username;$('editBio').value=pr.bio||'';if($('editWebsite'))$('editWebsite').value=pr.website||'';$('editPrivate').checked=pr.is_private===true;$('editPfpPreview').src=pr.avatar_url||DPFP;
+  $('editUsername').value=pr.username;$('editBio').value=pr.bio||'';$('editPrivate').checked=pr.is_private===true;$('editPfpPreview').src=pr.avatar_url||DPFP;
 }
 function switchOwnTab(t,el){document.querySelectorAll('#panel-profile .ptab').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderOwnGrid(t)}
-function getSavedIds(){
-  try{return JSON.parse(localStorage.getItem('yp_saved_'+(currentUser?.id||''))||'[]')}catch(e){return[]}
-}
-function toggleSavePost(pid, btn){
-  let ids = getSavedIds();
-  const idx = ids.indexOf(pid);
-  if(idx > -1){ ids.splice(idx,1); if(btn) btn.classList.remove('saved'); toast('Removed from saved'); }
-  else { ids.push(pid); if(btn) btn.classList.add('saved'); toast('Saved to collection ✨'); }
-  localStorage.setItem('yp_saved_'+(currentUser?.id||''), JSON.stringify(ids));
-}
-async function renderOwnGrid(t){
+function renderOwnGrid(t){
   const g=$('ownGrid');
   if(t==='posts'){const l=vpPosts.filter(p=>p.image_url);if(!l.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">📷</div><h3>No posts yet</h3></div>';return}g.innerHTML=l.map(p=>`<div class="grid-item" onclick="openPostViewer(${p.id})"><img src="${p.image_url}"></div>`).join('')}
-  else if(t==='reels'){const l=vpPosts.filter(p=>p.video_url);if(!l.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">🎬</div><h3>No reels yet</h3></div>';return}g.innerHTML=l.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}
-  else if(t==='saved'){
-    const ids = getSavedIds();
-    if(!ids.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">🔖</div><h3>No saved posts</h3><p>Bookmark posts to view them later</p></div>';return}
-    g.innerHTML='<div class="spinner" style="grid-column:1/-1"></div>';
-    const{data:sp}=await sb.from('posts').select('*').in('id',ids).order('created_at',{ascending:false});
-    if(!sp||!sp.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">🔖</div><h3>No saved posts</h3></div>';return}
-    g.innerHTML=sp.map(p=>p.video_url
-      ? `<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`
-      : `<div class="grid-item" onclick="openPostViewer(${p.id})"><img src="${p.image_url}"></div>`
-    ).join('');
-  }
+  else{const l=vpPosts.filter(p=>p.video_url);if(!l.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">🎬</div><h3>No reels yet</h3></div>';return}g.innerHTML=l.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}
 }
 
 // VIEW OTHER PROFILE
@@ -1136,16 +1019,11 @@ async function uploadAvatar(e){
   }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Save'}
 }
 async function saveProfile(){
-  const u=$('editUsername').value.trim(),b=$('editBio').value.trim(),w=$('editWebsite')?$('editWebsite').value.trim():'',p=$('editPrivate').checked;
+  const u=$('editUsername').value.trim(),b=$('editBio').value.trim(),p=$('editPrivate').checked;
   if(!u)return toast('Username required');
   const btn=$('saveProfileBtn');btn.disabled=true;btn.textContent='Saving...';
   try{
-    const upd = {username:u,bio:b,is_private:p};
-    if(w !== undefined) upd.website = w;
-    const {error} = await sb.from('profiles').update(upd).eq('id',currentUser.id);
-    if(error && error.message && error.message.includes('website')){
-      await sb.from('profiles').update({username:u,bio:b,is_private:p}).eq('id',currentUser.id);
-    }
+    await sb.from('profiles').update({username:u,bio:b,is_private:p}).eq('id',currentUser.id);
     currentUser.username=u;await sb.from('posts').update({username:u}).eq('user_id',currentUser.id);
     $('editProfileModal').classList.remove('active');toast('Saved');renderProfile(currentUser.id);
     if($('panel-feed').classList.contains('active'))renderFeed();
@@ -1262,10 +1140,8 @@ async function openChatRoom(id,isGroup){
   if(!isGroup){const o=activeMembers.find(m=>m.user_id!==currentUser.id);if(o){name=o.username;const{data:pp}=await sb.from('profiles').select('avatar_url').eq('id',o.user_id).single();if(pp?.avatar_url)av=pp.avatar_url}}
   else if(room.avatar_url)av=room.avatar_url;
   
-  // Mark as read (safely handle RLS 403)
-  try {
-    await sb.from('room_members').update({ last_read_at: new Date().toISOString() }).eq('room_id', id).eq('user_id', currentUser.id);
-  } catch(e) {}
+  // Mark as read
+  await sb.from('room_members').update({ last_read_at: new Date().toISOString() }).eq('room_id', id).eq('user_id', currentUser.id);
 
   el.innerHTML=`<div class="chat-room">
     <div class="chat-room-head">
@@ -1303,7 +1179,6 @@ async function loadMessages(){
   const box=$('chatMsgs');
   if(!data||!data.length){box.innerHTML='<div style="text-align:center;color:var(--text-3);font-size:14px;padding:20px">Say hi! 👋</div>';return}
   
-  // Get other member's last read
   const otherMembers = activeMembers.filter(m => m.user_id !== currentUser.id);
   let otherLastRead = new Date(0);
   if(otherMembers.length > 0) {
@@ -1315,24 +1190,24 @@ async function loadMessages(){
     const isSeen = s && new Date(m.created_at) <= otherLastRead;
     let content='';
     if(m.media_url){
-      if(m.media_type==='video'){
-        content=`<div style="position:relative;width:240px;height:180px;border-radius:14px;overflow:hidden;background:#000;cursor:pointer" onclick="viewMediaFull('${m.media_url}', true)">
-          <video src="${m.media_url}#t=0.1" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.75"></video>
-          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff">
-            <div style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:6px">▶</div>
-            <span style="font-size:11px;background:rgba(0,0,0,0.6);padding:3px 10px;border-radius:12px">📥 ~2.0 MB • Fullscreen</span>
-          </div>
-        </div>`;
+      if(m.media_type==='video') {
+        const vidId = 'vid-'+m.id;
+        content=`<div class="wa-video-loader" onclick="viewMediaFull('${m.media_url}', true)">
+                   <div class="play-btn">▶</div>
+                   <div class="size-info" id="${vidId}">Loading...</div>
+                 </div>`;
+        setTimeout(() => loadVideoSize(m.media_url, vidId), 100);
       } else {
-        content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}', false)">`;
+        content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}')">`;
       }
+      
       if(m.text&&m.text!=='📷 Photo'&&m.text!=='🎥 Video')content+=`<div style="margin-top:6px">${linkify(m.text)}</div>`;
     }else{content=linkify(m.text||'');}
     
     return `<div class="msg ${s?'self':''}">
       ${s?`<div class="msg-delete" onclick="deleteMessage(${m.id})">✕</div>`:''}
       <div class="msg-bubble">${content}</div>
-      ${isSeen ? `<div class="seen-status" title="Seen">✖</div>` : ''}
+      ${isSeen ? `<div class="seen-status">❌</div>` : ''}
     </div>`;
   }).join('');
   requestAnimationFrame(()=>box.scrollTop=box.scrollHeight);
@@ -1349,14 +1224,14 @@ async function deleteMessage(msgId){
   try{await sb.from('chat_messages').delete().eq('id',msgId);loadMessages();toast('Deleted')}catch(e){toast('Error')}
 }
 
-let activeAdmin = '';
 function openChatSettings(roomId,isGroup,adminId){
-  activeAdmin = adminId || '';
-  const isAdmin=isGroup&&(adminId===currentUser.id || !adminId);
+  const isAdmin=isGroup&&adminId===currentUser.id;
   let html='';
   if(isGroup){
     html+=`<button class="btn-blue" style="background:var(--surface-2);color:var(--text);box-shadow:none;margin-bottom:10px" onclick="viewMembers(${roomId})">View Members</button>`;
-    html+=`<button class="btn-blue" style="background:var(--surface-2);color:var(--text);box-shadow:none;margin-bottom:10px" onclick="$('groupPfpInput').click()">Change Group Photo</button>`;
+    if(isAdmin) {
+        html+=`<button class="btn-blue" style="background:var(--surface-2);color:var(--text);box-shadow:none;margin-bottom:10px" onclick="$('groupPfpInput').click()">Change Group Photo</button>`;
+    }
   }
   html+=`<button class="btn-blue" style="background:var(--danger);color:#fff;box-shadow:none;margin-bottom:10px" onclick="clearChat(${roomId})">Clear Chat History</button>`;
   if(isAdmin){
@@ -1368,16 +1243,14 @@ function openChatSettings(roomId,isGroup,adminId){
 
 async function uploadGroupAvatar(e) {
   const f = e.target.files[0]; if(!f || !activeRoomId) return;
-  e.target.value = '';
   toast('Uploading group photo...');
   try {
-    const ext = f.name.split('.').pop() || 'jpg';
-    const path = `groups/${currentUser.id}_${activeRoomId}_${Date.now()}.${ext}`;
-    const { error } = await sb.storage.from('avatars').upload(path, f, { upsert: true });
+    const ext = f.name.split('.').pop();
+    const path = `groups/${activeRoomId}_${Date.now()}.${ext}`;
+    const { error } = await sb.storage.from('posts').upload(path, f);
     if(error) throw error;
-    const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
-    const url = publicUrl + '?v=' + Date.now();
-    await sb.from('chat_rooms').update({ avatar_url: url }).eq('id', activeRoomId);
+    const { data: { publicUrl } } = sb.storage.from('posts').getPublicUrl(path);
+    await sb.from('chat_rooms').update({ avatar_url: publicUrl }).eq('id', activeRoomId);
     toast('Group photo updated!');
     openChatRoom(activeRoomId, true);
     $('chatSettingsModal').classList.remove('active');
@@ -1462,16 +1335,15 @@ function subChat(){
       const d=document.createElement('div');d.className='msg';
       let content='';
       if(m.media_url){
-        if(m.media_type==='video'){
-          content=`<div style="position:relative;width:240px;height:180px;border-radius:14px;overflow:hidden;background:#000;cursor:pointer" onclick="viewMediaFull('${m.media_url}', true)">
-            <video src="${m.media_url}#t=0.1" preload="metadata" muted playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.75"></video>
-            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff">
-              <div style="width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:6px">▶</div>
-              <span style="font-size:11px;background:rgba(0,0,0,0.6);padding:3px 10px;border-radius:12px">📥 ~2.0 MB • Fullscreen</span>
-            </div>
-          </div>`;
+        if(m.media_type==='video') {
+          const vidId = 'vid-sub-'+m.id;
+          content=`<div class="wa-video-loader" onclick="viewMediaFull('${m.media_url}', true)">
+                     <div class="play-btn">▶</div>
+                     <div class="size-info" id="${vidId}">Loading...</div>
+                   </div>`;
+          setTimeout(() => loadVideoSize(m.media_url, vidId), 100);
         } else {
-          content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}', false)">`;
+          content=`<img src="${m.media_url}" style="max-width:260px;border-radius:14px;display:block;cursor:pointer" onclick="viewMediaFull('${m.media_url}')">`;
         }
       }else{content=linkify(m.text||'')}
       d.innerHTML=`<div class="msg-bubble">${content}</div>`;
@@ -1511,16 +1383,7 @@ async function openChatWith(uid){
     switchPanel('chat');openChatRoom(existing,false);
   }catch(e){toast('Error opening chat')}
 }
-let newGroupPfpFile = null;
-function previewNewGroupPfp(e){
-  const f = e.target.files[0]; if(!f) return;
-  newGroupPfpFile = f;
-  $('newGroupPfpPreview').src = URL.createObjectURL(f);
-}
 async function openNewGroupModal(){
-  newGroupPfpFile = null;
-  $('newGroupPfpPreview').src = DPFP;
-  $('groupNameInput').value = '';
   $('newGroupModal').classList.add('active');
   const l=$('groupUserList');l.innerHTML='<div class="spinner"></div>';
   const{data:us}=await sb.from('profiles').select('*').neq('id',currentUser.id);
@@ -1533,23 +1396,13 @@ async function createGroup(){
   if(!cbs.length)return toast('Select members');
   const b=$('createGroupBtn');b.disabled=true;b.textContent='Creating...';
   try{
-    let avatarUrl = null;
-    if(newGroupPfpFile){
-      const ext = newGroupPfpFile.name.split('.').pop() || 'jpg';
-      const path = `groups/${currentUser.id}_${Date.now()}.${ext}`;
-      const { error: upErr } = await sb.storage.from('avatars').upload(path, newGroupPfpFile, { upsert: true });
-      if(!upErr){
-        const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
-        avatarUrl = publicUrl;
-      }
-    }
-    const{data:room,error}=await sb.from('chat_rooms').insert([{name,is_group:true,created_by:currentUser.id,admin_id:currentUser.id,avatar_url:avatarUrl}]).select().single();
+    const{data:room,error}=await sb.from('chat_rooms').insert([{name,is_group:true,created_by:currentUser.id,admin_id:currentUser.id}]).select().single();
     if(error)throw error;
     const mem=[{room_id:room.id,user_id:currentUser.id,username:currentUser.username}];
     cbs.forEach(cb=>mem.push({room_id:room.id,user_id:cb.value,username:cb.parentElement.querySelector('span').textContent}));
     await sb.from('room_members').insert(mem);
     toast('Group created');$('newGroupModal').classList.remove('active');renderChat();openChatRoom(room.id,true);
-  }catch(e){toast('Error: '+e.message)}finally{b.disabled=false;b.textContent='Create'}
+  }catch(e){toast('Error')}finally{b.disabled=false;b.textContent='Create'}
 }
 
 // STORY VIEWER
@@ -1559,23 +1412,7 @@ function viewStory(url,type){
   ov.style.cssText='position:fixed;inset:0;background:#000;z-index:9800;display:flex;align-items:center;justify-content:center';
   ov.innerHTML=`
     <div style="position:absolute;top:20px;left:20px;right:20px;height:4px;background:rgba(255,255,255,0.2);border-radius:4px;overflow:hidden"><div style="height:100%;background:var(--grad);width:0;animation:storyProg 5s linear forwards"></div></div>
-    <style>@keyframes storyProg{to{width:100%}}
-/* DOUBLE TAP HEART BURST */
-.heart-burst{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:84px;pointer-events:none;z-index:20;filter:drop-shadow(0 6px 24px rgba(244,63,94,0.7));animation:heartBurst .75s cubic-bezier(.17,.89,.32,1.49) forwards}
-@keyframes heartBurst{0%{transform:translate(-50%,-50%) scale(0);opacity:0}25%{transform:translate(-50%,-50%) scale(1.25);opacity:1}60%{transform:translate(-50%,-50%) scale(0.95);opacity:1}100%{transform:translate(-50%,-50%) scale(1.4);opacity:0}}
-
-/* REEL MUTE & CONTROLS */
-.reel-mute-btn{position:absolute;top:24px;right:24px;z-index:10;background:rgba(15,23,42,0.65);backdrop-filter:blur(12px);border:1px solid var(--border);color:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px}
-.reel-progress{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.2);z-index:12}
-.reel-progress-bar{height:100%;width:0%;background:var(--grad);transition:width .1s linear}
-
-/* SHARE TO DM LIST */
-.share-dm-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border-light)}
-.share-dm-row img{width:44px;height:44px;border-radius:50%;object-fit:cover}
-.share-dm-btn{padding:8px 16px;border-radius:12px;background:var(--grad);color:#fff;font-weight:600;font-size:13px}
-.share-dm-btn.sent{background:var(--surface-2);color:var(--text-3)}
-
-</style>
+    <style>@keyframes storyProg{to{width:100%}}</style>
     <button onclick="this.parentElement.remove()" style="position:absolute;top:24px;right:24px;color:#fff;font-size:28px;background:rgba(0,0,0,0.4);border:none;width:48px;height:48px;border-radius:50%;cursor:pointer">×</button>
     ${type==='video'?`<video src="${url}" autoplay controls playsinline style="max-width:100%;max-height:100%"></video>`:`<img src="${url}" style="max-width:100%;max-height:100%">`}
   `;
@@ -1594,12 +1431,11 @@ async function openReels(startId){
     const{data:profs}=await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',uids);
     const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
     
-    // STRICT FILTER: Only strictly public accounts (is_private === false) show in Reels feed
+    // STRICT FILTER: Only public accounts (or my own) show in Reels feed
     const vis=posts.filter(p=>{
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
-      if(!pr)return false;
-      return pr.is_private === false || pr.is_private === 0 || pr.is_private === 'false';
+      return pr && (pr.is_private === false || pr.is_private === 0);
     });
     
     if(!vis.length){closeReels();return}
@@ -1612,17 +1448,13 @@ async function openReels(startId){
       const pl=(likes||[]).filter(l=>l.post_id===p.id);
       const pc=(comments||[]).filter(c=>c.post_id===p.id);
       const liked=pl.some(l=>l.user_id===currentUser?.id);
-      return `<div class="reel" data-id="${p.id}" ondblclick="reelDoubleTap(${p.id},this)">
-        <button class="reel-mute-btn" onclick="event.stopPropagation();toggleReelMute(this)">🔊</button>
-        <video src="${p.video_url}" loop playsinline preload="none" onclick="this.paused?this.play():this.pause()" ontimeupdate="updateReelProg(this)"></video>
-        <div class="reel-progress"><div class="reel-progress-bar"></div></div>
+      return `<div class="reel" data-id="${p.id}">
+        <video src="${p.video_url}" loop playsinline preload="metadata" muted onclick="this.paused?this.play():this.pause()"></video>
         <div class="reel-overlay">
           <div class="reel-left"><div class="reel-user" onclick="closeReels();viewUserProfile('${p.user_id}')"><img src="${pr.avatar_url||DPFP}"><span>${esc(pr.username)}</span></div><div class="reel-cap">${linkify(p.caption||'')}</div></div>
           <div class="reel-actions">
             <button class="reel-action ${liked?'liked':''}" onclick="toggleLikeReel(${p.id},this,${pl.length})"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span class="rl-count">${pl.length}</span></button>
             <button class="reel-action" onclick="closeReels();openPostViewer(${p.id})"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>${pc.length}</span></button>
-            <button class="reel-action" onclick="openShareDm(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-            <button class="reel-action ${getSavedIds().includes(p.id)?'liked':''}" onclick="toggleSavePost(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
           </div>
         </div>
       </div>`;
@@ -1639,31 +1471,6 @@ async function openReels(startId){
     },100);
   }catch(e){closeReels()}
 }
-
-let reelsMuted = false;
-function toggleReelMute(btn){
-  reelsMuted = !reelsMuted;
-  document.querySelectorAll('.reel video').forEach(v => v.muted = reelsMuted);
-  document.querySelectorAll('.reel-mute-btn').forEach(b => b.textContent = reelsMuted ? '🔇' : '🔊');
-}
-function updateReelProg(v){
-  if(!v.duration) return;
-  const bar = v.parentElement.querySelector('.reel-progress-bar');
-  if(bar) bar.style.width = ((v.currentTime / v.duration) * 100) + '%';
-}
-function reelDoubleTap(pid, container){
-  const h = document.createElement('div');
-  h.className = 'heart-burst';
-  h.textContent = '❤️';
-  container.appendChild(h);
-  setTimeout(()=>h.remove(), 800);
-  const btn = container.querySelector('.reel-action');
-  if(btn && !btn.classList.contains('liked')){
-    const cnt = parseInt(btn.querySelector('.rl-count')?.textContent||'0');
-    toggleLikeReel(pid, btn, cnt);
-  }
-}
-
 async function toggleLikeReel(pid,btn,currentCount){
   const liked=btn.classList.contains('liked');btn.classList.toggle('liked');
   const cnt=btn.querySelector('.rl-count');

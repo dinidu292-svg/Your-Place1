@@ -151,9 +151,6 @@ input,textarea{font-family:inherit}
 .msg-delete{position:absolute;top:-8px;right:-8px;background:var(--danger);color:#fff;width:24px;height:24px;border-radius:50%;font-size:12px;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer;z-index:10}
 .msg.self:hover .msg-delete{display:flex}
 .seen-status{color:var(--danger);font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:2px}
-.wa-video-loader{position:relative;width:260px;height:150px;background:#000;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index:5;color:#fff;overflow:hidden;border:1px solid var(--border)}
-.wa-video-loader .play-btn{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:8px;backdrop-filter:blur(5px)}
-.wa-video-loader .size-info{font-size:12px;font-weight:600;background:rgba(0,0,0,0.6);padding:3px 10px;border-radius:20px}
 .chat-input-wrap{position:fixed;bottom:0;left:0;right:0;background:rgba(15,23,42,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 16px;z-index:1001;display:flex;align-items:center;gap:8px}
 .chat-input-box{flex:1;display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:4px 8px;gap:4px}
 .chat-tool-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-3);transition:all .2s;background:transparent;flex-shrink:0}
@@ -556,7 +553,7 @@ async function handleAuth(){
         await recordAttempt(email,'signup',true);
         if(data.session){
           currentUser={id:data.user.id,username:user,avatar_url:null};
-          await sb.from('profiles').insert([{id:data.user.id,username:user,is_private:false}]).catch(()=>{});
+          try { await sb.from('profiles').insert([{id:data.user.id,username:user,is_private:false}]); } catch(e) {}
           $('authOverlay').classList.remove('active');initApp();toast('Welcome! ✨');
         }else{
           $('authSuccess').innerHTML=`✉️ <b>Check your email!</b><br>We sent a verification link to <b>${esc(email)}</b>.<br>Click the link to activate, then sign in.`;
@@ -635,7 +632,9 @@ async function toggleFollow(target,isPriv){
     if(f||p){await sb.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',target);return'unfollowed'}
     const status=isPriv?'pending':'accepted';
     await sb.from('follows').insert([{follower_id:currentUser.id,following_id:target,status}]);
-    await sb.from('notifications').insert([{user_id:target,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:isPriv?'request':'follow'}]).catch(()=>{});
+    try {
+      await sb.from('notifications').insert([{user_id:target,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:isPriv?'request':'follow'}]);
+    } catch(e) {}
     return status==='pending'?'requested':'following';
   }catch(e){toast('Error: '+e.message);return null}
 }
@@ -750,7 +749,11 @@ async function toggleLike(pid,btn){
     else{
       await sb.from('likes').insert([{post_id:pid,user_id:currentUser.id}]);
       const{data:p}=await sb.from('posts').select('user_id').eq('id',pid).single();
-      if(p&&p.user_id!==currentUser.id){await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'like',post_id:pid}]).catch(()=>{});}
+      if(p&&p.user_id!==currentUser.id){
+        try {
+          await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'like',post_id:pid}]);
+        } catch(e) {}
+      }
     }
   }catch(e){btn.classList.toggle('liked');toast('Error')}
 }
@@ -816,7 +819,11 @@ async function addViewerComment(pid){
   try{
     await sb.from('comments').insert([{post_id:pid,user_id:currentUser.id,username:currentUser.username,text:t}]);
     const{data:p}=await sb.from('posts').select('user_id').eq('id',pid).single();
-    if(p&&p.user_id!==currentUser.id){await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'comment',post_id:pid,text:t.substring(0,80)}]).catch(()=>{});}
+    if(p&&p.user_id!==currentUser.id){
+      try {
+        await sb.from('notifications').insert([{user_id:p.user_id,actor_id:currentUser.id,actor_username:currentUser.username,actor_avatar:currentUser.avatar_url,type:'comment',post_id:pid,text:t.substring(0,80)}]);
+      } catch(e) {}
+    }
     openPostViewer(pid);
   }catch(e){toast('Error')}
 }
@@ -1259,7 +1266,9 @@ async function sendChat(){
         text: text.substring(0,80),
         post_id: null
       }));
-      await sb.from('notifications').insert(notifs).catch(()=>{});
+      try {
+        await sb.from('notifications').insert(notifs);
+      } catch(e) {}
     }
 
     await loadMessages();
@@ -1295,7 +1304,9 @@ async function handleChatMedia(event){
         text: isVid?'🎥 Video':'📷 Photo',
         post_id: null
       }));
-      await sb.from('notifications').insert(notifs).catch(()=>{});
+      try {
+        await sb.from('notifications').insert(notifs);
+      } catch(e) {}
     }
     await loadMessages();
   }catch(e){ toast('Upload error: '+e.message); }
@@ -1425,7 +1436,9 @@ async function sharePost(){
         text: (caption || (type==='reel'?'New reel':'New post')).substring(0,80),
         post_id: newPost.id
       }));
-      await sb.from('notifications').insert(notifs).catch(()=>{});
+      try {
+        await sb.from('notifications').insert(notifs);
+      } catch(e) {}
     }
 
     toast(isVideo?'Reel shared ✨':'Post shared ✨');

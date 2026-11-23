@@ -149,7 +149,6 @@ input,textarea{font-family:inherit}
 .msg-bubble video{max-width:260px;border-radius:14px;display:block;margin-bottom:6px}
 .msg-delete{position:absolute;top:-8px;right:-8px;background:var(--danger);color:#fff;width:24px;height:24px;border-radius:50%;font-size:12px;display:none;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.4);cursor:pointer;z-index:10}
 .msg.self:hover .msg-delete{display:flex}
-.seen-status{color:var(--danger);font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:2px}
 .chat-input-wrap{position:fixed;bottom:0;left:0;right:0;background:rgba(15,23,42,0.95);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:12px 16px;z-index:1001;display:flex;align-items:center;gap:8px}
 .chat-input-box{flex:1;display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:4px 8px;gap:4px}
 .chat-tool-btn{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-3);transition:all .2s;background:transparent;flex-shrink:0}
@@ -176,8 +175,6 @@ input,textarea{font-family:inherit}
 .notif-icon.follow{background:var(--success)}
 .notif-icon.request{background:var(--warning)}
 .notif-icon.message{background:#8B5CF6}
-.notif-icon.post{background:#F59E0B}
-.notif-icon.reel{background:#EC4899}
 .upload-overlay{position:fixed;inset:0;background:var(--bg);z-index:10000;display:none;flex-direction:column;overflow:hidden}
 .upload-overlay.active{display:flex}
 .up-header{height:70px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:var(--surface);flex-shrink:0}
@@ -230,7 +227,7 @@ input:checked + .slider:before{transform:translateX(22px)}
 .img-fullscreen video{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
 .img-fullscreen-close{position:absolute;top:24px;right:24px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:28px;cursor:pointer;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center}
 
-/* ===== FULLSCREEN POST VIEWER ===== */
+/* POST VIEWER (FIXED) */
 #viewPostModal{position:fixed;inset:0;background:#000;z-index:9000;display:none;align-items:center;justify-content:center;padding:0}
 #viewPostModal.active{display:flex}
 #viewPostModal .modal-card{width:100%;height:100%;max-width:100%;max-height:100%;border-radius:0;background:#000;border:none;overflow:hidden;display:flex;flex-direction:column}
@@ -311,7 +308,6 @@ input:checked + .slider:before{transform:translateX(22px)}
 .auth-toggle{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:20px;text-align:center;font-size:15px;color:var(--text-2)}
 .auth-toggle span{color:var(--accent);font-weight:600;cursor:pointer}
 .auth-success{background:rgba(16,185,129,0.15);border:1px solid var(--success);color:var(--success);padding:16px;border-radius:14px;text-align:center;font-size:14px;line-height:1.5}
-#authLimitInfo{font-size:13px;color:var(--text-3);text-align:center;margin-top:12px;line-height:1.5}
 .logout-item{display:flex;align-items:center;gap:16px;padding:18px 24px;cursor:pointer;border-bottom:1px solid var(--border-light);color:var(--danger);font-weight:600;font-size:15px}
 .logout-item:active{background:rgba(244,63,94,0.08)}
 .logout-item svg{width:24px;height:24px;stroke:var(--danger);fill:none;stroke-width:2}
@@ -409,6 +405,22 @@ input:checked + .slider:before{transform:translateX(22px)}
   </div>
 </div>
 
+<div id="verifyCodeModal" class="modal-ov" style="z-index:10002">
+  <div class="modal-card">
+    <div class="modal-body">
+      <h2 class="modal-title">Verify Email</h2>
+      <p style="text-align:center;color:var(--text-3);font-size:14px;margin-bottom:20px">
+        We sent a 6-digit code to <b id="verifyEmailDisplay"></b>
+      </p>
+      <input class="form-input" id="verifyCodeInput" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric" style="text-align:center;font-size:20px;letter-spacing:6px">
+      <div class="auth-error" id="verifyError" style="display:none"></div>
+      <button class="btn-blue" onclick="verifyCode()" id="verifyBtn" style="margin-top:8px">Verify</button>
+      <button class="btn-text" onclick="resendCode()" id="resendBtn" style="margin-top:8px">Resend code</button>
+      <button class="btn-text" onclick="$('verifyCodeModal').classList.remove('active')">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-ov" id="editProfileModal"><div class="modal-card"><div class="modal-body">
   <h2 class="modal-title">Edit Profile</h2>
   <label style="display:block;text-align:center;margin-bottom:20px;cursor:pointer">
@@ -459,7 +471,7 @@ input:checked + .slider:before{transform:translateX(22px)}
 </div></div></div>
 
 <div class="modal-ov" id="chatSettingsModal"><div class="modal-card"><div class="modal-body">
-  <h2 class="modal-title">Chat Settings</h2>
+  <h2 class="modal-title">Group Settings</h2>
   <div id="chatSettingsBody"></div>
   <button class="btn-text" style="margin-top:12px" onclick="$('chatSettingsModal').classList.remove('active')">Close</button>
 </div></div></div>
@@ -485,13 +497,12 @@ const SB_URL='https://ujbepvlzrdvcmxpmdsez.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYmVwdmx6cmR2Y214cG1kc2V6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTQwNjUsImV4cCI6MjEwNzk5MDA2NX0.-XzEMlr2W_4uOi0QDKaR4KmrPRJGPmXoDz6SlOjfqvE';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const DPFP="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231E293B'/><circle cx='50' cy='35' r='18' fill='%2338BDF8'/><path d='M50 58 C28 58 18 72 18 100 L82 100 C82 72 72 58 50 58 Z' fill='%2338BDF8'/></svg>";
-const AUTH_LIMIT=3;
 const MEDIA_BUCKET='media';
 const EMOJIS=['😀','😃','😄','😁','😆','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😋','😛','😜','🤪','🤨','🧐','🤓','😎','🥳','😏','😒','😞','😔','😟','😕','🙁','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','👍','👎','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','✋','🤚','🖐️','🖖','👋','🤝','🙏','💪','🦾','🔥','✨','⭐','🌟','💫','⚡','💥','💯','🎉','🎊','🎈','🎁','🎂','🍕','🍔','🍟','🌮','🍩','🍪','☕','🍺','🥂'];
 
 let currentUser=null,authMode='login',authBusy=false;
 let onlineUsers=new Map(),presenceCh=null,notifPollTimer=null;
-let activeRoomId=null,activeMembers=[],chatCh=null,currentChatTab='primary';
+let activeRoomId=null,activeMembers=[],activeRoomData=null,chatCh=null,currentChatTab='primary';
 let currentViewingUserId=null,vpPosts=[];
 let allChatsCache=[];
 let reelsObserver=null;
@@ -499,6 +510,7 @@ let upFile=null,upType=null,upFilter='none',upObjUrl=null,upAsStory=false;
 let chatPollTimer=null;
 let viewingReelsList=[];
 let feedRefreshTimer=null;
+let currentVerifyEmail='',currentVerifyUsername='';
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -533,7 +545,7 @@ function viewMediaFull(url, isVideo = false){
 }
 
 /* ============================================================
-   AUTH
+   AUTH (No daily limit, real email verification)
    ============================================================ */
 function showAuth(){$('authOverlay').classList.add('active')}
 function setAuthMode(m){
@@ -543,57 +555,146 @@ function setAuthMode(m){
   $('authBtn').textContent=li?'Sign In':'Create Account';
   $('authToggle').innerHTML=li?`New here? <span onclick="toggleAuthMode()">Create account</span>`:`Have an account? <span onclick="toggleAuthMode()">Sign in</span>`;
   $('authError').style.display='none';$('authSuccess').style.display='none';
-  let info=document.getElementById('authLimitInfo');
-  if(!info){info=document.createElement('div');info.id='authLimitInfo';$('authBtn').parentElement.appendChild(info);}
-  info.innerHTML='🔒 Max <b>3 sign-in/sign-up attempts</b> per day per email<br><span style="opacity:.7">Posts, stories, and everything else are unlimited</span>';
 }
 function toggleAuthMode(){setAuthMode(authMode==='login'?'signup':'login')}
-async function getAttemptsToday(email){
-  try{const start=new Date();start.setHours(0,0,0,0);const {count}=await sb.from('auth_attempts').select('*',{count:'exact',head:true}).eq('email',email.toLowerCase()).gte('created_at',start.toISOString());return count||0;}catch(e){return 0;}
-}
-async function recordAttempt(email,action,success){try{await sb.from('auth_attempts').insert([{email:email.toLowerCase(),action,success}])}catch(e){}}
+
 async function handleAuth(){
   if(authBusy)return;
-  const email=$('authEmail').value.trim().toLowerCase(),pass=$('authPassword').value,user=$('authUsername').value.trim();
+  const email=$('authEmail').value.trim().toLowerCase();
+  const pass=$('authPassword').value;
+  const user=$('authUsername').value.trim();
+  
   if(!email||!pass)return toast('Fill all fields');
   if(authMode==='signup'&&!user)return toast('Username required');
+  
   authBusy=true;const b=$('authBtn');b.disabled=true;b.textContent='Checking...';
   $('authError').style.display='none';$('authSuccess').style.display='none';
+  
   try{
-    const used=await getAttemptsToday(email);
-    if(used>=AUTH_LIMIT){$('authError').innerHTML=`🚫 <b>Daily limit reached</b><br>You can only try <b>3 times per day</b> for this email.<br>Try again tomorrow.`;$('authError').style.display='block';return;}
-    const left=AUTH_LIMIT-used-1;b.textContent=authMode==='login'?'Signing in...':'Creating...';
-    try{
-      if(authMode==='login'){
-        const {data,error}=await sb.auth.signInWithPassword({email,password:pass});if(error)throw error;
-        await recordAttempt(email,'login',true);
-        const {data:prof}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
-        currentUser={id:data.user.id,username:prof?.username||email.split('@')[0],avatar_url:prof?.avatar_url};
-        $('authOverlay').classList.remove('active');initApp();return;
+    if(authMode==='login'){
+      const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+      if(error)throw error;
+      const {data:prof}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
+      currentUser={id:data.user.id,username:prof?.username||email.split('@')[0],avatar_url:prof?.avatar_url};
+      $('authOverlay').classList.remove('active');initApp();return;
+    }else{
+      // SIGN UP
+      const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{username:user}}});
+      if(error)throw error;
+      
+      if(data.session){
+        // Auto-login (email confirmation is OFF in Supabase settings)
+        currentUser={id:data.user.id,username:user,avatar_url:null};
+        $('authOverlay').classList.remove('active');initApp();toast('Welcome! ✨');
       }else{
-        const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{username:user}}});if(error)throw error;
-        await recordAttempt(email,'signup',true);
-        if(data.session){
-          currentUser={id:data.user.id,username:user,avatar_url:null};
-          $('authOverlay').classList.remove('active');initApp();toast('Welcome! ✨');
-        }else{
-          $('authSuccess').innerHTML=`✉️ <b>Check your email!</b><br>We sent a verification link to <b>${esc(email)}</b>.<br>Click the link to activate, then sign in.`;
-          $('authSuccess').style.display='block';setAuthMode('login');
-        }
-        return;
+        // Email confirmation required. Send our custom verification code.
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+        
+        // Save code to DB
+        await sb.from('email_verifications').insert([{
+          email: email,
+          code: code,
+          expires_at: expiresAt
+        }]);
+        
+        // Send code via Edge Function
+        const { error: fnErr } = await sb.functions.invoke('send-verification', {
+          body: { email, code, username: user }
+        });
+        
+        if(fnErr) throw new Error('Failed to send email. Please try again.');
+        
+        showVerificationUI(email, user);
       }
-    }catch(err){
-      await recordAttempt(email,authMode,false);
-      let msg=err.message||'Error';
-      if(msg.includes('Invalid login'))msg='Invalid email or password';
-      if(msg.includes('Email not confirmed'))msg='📧 Please verify your email first.';
-      if(msg.includes('already registered'))msg='This email is already registered';
-      if(left>0)msg+=`<br><small style="color:var(--warning);margin-top:8px;display:block;font-size:13px">⚠️ ${left} attempt${left===1?'':'s'} remaining today</small>`;
-      else msg+=`<br><small style="color:var(--danger);margin-top:8px;display:block;font-size:13px">🚫 No attempts remaining today</small>`;
-      $('authError').innerHTML=msg;$('authError').style.display='block';
     }
-  }catch(ex){$('authError').textContent=ex.message;$('authError').style.display='block';}
-  finally{authBusy=false;b.disabled=false;b.textContent=authMode==='login'?'Sign In':'Create Account';}
+  }catch(err){
+    let msg=err.message||'Error';
+    if(msg.includes('Invalid login'))msg='Invalid email or password';
+    if(msg.includes('already registered'))msg='This email is already registered';
+    $('authError').innerHTML=msg;
+    $('authError').style.display='block';
+  }finally{
+    authBusy=false;b.disabled=false;b.textContent=authMode==='login'?'Sign In':'Create Account';
+  }
+}
+
+function showVerificationUI(email, username) {
+  currentVerifyEmail = email;
+  currentVerifyUsername = username;
+  $('verifyEmailDisplay').textContent = email;
+  $('verifyCodeInput').value = '';
+  $('verifyError').style.display = 'none';
+  $('verifyCodeModal').classList.add('active');
+}
+
+async function verifyCode() {
+  const code = $('verifyCodeInput').value.trim();
+  if (code.length !== 6) {
+    $('verifyError').textContent = 'Enter 6-digit code';
+    $('verifyError').style.display = 'block';
+    return;
+  }
+  
+  $('verifyBtn').disabled = true;
+  $('verifyBtn').textContent = 'Verifying...';
+  
+  try {
+    const { data, error } = await sb.from('email_verifications')
+      .select('*')
+      .eq('email', currentVerifyEmail)
+      .eq('code', code)
+      .eq('verified', false)
+      .gte('expires_at', new Date().toISOString())
+      .order('created_at', { ascending: false })
+      .limit(1);
+      
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      throw new Error('Invalid or expired code');
+    }
+    
+    await sb.from('email_verifications').update({ verified: true }).eq('id', data[0].id);
+    
+    $('verifyCodeModal').classList.remove('active');
+    toast('Email verified! Please sign in.');
+    setAuthMode('login');
+    $('authEmail').value = currentVerifyEmail;
+    
+  } catch (err) {
+    $('verifyError').textContent = err.message;
+    $('verifyError').style.display = 'block';
+  } finally {
+    $('verifyBtn').disabled = false;
+    $('verifyBtn').textContent = 'Verify';
+  }
+}
+
+async function resendCode() {
+  $('resendBtn').disabled = true;
+  $('resendBtn').textContent = 'Sending...';
+  
+  try {
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+    
+    await sb.from('email_verifications').insert([{
+      email: currentVerifyEmail,
+      code: code,
+      expires_at: expiresAt
+    }]);
+    
+    await sb.functions.invoke('send-verification', {
+      body: { email: currentVerifyEmail, code, username: currentVerifyUsername }
+    });
+    
+    toast('New code sent!');
+  } catch (err) {
+    toast('Failed to resend');
+  } finally {
+    $('resendBtn').disabled = false;
+    $('resendBtn').textContent = 'Resend code';
+  }
 }
 
 async function init(){
@@ -713,7 +814,7 @@ async function followFromProfile(){
 }
 
 /* ============================================================
-   FEED
+   FEED (1-min private post fix + public reels only)
    ============================================================ */
 async function renderFeed(){
   if(!currentUser)return;
@@ -903,7 +1004,7 @@ async function addViewerComment(pid){
 }
 
 /* ============================================================
-   SEARCH / EXPLORE
+   SEARCH / EXPLORE (public reels only!)
    ============================================================ */
 async function renderSearch(){
   if(!currentUser)return;
@@ -916,6 +1017,7 @@ async function doSearch(){
   if(!q){
     r.innerHTML='<div class="spinner"></div>';
     try{
+      // Public reels only: join profiles and filter is_private=false
       const{data:posts}=await sb.from('posts').select('*, profiles!inner(is_private)').not('video_url','is',null).eq('profiles.is_private', false).order('created_at',{ascending:false}).limit(50);
       const vis=(posts||[]).filter(p=>p.user_id!==currentUser.id);
       if(!vis.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels yet</h3></div>';return}
@@ -1191,6 +1293,7 @@ async function openChatRoom(roomId,isGroup){
   if(!currentUser)return;
   activeRoomId=roomId;
   const{data:room}=await sb.from('chat_rooms').select('*').eq('id',roomId).single();
+  activeRoomData=room;
   const{data:members}=await sb.from('room_members').select('*').eq('room_id',roomId);
   activeMembers=members||[];
   const other=!isGroup?(members||[]).find(m=>m.user_id!==currentUser.id):null;
@@ -1205,7 +1308,7 @@ async function openChatRoom(roomId,isGroup){
       <button class="back" onclick="closeChatRoom()">←</button>
       <img src="${avatar}">
       <div style="flex:1;min-width:0"><h3>${esc(title)}</h3><div class="status">${online?'● Online':(isGroup?(activeMembers.length+' members'):'')}</div></div>
-      <button class="menu-btn" onclick="openChatSettings()">⋯</button>
+      ${isGroup?`<button class="menu-btn" onclick="openChatSettings()">⋯</button>`:''}
     </div>
     <div class="chat-msgs" id="chatMsgs"></div>
     <div class="chat-input-wrap">
@@ -1225,7 +1328,7 @@ function closeChatRoom(){
   const el=$('chatRoomOverlay');if(el)el.remove();
   stopChatPoll();
   if(chatCh){try{sb.removeChannel(chatCh)}catch(e){};chatCh=null;}
-  activeRoomId=null;activeMembers=[];
+  activeRoomId=null;activeMembers=[];activeRoomData=null;
   if($('panel-chat').classList.contains('active'))renderChat();
 }
 async function loadChatMessages(){
@@ -1297,7 +1400,7 @@ async function openChatWith(uid){
         if(rooms&&rooms.length){switchPanel('chat');openChatRoom(rooms[0].id,false);return;}
       }
     }
-    const{data:newRoom,error}=await sb.from('chat_rooms').insert([{is_group:false}]).select().single();
+    const{data:newRoom,error}=await sb.from('chat_rooms').insert([{is_group:false,owner_id:currentUser.id}]).select().single();
     if(error)throw error;
     await sb.from('room_members').insert([{room_id:newRoom.id,user_id:currentUser.id,username:currentUser.username},{room_id:newRoom.id,user_id:uid}]);
     switchPanel('chat');openChatRoom(newRoom.id,false);
@@ -1318,7 +1421,7 @@ async function createGroup(){
   if(!checks.length)return toast('Select members');
   const btn=$('createGroupBtn');btn.disabled=true;btn.textContent='Creating...';
   try{
-    const{data:room,error}=await sb.from('chat_rooms').insert([{is_group:true,name}]).select().single();
+    const{data:room,error}=await sb.from('chat_rooms').insert([{is_group:true,name,owner_id:currentUser.id}]).select().single();
     if(error)throw error;
     const members=[{room_id:room.id,user_id:currentUser.id,username:currentUser.username},...checks.map(id=>({room_id:room.id,user_id:id}))];
     await sb.from('room_members').insert(members);
@@ -1326,10 +1429,88 @@ async function createGroup(){
     toast('Group created');renderChat();
   }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Create'}
 }
-function openChatSettings(){
+
+/* ============================================================
+   GROUP SETTINGS (Add/Remove members, change name, change icon)
+   ============================================================ */
+async function openChatSettings(){
+  if(!activeRoomData||!activeRoomData.is_group)return;
   $('chatSettingsModal').classList.add('active');
-  const b=$('chatSettingsBody');
-  b.innerHTML=`<div class="user-row" style="padding:16px 0"><div style="flex:1;font-weight:600">Members: ${activeMembers.length}</div></div>`;
+  const b=$('chatSettingsBody');b.innerHTML='<div class="spinner"></div>';
+  try{
+    const{data:members}=await sb.from('room_members').select('*').eq('room_id',activeRoomId);
+    const memberIds=(members||[]).map(m=>m.user_id);
+    const{data:profs}=await sb.from('profiles').select('id,username,avatar_url').in('id',memberIds);
+    const pm={};(profs||[]).forEach(p=>pm[p.id]=p);
+    b.innerHTML=`
+      <div style="text-align:center;margin-bottom:20px">
+        <label style="display:inline-block;cursor:pointer;position:relative">
+          <img src="${activeRoomData.avatar_url||DPFP}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:3px solid var(--accent)">
+          <div style="position:absolute;bottom:0;right:0;background:var(--accent);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px">📷</div>
+          <input type="file" accept="image/*" style="display:none" onchange="$('groupPfpInput').click()">
+        </label>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:13px;color:var(--text-3);font-weight:600;display:block;margin-bottom:6px">Group name</label>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="editGroupName" value="${esc(activeRoomData.name||'')}" style="margin:0;flex:1">
+          <button class="btn-blue" style="width:auto;padding:0 16px;margin:0" onclick="saveGroupName()">Save</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:13px;color:var(--text-3);font-weight:600">MEMBERS (${memberIds.length})</div>
+        <button class="btn-blue" style="width:auto;padding:8px 16px;margin:0;font-size:13px" onclick="openAddMemberModal()">+ Add</button>
+      </div>
+      <div style="max-height:260px;overflow-y:auto;border:1px solid var(--border);border-radius:12px" id="groupMemberList">
+        ${(members||[]).map(m=>{
+          const p=pm[m.user_id]||{username:m.user_id,avatar_url:null};
+          const isOwner=activeRoomData.owner_id===m.user_id;
+          const isMe=m.user_id===currentUser.id;
+          return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border-light)">
+            <img src="${p.avatar_url||DPFP}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">
+            <div style="flex:1;font-weight:500;font-size:14px">${esc(p.username)}${isMe?' (you)':''}${isOwner?' 👑':''}</div>
+            ${!isOwner?`<button class="follow-btn following" style="font-size:12px;padding:6px 12px" onclick="removeGroupMember('${m.user_id}')">Remove</button>`:''}
+          </div>`;
+        }).join('')}
+      </div>`;
+  }catch(e){b.innerHTML='<div style="text-align:center;padding:20px;color:var(--danger)">Error</div>'}
+}
+function uploadGroupAvatar(e){
+  const f=e.target.files[0];if(!f||!activeRoomId)return;
+  const ext=f.name.split('.').pop();
+  const path=`${currentUser.id}/group_${activeRoomId}_${Date.now()}.${ext}`;
+  sb.storage.from(MEDIA_BUCKET).upload(path,f,{contentType:f.type}).then(({error})=>{
+    if(error)return toast('Upload error');
+    const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
+    sb.from('chat_rooms').update({avatar_url:publicUrl+'?v='+Date.now()}).eq('id',activeRoomId).then(()=>{
+      activeRoomData.avatar_url=publicUrl;toast('Icon updated');openChatSettings();
+    });
+  });
+}
+async function saveGroupName(){
+  const n=$('editGroupName').value.trim();if(!n)return toast('Enter name');
+  await sb.from('chat_rooms').update({name:n}).eq('id',activeRoomId);
+  activeRoomData.name=n;toast('Saved');openChatSettings();
+}
+async function openAddMemberModal(){
+  const{data:members}=await sb.from('room_members').select('user_id').eq('room_id',activeRoomId);
+  const exist=(members||[]).map(m=>m.user_id);
+  const{data:us}=await sb.from('profiles').select('id,username,avatar_url').not('id','in',`(${exist.join(',')})`).limit(50);
+  const list=($('groupMemberList'));
+  list.innerHTML=(us||[]).map(u=>`<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--border-light)"><img src="${u.avatar_url||DPFP}" style="width:40px;height:40px;border-radius:50%;object-fit:cover"><div style="flex:1;font-weight:500;font-size:14px">${esc(u.username)}</div><button class="follow-btn" style="font-size:12px;padding:6px 12px" onclick="addGroupMember('${u.id}')">Add</button></div>`).join('')||'<div style="text-align:center;padding:20px;color:var(--text-3);font-size:14px">No users to add</div>';
+}
+async function addGroupMember(uid){
+  try{
+    await sb.from('room_members').insert([{room_id:activeRoomId,user_id:uid}]);
+    toast('Added');openChatSettings();
+  }catch(e){toast('Error: '+e.message)}
+}
+async function removeGroupMember(uid){
+  if(!confirm('Remove this member?'))return;
+  try{
+    await sb.from('room_members').delete().eq('room_id',activeRoomId).eq('user_id',uid);
+    toast('Removed');openChatSettings();
+  }catch(e){toast('Error: '+e.message)}
 }
 
 /* ============================================================
@@ -1421,14 +1602,15 @@ async function viewStory(url,type){
 }
 
 /* ============================================================
-   REELS
+   REELS (public only)
    ============================================================ */
 async function openReels(startId){
   if(!currentUser)return;
   const ov=$('reelsOverlay');ov.classList.add('active');
   const s=$('reelsScroll');s.innerHTML='<div class="spinner"></div>';
   try{
-    const{data:posts}=await sb.from('posts').select('*').not('video_url','is',null).order('created_at',{ascending:false}).limit(40);
+    // Public reels only
+    const{data:posts}=await sb.from('posts').select('*, profiles!inner(is_private)').not('video_url','is',null).eq('profiles.is_private', false).order('created_at',{ascending:false}).limit(40);
     const vis=(posts||[]).filter(p=>p.video_url);
     if(!vis.length){s.innerHTML='<div style="color:#fff;text-align:center;padding:60px">No reels yet</div>';return}
     viewingReelsList=vis;
@@ -1491,9 +1673,6 @@ async function toggleReelLike(pid,btn){
 document.addEventListener('DOMContentLoaded',()=>{
   buildEmojiPicker();
   init();
-});
-window.addEventListener('load',()=>{
-  if(!window.switchPanel){console.error('switchPanel missing - script parse error');}
 });
 </script>
 </body>

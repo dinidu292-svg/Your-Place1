@@ -553,7 +553,7 @@ async function handleAuth(){
         await recordAttempt(email,'signup',true);
         if(data.session){
           currentUser={id:data.user.id,username:user,avatar_url:null};
-          try { await sb.from('profiles').insert([{id:data.user.id,username:user,is_private:false}]); } catch(e) {}
+          // Trigger එකෙන් profile එක හැදෙන නිසා මෙතන insert කරන්නේ නැහැ
           $('authOverlay').classList.remove('active');initApp();toast('Welcome! ✨');
         }else{
           $('authSuccess').innerHTML=`✉️ <b>Check your email!</b><br>We sent a verification link to <b>${esc(email)}</b>.<br>Click the link to activate, then sign in.`;

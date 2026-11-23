@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>Your Place</title>
+<link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -72,8 +73,6 @@ input,textarea{font-family:inherit}
 .pa-btn svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2}
 .pa-btn.liked svg{fill:var(--danger);stroke:var(--danger);animation:pop .3s}
 @keyframes pop{50%{transform:scale(1.3)}}
-.pa-btn.bookmark{margin-left:auto}
-.pa-btn.bookmark.saved svg{fill:var(--accent);stroke:var(--accent)}
 .post-likes{padding:4px 20px;font-weight:700;font-size:15px}
 .post-caption{padding:4px 20px;font-size:15px;line-height:1.5}
 .post-caption strong{font-weight:700;margin-right:8px;cursor:pointer;color:var(--accent)}
@@ -230,37 +229,104 @@ input:checked + .slider:before{transform:translateX(22px)}
 .img-fullscreen img{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
 .img-fullscreen video{max-width:100%;max-height:100%;object-fit:contain;border-radius:12px}
 .img-fullscreen-close{position:absolute;top:24px;right:24px;background:rgba(255,255,255,0.15);border:none;color:#fff;width:48px;height:48px;border-radius:50%;font-size:28px;cursor:pointer;backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center}
-#viewPostModal .modal-card{max-width:100%;max-height:100vh;border-radius:0;height:100vh;background:#000;border:none}
-.viewer{position:relative;width:100%;height:100%;display:flex;flex-direction:column}
-@media(min-width:768px){
-  .viewer{flex-direction:row;background:var(--bg);margin:auto;max-width:1200px;max-height:calc(100vh - 40px);border-radius:24px;overflow:hidden}
-  #viewPostModal .modal-card{max-width:1200px;max-height:calc(100vh - 40px);border-radius:24px;height:auto;background:var(--bg);margin:auto}
+
+/* ===== FULLSCREEN POST VIEWER (INSTAGRAM STYLE) ===== */
+#viewPostModal{position:fixed;inset:0;background:#000;z-index:9000;display:none;align-items:center;justify-content:center;padding:0}
+#viewPostModal.active{display:flex}
+#viewPostModal .modal-card{width:100%;height:100%;max-width:100%;max-height:100%;border-radius:0;background:#000;border:none;overflow:hidden}
+
+.viewer{position:relative;width:100%;height:100%;display:flex;flex-direction:column;background:#000}
+
+.viewer-media{
+  position:relative;
+  flex:1;
+  width:100%;
+  height:100%;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
 }
-.viewer-media{flex:1;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;min-height:400px;position:relative}
-.viewer-media img,.viewer-media video{max-width:100%;max-height:100%;object-fit:contain;display:block}
-.viewer-side{width:400px;background:var(--surface);display:flex;flex-direction:column;border-left:1px solid var(--border);height:100%}
-@media(max-width:767px){.viewer-side{display:none}}
-.viewer-side-head{padding:20px;border-bottom:1px solid var(--border);display:flex;gap:14px;align-items:center}
-.viewer-side-head img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+.viewer-media img,
+.viewer-media video{
+  width:100%;
+  height:100%;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  display:block;
+  background:#000;
+}
+
+@media(min-width:768px){
+  #viewPostModal{background:rgba(0,0,0,0.92);backdrop-filter:blur(10px);padding:20px}
+  #viewPostModal .modal-card{
+    max-width:1200px;
+    height:calc(100vh - 40px);
+    border-radius:16px;
+    overflow:hidden;
+    background:#000;
+  }
+  .viewer{flex-direction:row}
+  .viewer-media{flex:1;height:100%;min-width:0}
+  .viewer-side{
+    display:flex;
+    width:400px;
+    flex-shrink:0;
+    background:var(--surface);
+    border-left:1px solid var(--border);
+    height:100%;
+  }
+}
+
+@media(max-width:767px){
+  .viewer-side{display:none}
+  .viewer-media{height:100%}
+}
+
+.viewer-side{flex-direction:column;overflow:hidden}
+.viewer-side-head{padding:16px;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;flex-shrink:0}
+.viewer-side-head img{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
 .viewer-side-head .un{font-weight:600;font-size:15px}
-.viewer-side-comments{flex:1;overflow-y:auto;padding:20px}
-.viewer-side-comment{font-size:15px;margin-bottom:18px;line-height:1.5}
-.viewer-side-comment strong{font-weight:600;margin-right:10px;color:var(--accent)}
-.viewer-side-actions{padding:16px 20px;border-top:1px solid var(--border)}
-.viewer-side-actions .row1{display:flex;gap:16px;align-items:center;margin-bottom:12px}
-.viewer-likes{font-weight:700;font-size:15px;margin-bottom:10px}
-.viewer-comment-row{display:flex;gap:12px;padding:16px 20px;border-top:1px solid var(--border)}
-.viewer-comment-row input{flex:1;border:none;outline:none;background:transparent;font-size:15px;color:var(--text)}
-.viewer-comment-row button{background:none;border:none;color:var(--accent);font-weight:600;font-size:15px}
-.viewer-close-mobile{position:absolute;top:20px;left:20px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border:1px solid var(--border);color:#fff;width:48px;height:48px;border-radius:50%;font-size:24px;cursor:pointer;z-index:10;display:flex;align-items:center;justify-content:center}
+.viewer-side-comments{flex:1;overflow-y:auto;padding:16px;min-height:0}
+.viewer-side-comment{font-size:14px;margin-bottom:14px;line-height:1.5;word-wrap:break-word}
+.viewer-side-comment strong{font-weight:600;margin-right:8px;color:var(--accent)}
+.viewer-side-actions{padding:14px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.viewer-side-actions .row1{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.viewer-likes{font-weight:700;font-size:14px;margin-bottom:8px}
+.viewer-comment-row{display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0}
+.viewer-comment-row input{flex:1;border:none;outline:none;background:transparent;font-size:14px;color:var(--text);min-width:0}
+.viewer-comment-row button{background:none;border:none;color:var(--accent);font-weight:600;font-size:14px;flex-shrink:0}
+
+.viewer-close-mobile{
+  position:absolute;
+  top:16px;
+  left:16px;
+  background:rgba(0,0,0,0.6);
+  backdrop-filter:blur(10px);
+  border:none;
+  color:#fff;
+  width:42px;height:42px;
+  border-radius:50%;
+  font-size:24px;
+  cursor:pointer;
+  z-index:100;
+  display:flex;align-items:center;justify-content:center;
+}
 @media(min-width:768px){.viewer-close-mobile{display:none}}
-.mobile-actions-rail{position:absolute;right:16px;bottom:140px;display:flex;flex-direction:column;gap:18px;z-index:10;pointer-events:none}
+
+.mobile-actions-rail{position:absolute;right:14px;bottom:150px;display:flex;flex-direction:column;gap:18px;z-index:100;pointer-events:none}
 .mobile-actions-rail .mob-act-btn{pointer-events:auto;min-width:48px;min-height:48px;justify-content:center}
 @media(min-width:768px){.mobile-actions-rail{display:none}}
-.mob-act-btn{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;font-size:12px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.8)}
-.mob-act-btn svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
+.mob-act-btn{display:flex;flex-direction:column;align-items:center;gap:6px;color:#fff;font-size:12px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,0.8);background:rgba(0,0,0,0.4);border-radius:50%;padding:8px;width:48px;height:48px;justify-content:center}
+.mob-act-btn svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
 .mob-act-btn.liked svg{fill:var(--danger);stroke:var(--danger)}
-.viewer-media .viewer-comment-row{z-index:20;padding:10px 16px}
+.mobile-comment-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(10px);display:flex;padding:10px 14px;gap:10px;z-index:100;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+.mobile-comment-bar input{flex:1;border:none;outline:none;background:transparent;color:#fff;font-size:14px;min-width:0}
+.mobile-comment-bar button{background:none;border:none;color:var(--accent);font-weight:600;font-size:14px;flex-shrink:0}
+@media(min-width:768px){.mobile-comment-bar{display:none}}
+
 #reelsOverlay{position:fixed;inset:0;background:#000;z-index:9999;display:none;flex-direction:column}
 #reelsOverlay.active{display:flex}
 .reels-scroll{width:100%;height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scrollbar-width:none}
@@ -482,6 +548,7 @@ let reelsObserver=null;
 let upFile=null,upType=null,upFilter='none',upObjUrl=null,upAsStory=false;
 let chatPollTimer=null;
 let viewingReelsList=[];
+let feedRefreshTimer=null;
 
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -592,6 +659,11 @@ async function init(){
 async function initApp(){
   $('navPfp').src=currentUser.avatar_url||DPFP;
   renderFeed();subscribePresence();pollNotifications();
+  // ✅ Auto-refresh feed every 30s so 1-min private posts disappear
+  if(feedRefreshTimer)clearInterval(feedRefreshTimer);
+  feedRefreshTimer=setInterval(()=>{
+    if($('panel-feed').classList.contains('active'))renderFeed();
+  },30000);
 }
 function subscribePresence(){
   if(presenceCh)return;
@@ -657,7 +729,7 @@ async function followFromProfile(){
   const s=await getStats(currentViewingUserId);$('vpFollowersCount').textContent=s.followers;$('vpFollowingCount').textContent=s.following;b.disabled=false;
 }
 
-// ===== FEED =====
+// ===== FEED (Instagram style — private 1-min) =====
 async function renderFeed(){
   const el=$('panel-feed');el.innerHTML='<div class="spinner"></div>';
   try{
@@ -670,6 +742,7 @@ async function renderFeed(){
     const{data:flw}=await sb.from('follows').select('following_id').eq('follower_id',currentUser.id).eq('status','accepted');
     const fid=(flw||[]).map(f=>f.following_id);
     const now=Date.now();
+    // ✅ Instagram style: private user posts → 1 minute only in home feed
     const vis=(posts||[]).filter(p=>{
       if(p.user_id===currentUser.id)return true;
       const pr=pm[p.user_id];
@@ -758,10 +831,11 @@ function sharePostLink(pid) {
   else { navigator.clipboard.writeText(url).then(() => toast('Link copied!')).catch(() => prompt('Copy:', url)); }
 }
 
-// ===== POST VIEWER =====
+// ===== FULLSCREEN POST VIEWER =====
 async function openPostViewer(pid){
   const w=$('viewerWrap');w.innerHTML='<div class="spinner"></div>';
   $('viewPostModal').classList.add('active');
+  document.body.style.overflow='hidden';
   try{
     const{data:p}=await sb.from('posts').select('*').eq('id',pid).single();
     const{data:prof}=await sb.from('profiles').select('*').eq('id',p.user_id).maybeSingle();
@@ -770,41 +844,68 @@ async function openPostViewer(pid){
     const liked=(likes||[]).some(l=>l.user_id===currentUser?.id);
     const isV=p.video_url&&p.video_url.length>0;
     const isOwn=p.user_id===currentUser.id;
-    const header=`<div class="viewer-side-head"><button class="back-btn" onclick="closePostViewer()" style="width:38px;height:38px"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button><img src="${prof?.avatar_url||DPFP}" onclick="closePostViewer();viewUserProfile('${p.user_id}')" style="cursor:pointer;margin-left:4px"><div style="flex:1"><div class="un">${esc(prof?.username||p.username)}</div></div>${isOwn?`<button onclick="deletePost(${p.id});closePostViewer()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-3)">🗑️</button>`:''}</div>`;
-    const media=isV?`<video src="${p.video_url}" controls autoplay playsinline></video>`:`<img src="${p.image_url}" onerror="this.src='${DPFP}'" onclick="viewMediaFull('${p.image_url}')">`;
-    const actions=`<div class="viewer-side-actions"><div class="row1"><button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button><button class="pa-btn" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div><div class="viewer-likes" id="likes-${p.id}">${(likes||[]).length} ${(likes||[]).length===1?'like':'likes'}</div><div style="font-size:15px;line-height:1.4"><strong style="color:var(--accent)">${esc(prof?.username||p.username)}</strong> ${linkify(p.caption||'')}</div></div>`;
+
+    const mediaTag = isV
+      ? `<video src="${p.video_url}" controls autoplay playsinline preload="metadata"></video>`
+      : `<img src="${p.image_url}" onerror="this.src='${DPFP}'" onclick="viewMediaFull('${p.image_url}')">`;
+
+    const header=`<div class="viewer-side-head">
+      <img src="${prof?.avatar_url||DPFP}" onclick="closePostViewer();viewUserProfile('${p.user_id}')" style="cursor:pointer">
+      <div style="flex:1"><div class="un">${esc(prof?.username||p.username)}</div></div>
+      ${isOwn?`<button onclick="deletePost(${p.id});closePostViewer()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-3)">🗑️</button>`:''}
+    </div>`;
+
+    const actions=`<div class="viewer-side-actions">
+      <div class="row1">
+        <button class="pa-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>
+        <button class="pa-btn" onclick="sharePostLink(${p.id})"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+      <div class="viewer-likes" id="likes-${p.id}">${(likes||[]).length} ${(likes||[]).length===1?'like':'likes'}</div>
+      <div style="font-size:14px;line-height:1.4;word-wrap:break-word"><strong style="color:var(--accent)">${esc(prof?.username||p.username)}</strong> ${linkify(p.caption||'')}</div>
+    </div>`;
+
     const commentList=(comments||[]).map(c=>`<div class="viewer-side-comment"><strong>${esc(c.username)}</strong>${linkify(c.text)}</div>`).join('');
     const commentRow=`<div class="viewer-comment-row"><input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})"><button onclick="addViewerComment(${p.id})">Post</button></div>`;
+
     const mobileRail = `<div class="mobile-actions-rail">
       <button class="mob-act-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this)">
         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        <span>${(likes||[]).length}</span>
       </button>
-      <button class="mob-act-btn" onclick="document.getElementById('vcInput-${p.id}').focus()">
+      <button class="mob-act-btn" onclick="document.getElementById('mci-${p.id}').focus()">
         <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        <span>${(comments||[]).length}</span>
       </button>
       <button class="mob-act-btn" onclick="sharePostLink(${p.id})">
         <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
     </div>`;
+
     w.innerHTML=`<div class="viewer">
       <button class="viewer-close-mobile" onclick="closePostViewer()">×</button>
       <div class="viewer-media">
-        ${media}
+        ${mediaTag}
         ${mobileRail}
-        <div class="viewer-comment-row" style="position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);display:flex;">
-          <input type="text" id="vcInput-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})" style="color:#fff;flex:1">
-          <button onclick="addViewerComment(${p.id})" style="color:var(--accent)">Post</button>
+        <div class="mobile-comment-bar">
+          <input type="text" id="mci-${p.id}" placeholder="Add a comment..." onkeydown="if(event.key==='Enter')addViewerComment(${p.id})">
+          <button onclick="addViewerComment(${p.id})">Post</button>
         </div>
       </div>
-      <div class="viewer-side">${header}<div class="viewer-side-comments">${commentList||'<div style="text-align:center;color:var(--text-3);font-size:15px;padding:20px">No comments yet.</div>'}</div>${actions}${commentRow}</div>
+      <div class="viewer-side">
+        ${header}
+        <div class="viewer-side-comments">${commentList||'<div style="text-align:center;color:var(--text-3);font-size:14px;padding:20px">No comments yet.</div>'}</div>
+        ${actions}
+        ${commentRow}
+      </div>
     </div>`;
-  }catch(ex){w.innerHTML=`<div style="color:#fff;padding:40px;text-align:center">Error</div>`}
+  }catch(ex){console.error(ex);w.innerHTML=`<div style="color:#fff;padding:40px;text-align:center">Error loading post</div>`}
 }
-function closePostViewer(){const v=document.querySelector('#viewerWrap video');if(v)v.pause();$('viewPostModal').classList.remove('active');$('viewerWrap').innerHTML=''}
+function closePostViewer(){
+  const v=document.querySelector('#viewerWrap video');if(v)v.pause();
+  $('viewPostModal').classList.remove('active');
+  $('viewerWrap').innerHTML='';
+  document.body.style.overflow='';
+}
 async function addViewerComment(pid){
-  const inp=$('vcInput-'+pid);if(!inp)return;
+  const inp=$('vcInput-'+pid)||$('mci-'+pid);if(!inp)return;
   const t=inp.value.trim();if(!t)return;inp.value='';
   try{
     await sb.from('comments').insert([{post_id:pid,user_id:currentUser.id,username:currentUser.username,text:t}]);
@@ -814,7 +915,7 @@ async function addViewerComment(pid){
   }catch(e){toast('Error')}
 }
 
-// ===== SEARCH / EXPLORE (PUBLIC REELS ONLY) =====
+// ===== SEARCH / EXPLORE =====
 async function renderSearch(){
   $('panel-search').innerHTML=`<div class="search-bar"><div class="search-input"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input id="searchInput" placeholder="Search users..." oninput="doSearch()"></div></div><div id="searchResults"></div>`;
   doSearch();
@@ -889,7 +990,7 @@ function renderOwnGrid(t){
   else{const l=vpPosts.filter(p=>p.video_url);if(!l.length){g.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="em">🎬</div><h3>No reels yet</h3></div>';return}g.innerHTML=l.map(p=>`<div class="grid-item" onclick="openReels(${p.id})"><video src="${p.video_url}#t=0.1" preload="metadata" muted playsinline></video><div class="grid-play">▶</div></div>`).join('')}
 }
 
-// ===== VIEW OTHER PROFILE (private posts සියල්ල පෙන්වයි) =====
+// ===== VIEW OTHER PROFILE =====
 async function viewUserProfile(uid){
   if(uid===currentUser.id){switchPanel('profile');return}
   currentViewingUserId=uid;
@@ -1101,7 +1202,6 @@ async function openChatRoom(id,isGroup){
   </div>`;
   loadMessages();subChat();startChatPoll();
 }
-
 function closeChatRoom(){activeRoomId=null;if(chatCh){sb.removeChannel(chatCh);chatCh=null}stopChatPoll();hideEmojiPicker();switchPanel('chat')}
 
 async function loadMessages(){
@@ -1109,7 +1209,6 @@ async function loadMessages(){
   const box=$('chatMsgs');if(!box)return;
   const{data:msgs}=await sb.from('chat_messages').select('*').eq('room_id',activeRoomId).order('created_at');
   const{data:mem}=await sb.from('room_members').select('last_read_at').eq('room_id',activeRoomId).eq('user_id',currentUser.id).maybeSingle();
-  const myLastRead=mem?.last_read_at?new Date(mem.last_read_at).getTime():0;
   const otherLastReads=activeMembers.filter(m=>m.user_id!==currentUser.id).map(m=>m.last_read_at?new Date(m.last_read_at).getTime():0);
   const otherLastRead=Math.max(0,...otherLastReads);
   box.innerHTML=(msgs||[]).map(m=>{
@@ -1126,7 +1225,6 @@ async function loadMessages(){
   box.scrollTop=box.scrollHeight;
   await sb.from('room_members').update({last_read_at:new Date().toISOString()}).eq('room_id',activeRoomId).eq('user_id',currentUser.id);
 }
-
 function subChat(){
   if(!activeRoomId)return;
   if(chatCh)sb.removeChannel(chatCh);
@@ -1221,7 +1319,7 @@ async function openChatSettings(roomId,isGroup,adminId){
   const b=$('chatSettingsBody');
   let html='';
   if(isGroup){
-    html+=`<label style="display:block;text-align:center;margin-bottom:16px;cursor:pointer"><div class="profile-av" style="width:80px;height:80px;margin:0 auto"><img id="grpPfp" src="${DPFP}"></div><div style="color:var(--accent);font-weight:600;font-size:13px;margin-top:10px">Change group photo</div><input type="file" accept="image/*" style="display:none" onchange="uploadGroupAvatar(event)"></label>`;
+    html+=`<div style="text-align:center;padding:10px 0;color:var(--text-3);font-size:13px">Group chat</div>`;
     const{data:mem}=await sb.from('room_members').select('*').eq('room_id',roomId);
     html+=`<div style="font-weight:600;margin-bottom:10px">Members (${(mem||[]).length})</div>`;
     html+=(mem||[]).map(m=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 0"><div style="flex:1;font-size:14px">${esc(m.username)} ${m.user_id===adminId?'<span style="color:var(--warning);font-size:11px;font-weight:700">ADMIN</span>':''}</div></div>`).join('');
@@ -1263,27 +1361,54 @@ function applyFilter(el,filter){
   ['editImg','editVid','shareThumb','shareThumbVid'].forEach(id=>{const e=$(id);if(e)e.style.filter=filter==='none'?'':filter});
 }
 function updateCaptionCount(){const v=$('shareCaption').value.length;$('capCount').textContent=v}
+
 async function sharePost(){
   if(!upFile)return toast('No file');
   const btn=$('shareBtn');btn.disabled=true;btn.textContent='Posting...';
   try{
+    // 1) Upload to Storage
     const ext=upFile.name.split('.').pop();
     const folder=upAsStory?'stories':'posts';
     const path=`${currentUser.id}/${folder}_${Date.now()}.${ext}`;
     const{error:upErr}=await sb.storage.from(MEDIA_BUCKET).upload(path,upFile,{upsert:true,contentType:upFile.type});
-    if(upErr)throw upErr;
+    if(upErr) throw new Error('Storage: '+upErr.message);
     const{data:{publicUrl}}=sb.storage.from(MEDIA_BUCKET).getPublicUrl(path);
-    try{await sb.from('media').insert([{user_id:currentUser.id,file_path:path,file_type:upType,bucket:MEDIA_BUCKET}])}catch(e){}
+
+    // 2) Insert media (optional — if it fails, still post)
+    let mediaId=null;
+    try{
+      const{data:m,error:mErr}=await sb.from('media').insert([{user_id:currentUser.id,file_path:path,file_type:upType,bucket:MEDIA_BUCKET}]).select().single();
+      if(!mErr) mediaId=m.id;
+    }catch(e){}
+
+    // 3) Insert post / story
     if(upAsStory){
-      await sb.from('stories').insert([{user_id:currentUser.id,username:currentUser.username,media_url:publicUrl,media_type:upType}]);
+      const{error:sErr}=await sb.from('stories').insert([{user_id:currentUser.id,username:currentUser.username,media_url:publicUrl,media_type:upType}]);
+      if(sErr) throw new Error('Story: '+sErr.message);
       upAsStory=false;
     }else{
-      await sb.from('posts').insert([{user_id:currentUser.id,username:currentUser.username,image_url:upType==='image'?publicUrl:null,video_url:upType==='video'?publicUrl:null,caption:$('shareCaption').value.trim(),is_trial_reel:$('shareTrial').checked}]);
+      const{error:pErr}=await sb.from('posts').insert([{
+        user_id:currentUser.id,
+        username:currentUser.username,
+        media_id:mediaId,
+        image_url:upType==='image'?publicUrl:null,
+        video_url:upType==='video'?publicUrl:null,
+        caption:$('shareCaption').value.trim(),
+        is_trial_reel:$('shareTrial').checked
+      }]);
+      if(pErr) throw new Error('Post: '+pErr.message);
     }
-    toast('Posted! ✨');closeUpload();
+
+    toast('Posted! ✨');
+    closeUpload();
     if($('panel-feed').classList.contains('active'))renderFeed();
     if($('panel-profile').classList.contains('active'))renderProfile(currentUser.id);
-  }catch(e){toast('Error: '+e.message)}finally{btn.disabled=false;btn.textContent='Share'}
+  }catch(e){
+    console.error('sharePost error:',e);
+    toast('Error: '+e.message);
+  }finally{
+    btn.disabled=false;btn.textContent='Share';
+  }
 }
 
 async function viewStory(url,type){
@@ -1353,10 +1478,7 @@ function buildEmojiPicker(){
 }
 function toggleEmojiPicker(){const p=$('emojiPicker');if(!p)return;p.classList.toggle('active')}
 function hideEmojiPicker(){const p=$('emojiPicker');if(p)p.classList.remove('active')}
-function insertEmoji(e){
-  const inp=$('chatInput');if(!inp)return;
-  inp.value+=e;inp.focus();
-}
+function insertEmoji(e){const inp=$('chatInput');if(!inp)return;inp.value+=e;inp.focus()}
 
 // start
 init();

@@ -366,7 +366,6 @@ input:checked + .slider:before{transform:translateX(22px)}
 .auth-toggle{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:20px;text-align:center;font-size:15px;color:var(--text-2)}
 .auth-toggle span{color:var(--accent);font-weight:600;cursor:pointer}
 .auth-success{background:rgba(16,185,129,0.15);border:1px solid var(--success);color:var(--success);padding:16px;border-radius:14px;text-align:center;font-size:14px;line-height:1.5}
-#authLimitInfo{font-size:13px;color:var(--text-3);text-align:center;margin-top:12px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -448,11 +447,9 @@ input:checked + .slider:before{transform:translateX(22px)}
       <input class="auth-input" id="authEmail" type="email" placeholder="Email address" autocomplete="email">
       <input class="auth-input" id="authUsername" type="text" placeholder="Username" style="display:none">
       <input class="auth-input" id="authPassword" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
-      <input class="auth-input" id="authOtp" type="text" placeholder="Enter 6-digit code" maxlength="6" style="display:none; text-align:center; letter-spacing: 5px; font-size: 20px;">
       <div class="auth-error" id="authError"></div>
       <div class="auth-success" id="authSuccess" style="display:none"></div>
       <button class="auth-btn" id="authBtn" onclick="handleAuth()">Sign In</button>
-      <button class="auth-btn" id="verifyOtpBtn" onclick="verifyOTP()" style="display:none">Verify Code</button>
     </div>
     <div class="auth-toggle" id="authToggle">New here? <span onclick="toggleAuthMode()">Create account</span></div>
   </div>
@@ -531,7 +528,6 @@ const SB_URL='https://ujbepvlzrdvcmxpmdsez.supabase.co';
 const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYmVwdmx6cmR2Y214cG1kc2V6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MTQwNjUsImV4cCI6MjEwNzk5MDA2NX0.-XzEMlr2W_4uOi0QDKaR4KmrPRJGPmXoDz6SlOjfqvE';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const DPFP="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%231E293B'/><circle cx='50' cy='35' r='18' fill='%2338BDF8'/><path d='M50 58 C28 58 18 72 18 100 L82 100 C82 72 72 58 50 58 Z' fill='%2338BDF8'/></svg>";
-const AUTH_LIMIT=3;
 const MEDIA_BUCKET='media';
 const EMOJIS=['😀','😃','😄','😁','😆','😂','🤣','😊','😇','🙂','🙃','😉','😍','🥰','😘','😋','😛','😜','🤪','🤨','🧐','🤓','😎','🥳','😏','😒','😞','😔','😟','😕','🙁','😣','😖','😫','😩','🥺','😢','😭','😤','😠','😡','🤬','🤯','😳','🥵','🥶','😱','😨','😰','😥','😓','🤗','🤔','🤭','🤫','🤥','😶','😐','😑','😬','🙄','😯','😦','😧','😮','😲','🥱','😴','🤤','😪','😵','🤐','🥴','🤢','🤮','🤧','😷','🤒','🤕','🤑','🤠','😈','👿','👹','👺','🤡','💩','👻','💀','☠️','👽','🤖','🎃','😺','😸','😹','😻','😼','😽','🙀','😿','😾','❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❣️','💕','💞','💓','💗','💖','💘','💝','👍','👎','👌','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','👇','☝️','✋','🤚','🖐️','🖖','👋','🤝','🙏','💪','🦾','🔥','✨','⭐','🌟','💫','⚡','💥','💯','🎉','🎊','🎈','🎁','🎂','🍕','🍔','🍟','🌮','🍩','🍪','☕','🍺','🥂'];
 
@@ -576,89 +572,60 @@ function viewMediaFull(url, isVideo = false){
   document.body.appendChild(div);
 }
 
-// ===== AUTH with OTP =====
+// ===== AUTH (Email + Password, no OTP) =====
 function showAuth(){$('authOverlay').classList.add('active')}
 function setAuthMode(m){
   authMode=m;const li=m==='login';
   $('authUsername').style.display=li?'none':'block';
-  $('authPassword').style.display=li?'block':'none';
-  $('authOtp').style.display='none';
-  $('authBtn').style.display='block';
-  $('verifyOtpBtn').style.display='none';
   $('authSub').textContent=li?'Welcome back. Sign in to your universe.':'Join Your Place. Start your journey.';
-  $('authBtn').textContent=li?'Sign In':'Send Code';
+  $('authBtn').textContent=li?'Sign In':'Create Account';
   $('authToggle').innerHTML=li?`New here? <span onclick="toggleAuthMode()">Create account</span>`:`Have an account? <span onclick="toggleAuthMode()">Sign in</span>`;
   $('authError').style.display='none';$('authSuccess').style.display='none';
 }
 function toggleAuthMode(){setAuthMode(authMode==='login'?'signup':'login')}
 
-async function getAttemptsToday(email){
-  try{const start=new Date();start.setHours(0,0,0,0);const {count}=await sb.from('auth_attempts').select('*',{count:'exact',head:true}).eq('email',email.toLowerCase()).gte('created_at',start.toISOString());return count||0;}catch(e){return 0;}
-}
-async function recordAttempt(email,action,success){try{await sb.from('auth_attempts').insert([{email:email.toLowerCase(),action,success}])}catch(e){}}
-
 async function handleAuth(){
   if(authBusy)return;
-  const email=$('authEmail').value.trim().toLowerCase();
-  if(!email) return toast('Enter your email');
+  const email=$('authEmail').value.trim().toLowerCase(),pass=$('authPassword').value,user=$('authUsername').value.trim();
+  if(!email||!pass)return toast('Fill all fields');
+  if(authMode==='signup'&&!user)return toast('Username required');
+  if(pass.length<6)return toast('Password must be 6+ characters');
   
-  authBusy=true;const b=$('authBtn');b.disabled=true;b.textContent='Sending...';
+  authBusy=true;const b=$('authBtn');b.disabled=true;b.textContent=authMode==='login'?'Signing in...':'Creating...';
   $('authError').style.display='none';$('authSuccess').style.display='none';
-
+  
   try{
-    const used=await getAttemptsToday(email);
-    if(used>=AUTH_LIMIT){
-      $('authError').innerHTML=`🚫 <b>Daily limit reached</b><br>You can only try <b>3 times per day</b> for this email.`;
-      $('authError').style.display='block';
-      return;
+    if(authMode==='login'){
+      const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+      if(error)throw error;
+      const {data:prof}=await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
+      currentUser={id:data.user.id,username:prof?.username||email.split('@')[0],avatar_url:prof?.avatar_url};
+      $('authOverlay').classList.remove('active');
+      initApp();
+    }else{
+      const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{username:user}}});
+      if(error)throw error;
+      if(data.session){
+        // Create profile
+        await sb.from('profiles').upsert({id:data.user.id,username:user,is_private:false});
+        currentUser={id:data.user.id,username:user,avatar_url:null};
+        $('authOverlay').classList.remove('active');
+        initApp();
+        toast('Welcome! ✨');
+      }else{
+        $('authSuccess').innerHTML=`✅ Account created!<br>Please check your email to confirm, then sign in.`;
+        $('authSuccess').style.display='block';
+        setAuthMode('login');
+      }
     }
-
-    const { data, error } = await sb.auth.signInWithOtp({
-      email: email,
-      options: { shouldCreateUser: true }
-    });
-    if(error) throw error;
-    await recordAttempt(email,authMode,true);
-
-    $('authOtp').style.display='block';
-    $('authBtn').style.display='none';
-    $('verifyOtpBtn').style.display='block';
-    $('authSub').textContent=`Code sent to ${email}`;
-    toast('Verification code sent to your email!');
-
   }catch(err){
-    await recordAttempt(email,authMode,false);
     let msg=err.message||'Error';
+    if(msg.includes('Invalid login'))msg='Invalid email or password';
+    if(msg.includes('already registered'))msg='This email is already registered';
+    if(msg.includes('Email not confirmed'))msg='📧 Please confirm your email first. (Disable email confirmation in Supabase to skip this)';
     $('authError').innerHTML=msg;$('authError').style.display='block';
   }finally{
-    authBusy=false;b.disabled=false;b.textContent=authMode==='login'?'Sign In':'Send Code';
-  }
-}
-
-async function verifyOTP(){
-  if(authBusy)return;
-  const email=$('authEmail').value.trim().toLowerCase();
-  const token=$('authOtp').value.trim();
-  if(!token || token.length<6) return toast('Enter the 6-digit code');
-
-  authBusy=true;const b=$('verifyOtpBtn');b.disabled=true;b.textContent='Verifying...';
-  $('authError').style.display='none';
-
-  try{
-    const { data, error } = await sb.auth.verifyOtp({ email, token, type: 'email' });
-    if(error) throw error;
-
-    const {data:prof} = await sb.from('profiles').select('*').eq('id',data.user.id).maybeSingle();
-    currentUser={id:data.user.id,username:prof?.username||email.split('@')[0],avatar_url:prof?.avatar_url};
-    
-    $('authOverlay').classList.remove('active');
-    initApp();
-    toast('Welcome! ✨');
-  }catch(err){
-    $('authError').textContent=err.message||'Invalid code';
-    $('authError').style.display='block';
-  }finally{
-    authBusy=false;b.disabled=false;b.textContent='Verify Code';
+    authBusy=false;b.disabled=false;b.textContent=authMode==='login'?'Sign In':'Create Account';
   }
 }
 
@@ -754,7 +721,6 @@ async function followFromProfile(){
 async function renderFeed(){
   const el=$('panel-feed');el.innerHTML='<div class="spinner"></div>';
   try{
-    // Only posts (video_url null)
     const{data:posts}=await sb.from('posts').select('*').is('video_url', null).order('created_at',{ascending:false}).limit(50);
     const uids=[...new Set((posts||[]).map(p=>p.user_id))];
     const{data:profs}=uids.length?await sb.from('profiles').select('id,username,avatar_url,is_private').in('id',uids):{data:[]};
@@ -765,8 +731,10 @@ async function renderFeed(){
     const pids=(posts||[]).map(p=>p.id);
     let seenPids = new Set();
     if(pids.length>0){
-       const {data:views} = await sb.from('post_views').select('post_id').eq('user_id', currentUser.id).in('post_id', pids);
-       if(views) views.forEach(v => seenPids.add(v.post_id));
+       try {
+         const {data:views} = await sb.from('post_views').select('post_id').eq('user_id', currentUser.id).in('post_id', pids);
+         if(views) views.forEach(v => seenPids.add(v.post_id));
+       } catch(e) {}
     }
 
     const vis=(posts||[]).filter(p=>{
@@ -944,7 +912,6 @@ async function doSearch(){
   if(!q){
     r.innerHTML='<div class="spinner"></div>';
     try{
-      // Only public reels (join profiles where is_private = false)
       const{data:posts}=await sb.from('posts').select('*, profiles!inner(is_private)').not('video_url','is',null).eq('profiles.is_private', false).order('created_at',{ascending:false}).limit(50);
       const vis=(posts||[]).filter(p=>p.user_id!==currentUser.id);
       if(!vis.length){r.innerHTML='<div class="empty-state"><div class="em">🎬</div><h3>No public reels yet</h3></div>';return}
